@@ -39,6 +39,3 @@ Rules:
 - Follow the build order in PRODUCT_SPEC.md section 39 (Phase 1 through 6). Do not start with graph aesthetics or animation.
 - Stack: Astro + TypeScript + CSS + Cytoscape.js. No backend. No additional UI framework unless justified.
 - Visual direction is locked: Systems Atlas. Do not deviate from the colour system, typography, or "avoid" lists in DESIGN_SPEC.md.
-
-Start with Phase 1: encode the canonical assignment registry into src/data/assignments.ts, 
-then src/data/concepts.ts, src/data/artifacts.ts, and src/data/graph.ts using only approved edges.
