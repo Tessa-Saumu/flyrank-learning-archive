@@ -1,0 +1,184 @@
+---
+/**
+ * Header.astro — compact site header per DESIGN_SPEC §08.
+ *
+ * Phase 1 mapping:
+ *  - MAP          → homepage browse index (the Phase 1 map placeholder)
+ *  - WORK         → /work
+ *  - FRAMEWORK    → /framework (stub until Phase 3)
+ *  - REFLECTION   → /reflection (stub until Phase 3)
+ *  - AI FLUENCY   → /track/ai-fluency
+ *  - MACHINE LEARNING → /track/machine-learning
+ */
+const path = Astro.url.pathname;
+
+const nav = [
+  { label: 'MAP', href: '/#browse' },
+  { label: 'WORK', href: '/work/' },
+  { label: 'FRAMEWORK', href: '/framework/' },
+  { label: 'REFLECTION', href: '/reflection/' },
+];
+
+const tracks = [
+  { label: 'AI FLUENCY', href: '/track/ai-fluency/', track: 'ai-fluency' },
+  { label: 'MACHINE LEARNING', href: '/track/machine-learning/', track: 'machine-learning' },
+];
+
+function isActive(href: string): boolean {
+  if (href === '/work/') return path.startsWith('/work');
+  if (href.startsWith('/track/')) return path.startsWith(href);
+  return path === href;
+}
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <a class="header__brand" href="/">
+      <span class="header__wordmark">FLYRANK</span>
+      <span class="header__descriptor">LEARNING ARCHIVE</span>
+    </a>
+
+    <nav class="header__nav" aria-label="Primary">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            class:list={['header__link', { 'is-active': isActive(item.href) }]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <nav class="header__tracks" aria-label="Tracks">
+      {
+        tracks.map((item) => (
+          <a
+            href={item.href}
+            class:list={['header__link', `track-${item.track}`, { 'is-active': isActive(item.href) }]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border-bottom: var(--rule);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .header__brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    text-decoration: none;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .header__wordmark {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+  }
+
+  .header__descriptor {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--text-faint);
+  }
+
+  .header__nav {
+    display: flex;
+    gap: var(--space-5);
+    flex: 1;
+    justify-content: center;
+  }
+
+  .header__tracks {
+    display: flex;
+    gap: var(--space-5);
+    flex-shrink: 0;
+  }
+
+  .header__link {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-dim);
+    position: relative;
+    padding: var(--space-1) 0;
+    transition: color var(--motion-fast) var(--ease);
+  }
+
+  .header__link:hover {
+    color: var(--text);
+  }
+
+  /* Subtle active indicator (DESIGN_SPEC §08) */
+  .header__link.is-active {
+    color: var(--text);
+  }
+
+  .header__link.is-active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: var(--text);
+  }
+
+  /* Track identity accents are text-only, never colour alone */
+  .header__link.track-ai-fluency.is-active {
+    color: var(--green-bright);
+  }
+
+  .header__link.track-machine-learning.is-active {
+    color: var(--terracotta);
+  }
+
+  @media (max-width: 900px) {
+    .header__inner {
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      padding-top: var(--space-2);
+      padding-bottom: var(--space-2);
+    }
+
+    .header__nav {
+      order: 3;
+      flex-basis: 100%;
+      justify-content: flex-start;
+      gap: var(--space-4);
+    }
+
+    .header__tracks {
+      margin-left: auto;
+    }
+  }
+</style>
