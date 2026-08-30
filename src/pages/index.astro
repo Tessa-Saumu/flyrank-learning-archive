@@ -1,17 +1,78 @@
 ---
-
+/**
+ * Homepage — hero + orientation + browse index (DESIGN_SPEC §03, §09; IA §4).
+ * In Phase 1 the "map" target is this static browse index; EXPLORE THE MAP
+ * and BROWSE THE WORK both anchor here.
+ */
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import FilterBar from '../components/FilterBar.astro';
+import BrowseWork from '../components/BrowseWork.astro';
+import { assignments } from '../data/assignments';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base>
+  <Hero />
+
+  <section class="orientation section" aria-labelledby="orientation-heading">
+    <div class="container">
+      <h2 class="sr-only" id="orientation-heading">Orientation</h2>
+      <div class="orientation__grid">
+        <div class="orientation__item">
+          <h3 class="orientation__label">What this is</h3>
+          <p>
+            A visual archive of the work completed across the FlyRank AI
+            Fluency and Machine Learning tracks: what each assignment asked
+            for, what it taught, and how the pieces connect.
+          </p>
+        </div>
+        <div class="orientation__item">
+          <h3 class="orientation__label">Who it is for</h3>
+          <p>
+            Future FlyRank students who want to see what the programme actually
+            asks, and reviewers who want to see the work and how it fits
+            together.
+          </p>
+        </div>
+        <div class="orientation__item">
+          <h3 class="orientation__label">How to use it</h3>
+          <p>
+            Browse the work below, or filter by track, tier, and concept. Every
+            assignment links to its task, lesson, takeaway, and proof.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="browse" aria-labelledby="browse-heading">
+    <div class="container">
+      <h2 class="section-label" id="browse-heading">Browse the work</h2>
+      <FilterBar basePath="/work/" />
+      <BrowseWork assignments={assignments} searchId="home-search" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .orientation__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .orientation__label {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-2);
+  }
+
+  .orientation__item p {
+    color: var(--text-dim);
+    margin: 0;
+  }
+</style>

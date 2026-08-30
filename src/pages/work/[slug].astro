@@ -1,0 +1,67 @@
+---
+/**
+ * /work/[slug] — one static route per canonical assignment (35 pages).
+ * Renders via DetailPanel (shared with the Phase 2 map panel).
+ */
+import Base from '../../layouts/Base.astro';
+import DetailPanel from '../../components/DetailPanel.astro';
+import { assignments } from '../../data/assignments';
+
+export function getStaticPaths() {
+  return assignments.map((a) => ({ params: { slug: a.id } }));
+}
+
+const { slug } = Astro.params;
+const assignment = assignments.find((a) => a.id === slug);
+
+if (!assignment) {
+  return Astro.redirect('/work/');
+}
+
+// PRODUCT_SPEC §36: description = first sentence of the Task beat.
+const firstSentence = assignment.task?.split(/(?<=[.!?])\s/)[0] ?? undefined;
+
+const title = assignment.officialCode
+  ? `${assignment.officialCode} · ${assignment.title}`
+  : assignment.title;
+---
+
+<Base
+  title={title}
+  description={firstSentence}
+  canonicalPath={`/work/${assignment.id}/`}
+>
+  <div class="container section">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/work/">Work</a>
+      <span aria-hidden="true">/</span>
+      <a href={`/track/${assignment.track === 'machine-learning' ? 'machine-learning' : 'ai-fluency'}/`}>
+        {assignment.track === 'machine-learning' ? 'Machine Learning' : 'AI Fluency'}
+      </a>
+    </nav>
+    <DetailPanel assignment={assignment} />
+  </div>
+</Base>
+
+<style>
+  .crumbs {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-6);
+  }
+
+  .crumbs a {
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--text);
+  }
+</style>

@@ -1,0 +1,37 @@
+---
+/**
+ * /framework — stub. Real content (My Working Framework + What I Wish I Knew)
+ * lands in Phase 3, drafted from the completed work. No invented synthesis
+ * before then (PRODUCT_SPEC §30, §31).
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Framework"
+  description="My Working Framework for the FlyRank Learning Archive."
+  canonicalPath="/framework/"
+>
+  <div class="container section">
+    <p class="eyebrow">Framework</p>
+    <h1 class="stub__title">My Working Framework</h1>
+    <p class="stub__body">
+      This section is being written from the completed work. It will appear in
+      the final phase, with each step linked to the assignments that earned it.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .stub__title {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .stub__body {
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
+  }
+</style>
