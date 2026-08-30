@@ -8,6 +8,96 @@ files changed, the phase + task reference, and any assumptions made.
 
 ---
 
+## Phase 2 — Learning Map: The Interactive Graph Layer
+
+### 2.1–2.4 — Learning Map (complete)
+
+**What was implemented**
+
+- **Graph foundation (Task 2.1).** `LearningMap.astro` is now the presentational
+  shell (controls, map stage, detail panel, keyboard roster, static fallback).
+  The heavy client code lives in `src/components/map/`:
+  - `layout.ts` — a single deterministic seed coordinate space (concepts as a
+    central band, ML spine below with ML-01 at the entrance, AI Fluency strands
+    above), so every state is identical on every load.
+  - `adapter.ts` — the pure, unit-tested data adapter `buildGraphElements(viewState)`
+    that is the only place data meets the renderer. It enforces approved-only
+    edges, keeps rejected edges out, and drives tier-based node sizing.
+  - `panel.ts` — client-side renderer functionally equivalent to the Phase 1
+    `DetailPanel` (code/meta/title, three beats, PROOF, Connections), because the
+    map is a client island and must update without a reload.
+  - `map-client.ts` — Cytoscape initialisation, state machine, URL sync,
+    interactions, filters, search, keyboard, and failure-safe fallback.
+- **Isolation (Task 2.1.1).** Cytoscape is bundled only on the homepage; verified
+  `cytoscape` is absent from `/work/*` and `/track/*` output (bundle check). A
+  `noscript` + `map-failed` fallback shows the static browseable archive when JS
+  is disabled or Cytoscape fails to initialise (DESIGN_SPEC §58).
+- **Progressive disclosure (Task 2.2).** View-state machine
+  `default → track → concept → assignment → browse-all`, plus `concepts` and
+  `artifacts` filters. Default = 10 concepts + 18 core anchors + ML-01 +
+  18 approved high-confidence edges, no reference-tier nodes. Track selection
+  reveals the track spine and keeps cross-track bridges visible (dimmed so the
+  chosen track stays dominant). Concept selection promotes reference-tier
+  members (e.g. `fl-curate-images` under Human Judgment). Assignment selection
+  opens the panel beside the map with an outer selection ring. Escape returns to
+  the default state preserving zoom/position.
+- **URL state (Task 2.2.7).** `?track=`, `?concept=`, `?node=`, `?view=browse-all`
+  (also `concepts`, `artifacts`, `tier`) sync to the address bar and reproduce on
+  refresh; deep links open the panel.
+- **Interactions, filters, search, keyboard (Task 2.3).** Hover (subtle scale +
+  neighbourhood brighten), click (ring + panel), the five primary filters + tier
+  secondary + Browse All, search that resolves title/code/concept/artifact names,
+  a keyboard roster (nodes are focusable buttons, Enter selects, Escape closes,
+  focus returns), and reduced-motion handling.
+- **Mobile (Task 2.4).** CSS breakpoints collapse to a single column, content
+  moves below the map, and the panel no longer crowds the graph. No horizontal
+  overflow at 375px.
+- **Homepage (§03 composition).** `index.astro` now places the intro (Hero) in a
+  left column beside the Learning Map; the orientation and browse sections remain
+  below as the guaranteed non-graph route. Header `MAP` and Hero `EXPLORE THE MAP`
+  now target `#map`.
+
+**Files changed**
+
+- `src/components/LearningMap.astro` (replaced placeholder)
+- `src/components/map/layout.ts`, `adapter.ts`, `panel.ts`, `map-client.ts` (new)
+- `src/pages/index.astro`, `src/components/Hero.astro`, `src/components/Header.astro`
+- `package.json` (scripts: `test`, `test:adapter`, `test:map`, `test:install`),
+  `playwright.config.ts` (new), `.gitignore` (test output), `tsconfig.json`
+  (excludes test files from `astro check`)
+- `tests/adapter.spec.ts` (new, 10 tests), `tests/map.spec.ts` (new, 11 tests)
+
+**Assumptions**
+
+- The default view is interpreted as exactly 10 concepts + all core-tier
+  assignments + ML-01 (the 18 core anchors) with only high-confidence approved
+  edges (18 in total). Track/browse-all views show all 34 approved edges.
+- The map detail panel is a client-side functional equivalent of the Phase 1
+  server `DetailPanel` (Task 2.3.5) rather than a re-imported server component,
+  because the map is a client island and cannot reload on every selection.
+- "Fade unrelated nodes" is achieved by the view removing unrelated nodes from
+  the graph (a calm spotlight) rather than dimming them in place; other-track
+  bridges in track view are dimmed in place so the chosen track is dominant.
+- Browser Playwright tests were written and collected but could **not be executed
+  in this sandbox**: the Playwright browser CDN is unreachable here and the
+  system lacks the native libs a downloaded chromium needs. The adapter unit
+  tests run green under the Playwright node runner. Run the browser suite with
+  `npm run test:install && npm run test:map`.
+
+**Verification**
+
+- `npm run validate` green (census: 35 / 10 / 11 / 34 / 5 / 58).
+- `npx astro check` 0 errors.
+- `npm run build` 52 pages; bundle check confirms `cytoscape` only on the map
+  page (absent from `/work` and `/track`).
+- `npm run test:adapter` — 10/10 adapter unit tests pass (default state, full
+  archive, approved-only edges, rejected pairs absent, locked concept members,
+  tier promotion, monotonic tier size, cross-track bridges, assignment
+  neighbourhood, artifacts view).
+- Smoke: all 51 static routes return HTTP 200 via `npm run preview`.
+
+---
+
 ## Phase 1 — Foundation: Data Layer and Non-Graph Archive
 
 ### 1.3.9 — Sitemap + 404 + verification pass (complete)
