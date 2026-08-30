@@ -16,6 +16,9 @@ import { assignments } from '../src/data/assignments.ts';
 import { concepts } from '../src/data/concepts.ts';
 import { artifacts, artifactLinks } from '../src/data/artifacts.ts';
 import { publicEdges, rejectedEdges } from '../src/data/graph.ts';
+import { frameworkSteps } from '../src/data/framework.ts';
+import { wishIKnew } from '../src/data/wish-i-knew.ts';
+import { finalReflection } from '../src/data/reflection.ts';
 
 const errors = [];
 const fail = (msg) => errors.push(msg);
@@ -573,6 +576,14 @@ for (const c of concepts) copyFields.push(c.name, c.description);
 for (const art of artifacts) copyFields.push(art.title, art.description);
 for (const e of publicEdges) copyFields.push(e.reason);
 for (const r of rejectedEdges) copyFields.push(r.decision);
+for (const s of frameworkSteps) copyFields.push(s.label, s.description);
+for (const s of wishIKnew) copyFields.push(s.text);
+copyFields.push(finalReflection.intro);
+for (const s of finalReflection.sections) {
+  copyFields.push(s.heading);
+  copyFields.push(...s.body);
+}
+copyFields.push(...finalReflection.learnings, finalReflection.convergenceNote);
 
 for (const text of copyFields) {
   if (text.includes(EM_DASH)) fail(`Em dash (—) found in copy: ${JSON.stringify(text)}`);
@@ -607,6 +618,51 @@ for (const id of ['fl-explain-build', 'fl-crit-review', 'fl-10-final-package']) 
   if (a && a.workloadHours !== undefined) {
     fail(`Assignment ${id}: workloadHours should be omitted (registry is blank) but is ${a.workloadHours}`);
   }
+}
+
+/* ---- 11. Framework steps: referential integrity (Phase 3, Task 3.2.1) ---- */
+if (frameworkSteps.length === 0) fail('frameworkSteps is empty (Phase 3 expects to render an earned synthesis)');
+for (const step of frameworkSteps) {
+  if (!step.id || !step.label || !step.description) fail(`Framework step is missing a required field`);
+  if (step.assignmentIds.length === 0) fail(`Framework step ${step.id}: must reference at least one assignment`);
+  for (const id of step.assignmentIds) {
+    if (!assignmentById.has(id)) fail(`Framework step ${step.id} references unknown assignment ${id}`);
+  }
+}
+const frameworkStepIds = new Set(frameworkSteps.map((s) => s.id));
+if (frameworkStepIds.size !== frameworkSteps.length) fail('Duplicate framework step ids found');
+
+/* ---- 12. "What I Wish I Knew": traceable statements (Phase 3, Task 3.2.2) ---- */
+if (wishIKnew.length === 0) fail('wishIKnew is empty (Phase 3 expects traceable statements)');
+for (const s of wishIKnew) {
+  if (!s.id || !s.text) fail('wishIKnew statement is missing a required field');
+  if (s.assignmentIds.length === 0) fail(`wishIKnew statement ${s.id}: must trace to at least one assignment`);
+  for (const id of s.assignmentIds) {
+    if (!assignmentById.has(id)) fail(`wishIKnew statement ${s.id} references unknown assignment ${id}`);
+  }
+}
+const wikIds = new Set(wishIKnew.map((s) => s.id));
+if (wikIds.size !== wishIKnew.length) fail('Duplicate wishIKnew statement ids found');
+
+/* ---- 13. Final Reflection: 500–800 word retrospective (Phase 3, Task 3.2.3) ---- */
+const retrospectiveText = [
+  finalReflection.intro,
+  ...finalReflection.sections.flatMap((s) => s.body),
+  ...finalReflection.learnings,
+].join(' ');
+const retrospectiveWords = retrospectiveText.split(/\s+/).filter(Boolean).length;
+if (retrospectiveWords < 500 || retrospectiveWords > 800) {
+  fail(
+    `Final retrospective is ${retrospectiveWords} words; must be between 500 and 800 (PRODUCT_SPEC §32)`
+  );
+}
+const requiredHeadings = ['What I set out to do', 'What changed', 'What I would build next'];
+const sectionHeadings = finalReflection.sections.map((s) => s.heading);
+for (const h of requiredHeadings) {
+  if (!sectionHeadings.includes(h)) fail(`Final retrospective is missing the required section heading "${h}"`);
+}
+if (finalReflection.learnings.length !== 3) {
+  fail(`Final retrospective must list three transferable learnings, got ${finalReflection.learnings.length}`);
 }
 
 /* ========================================================================== */
