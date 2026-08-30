@@ -14,6 +14,7 @@ const staticPaths = [
   '/track/ai-fluency/',
   '/track/machine-learning/',
   '/framework/',
+  '/framework/wish-i-knew/',
   '/reflection/',
 ];
 

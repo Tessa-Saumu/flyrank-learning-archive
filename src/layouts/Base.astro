@@ -25,7 +25,7 @@ const {
 
 const canonicalUrl = new URL(canonicalPath, site.url).toString();
 const ogTitle = title === site.title ? site.title : `${title} · ${site.name}`;
-const ogImageUrl = ogImage ? new URL(ogImage, site.url).toString() : undefined;
+const ogImageUrl = new URL(ogImage ?? site.ogImage, site.url).toString();
 ---
 
 <!doctype html>
@@ -37,19 +37,25 @@ const ogImageUrl = ogImage ? new URL(ogImage, site.url).toString() : undefined;
     <title>{ogTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content="index, follow" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
 
-    <!-- Open Graph (PRODUCT_SPEC §36) -->
+    <!-- Open Graph (PRODUCT_SPEC §36). og:image is always set (default in
+         src/config.ts) so share previews render; swap /public/og.png for a
+         branded card. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
-    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

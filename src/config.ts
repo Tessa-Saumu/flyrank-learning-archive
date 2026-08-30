@@ -12,4 +12,7 @@ export const site = {
   title: 'FlyRank Learning Archive',
   description:
     'A visual archive of work across the FlyRank AI Fluency and Machine Learning tracks: what each assignment asked for, what it taught, and how the pieces connect.',
+  // Root-relative social preview image (PRODUCT_SPEC §36). PLACEHOLDER until the
+  // owner supplies a branded card; /public/og.png ships as the default.
+  ogImage: '/og.png',
 };
