@@ -1,0 +1,31 @@
+---
+/**
+ * LearningMap.astro — placeholder shell for the interactive graph layer.
+ *
+ * IMPLEMENTATION_PLAN Phase 2 (Cytoscape.js). Not used in Phase 1: the
+ * homepage "MAP" target is the static browse index in this phase. Phase 2
+ * swaps this in with zero layout change to the surrounding page.
+ */
+---
+
+<div class="learning-map" aria-hidden="true">
+  <p class="learning-map__note">Learning Map arrives in the next phase.</p>
+</div>
+
+<style>
+  .learning-map {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    border: 1px dashed rgba(233, 231, 223, 0.16);
+    border-radius: var(--radius-2);
+  }
+
+  .learning-map__note {
+    font-size: var(--fs-metadata);
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+</style>

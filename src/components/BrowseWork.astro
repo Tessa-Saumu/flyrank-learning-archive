@@ -1,0 +1,190 @@
+---
+/**
+ * BrowseWork.astro — the non-graph browse index: assignment cards grouped by
+ * track and strand, with a client-side search input.
+ *
+ * Search (Phase 1 scope): a simple <input> filtering over title, code/ID,
+ * concept name, and artifact name. The full list is rendered server-side, so
+ * with JavaScript disabled the archive degrades to the static list.
+ */
+import AssignmentCard from './AssignmentCard.astro';
+import { artifactsForAssignment, conceptsForAssignment, strandLabel, trackLabel } from '../lib/archive';
+import type { Assignment, Strand, Track } from '../data/types';
+
+interface Props {
+  assignments: Assignment[];
+  /** Unique id for the search input (used by the inline script). */
+  searchId?: string;
+  /** Show the search box (default true). */
+  showSearch?: boolean;
+}
+
+const { assignments, searchId = 'browse-search', showSearch = true } = Astro.props;
+
+function searchText(a: Assignment): string {
+  const conceptNames = conceptsForAssignment(a.id).map((c) => c.name);
+  const artifactNames = artifactsForAssignment(a.id).map((x) => x.artifact.title);
+  return [a.title, a.officialCode ?? '', a.id, ...conceptNames, ...artifactNames]
+    .join(' ')
+    .toLowerCase();
+}
+
+const trackOrder: Track[] = ['ai-fluency', 'machine-learning'];
+const strandOrder: Strand[] = ['portfolio-public-work', 'ai-systems-agents', 'convergence', 'ml-spine'];
+
+const groups = trackOrder
+  .map((track) => {
+    const inTrack = assignments.filter((a) => a.track === track);
+    if (inTrack.length === 0) return null;
+    const strands = strandOrder
+      .map((strand) => ({ strand, items: inTrack.filter((a) => a.strand === strand) }))
+      .filter((g) => g.items.length > 0);
+    return { track, strands };
+  })
+  .filter((g): g is NonNullable<typeof g> => Boolean(g));
+
+const multiStrand = (g: NonNullable<(typeof groups)[number]>) => g.strands.length > 1;
+---
+
+<div class="browse">
+  {
+    showSearch && (
+      <div class="browse__search">
+        <label class="sr-only" for={searchId}>Search the archive</label>
+        <input
+          class="browse__input"
+          id={searchId}
+          type="search"
+          placeholder="Search titles, codes, concepts, artifacts"
+          data-search-input
+          data-search-list="browse-list"
+          autocomplete="off"
+        />
+      </div>
+    )
+  }
+
+  <div class="browse__list" id="browse-list">
+    {
+      groups.map((g) => (
+        <section class="browse__track" data-track-group>
+          <h2 class="browse__track-heading">{trackLabel(g.track)}</h2>
+          {g.strands.map((s) => (
+            <section class="browse__strand" data-strand-group>
+              {multiStrand(g) && <h3 class="browse__strand-heading">{strandLabel(s.strand)}</h3>}
+              <ul class="browse__grid">
+                {s.items.map((a) => (
+                  <li data-search-item data-search-text={searchText(a)}>
+                    <AssignmentCard assignment={a} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </section>
+      ))
+    }
+  </div>
+</div>
+
+{
+  showSearch && (
+    <script>
+      {
+        // Client-side search: filters the server-rendered list. Degrades to the
+        // full static list with JS off.
+      }
+      (function () {
+        const input = document.querySelector('[data-search-input]') as HTMLInputElement | null;
+        if (!input) return;
+        const listId = input.getAttribute('data-search-list');
+        if (!listId) return;
+        const list = document.getElementById(listId);
+        if (!list) return;
+        input.addEventListener('input', function () {
+          const q = input.value.trim().toLowerCase();
+          const items = list.querySelectorAll<HTMLElement>('[data-search-item]');
+          items.forEach(function (item) {
+            const text = (item.getAttribute('data-search-text') || '').toLowerCase();
+            item.hidden = q !== '' && text.indexOf(q) === -1;
+          });
+          // Hide empty strand/track groups.
+          list.querySelectorAll<HTMLElement>('[data-strand-group]').forEach(function (strand) {
+            const visible = strand.querySelectorAll('[data-search-item]:not([hidden])').length;
+            strand.hidden = visible === 0;
+          });
+          list.querySelectorAll<HTMLElement>('[data-track-group]').forEach(function (track) {
+            const visible = track.querySelectorAll('[data-search-item]:not([hidden])').length;
+            track.hidden = visible === 0;
+          });
+        });
+      })();
+    </script>
+  )
+}
+
+<style>
+  .browse__search {
+    margin-bottom: var(--space-6);
+  }
+
+  .browse__input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+  }
+
+  .browse__input:focus {
+    outline: 2px solid var(--green-bright);
+    outline-offset: 2px;
+  }
+
+  .browse__input::placeholder {
+    color: var(--text-faint);
+  }
+
+  .browse__track {
+    margin-bottom: var(--space-7);
+  }
+
+  .browse__track-heading {
+    font-size: var(--fs-section);
+    font-weight: 600;
+    padding-bottom: var(--space-3);
+    border-bottom: var(--rule);
+    margin-bottom: var(--space-5);
+  }
+
+  .browse__strand {
+    margin-bottom: var(--space-6);
+  }
+
+  .browse__strand-heading {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-4);
+  }
+
+  .browse__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .browse__grid > li {
+    display: flex;
+  }
+
+  .browse__grid > li > :global(*) {
+    width: 100%;
+  }
+</style>
