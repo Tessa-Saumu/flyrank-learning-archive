@@ -1,0 +1,824 @@
+/**
+ * Canonical assignment registry — 35 records, one per row of
+ * CONTENT_REGISTRY §1.1. IDs are used EXACTLY as written there (AGENTS.md).
+ *
+ * Source authority: CONTENT_REGISTRY.md is the authority for data. Copy
+ * (task/lesson/takeaway) is verbatim from PRODUCT_SPEC §15, with the three
+ * registry-mandated safeguards applied:
+ *
+ *   1. ML-03 uses the revised spec wording (the blocked older sentence is
+ *      not used).
+ *   2. FL Ship (`fl-empty-live-page`) uses the revised spec wording (the
+ *      blocked stronger claim is not used).
+ *   3. FL-04 Task applies the source-safe edit: "runs on a brand new input"
+ *      (the phrase "without your intervention" is dropped). See the inline
+ *      comment on that record for provenance.
+ *
+ * No duplicated FL Identity Task/Lesson/Takeaway blocks existed in the source
+ * (PRODUCT_SPEC §15 has a single FL Identity block), so nothing was removed.
+ *
+ * The two non-assignment source records from CONTENT_REGISTRY §1.2
+ * ("Consistency, Not Talent" / "Frame, Not Upstage"; "Show It / Tell the
+ * Story") are documented below as comments, NOT data nodes.
+ */
+import type { Assignment } from './types';
+
+export const assignments: Assignment[] = [
+  /* ======================= MACHINE LEARNING — ML SPINE ======================= */
+
+  {
+    id: 'ml-01-run-starter-notebooks',
+    officialCode: 'ML-01',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Run the Starter Notebooks',
+    sourceAliases: ['ML01', 'Run the Starter Notebooks'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 1,
+    workloadHours: 3,
+    phase: 'Setup',
+    task: 'Clone the starter repo, run a live ML pipeline on real search data, and observe a hand-written rule get outperformed by a learned model before you have studied any theory.',
+    lesson:
+      'The gap between a rule and a model is not abstract. Seeing it computed in front of you, before you know the theory, is what makes the concept stick.',
+    takeaway:
+      'The repo structure matters as much as the notebooks. Read GUIDE.md before you start so you know which folders are yours and which you should not touch.',
+    concepts: ['concept-data-evidence'],
+    artifactLinks: ['artifact-ml-repo'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-02-research-question-lane',
+    officialCode: 'ML-02',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Research Question and Provisional Lane',
+    sourceAliases: ['ML02'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 1,
+    workloadHours: 3,
+    phase: 'Setup',
+    task: 'Pick a provisional project lane and write a framing notebook that defines your research question, the decision it improves, the action it enables, and the cost of a wrong answer, backed by real numbers from the starter data.',
+    lesson:
+      'An ML project that does not name a decision and an action is just a modelling exercise. The framing question forces you to connect the output to something that matters.',
+    takeaway:
+      'The lane can change until Week 4, so do not agonise over it. What you cannot defer is being concrete: vague questions produce vague projects.',
+    concepts: ['concept-problem-framing', 'concept-data-evidence'],
+    artifactLinks: ['artifact-ml-repo'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-03-ml-task-framing',
+    officialCode: 'ML-03',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Frame Your Lane as an ML Task',
+    sourceAliases: ['ML03'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 2,
+    workloadHours: 4,
+    phase: 'Foundations',
+    task: 'Translate your research question into a precise ML task definition, including task type, target column, and success metric, and make the unit of analysis visible as real data.',
+    lesson:
+      'The gap between wanting to predict something useful and defining X for unit Y with a measurable success metric is what this assignment makes concrete.',
+    takeaway:
+      'Use AI to explore options for task type and target, but write the explanation yourself. The graded part is your reasoning, not what the model suggested.',
+    concepts: ['concept-problem-framing', 'concept-prompting'],
+    artifactLinks: ['artifact-ml-repo'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-04-data-contract',
+    officialCode: 'ML-04',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Search Intelligence Data Contract',
+    sourceAliases: ['ML04'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 3,
+    workloadHours: 3,
+    phase: 'Foundations',
+    task: "Document your lane's slice of the data pipeline in plain language, verify three facts about it with real queries, build a five-feature frame with availability justifications, and deliberately trigger label leakage to see what it looks like before removing it.",
+    lesson:
+      "The deliberate leakage experiment is the assignment's most useful moment. Watching your score jump toward perfect when you include a label-derived column makes the problem real in a way that reading about it does not.",
+    takeaway:
+      'The sample table is the final month only, not a random sample. Do not use it to develop label logic. Iterate on a mid-panel month and treat the final month as sealed.',
+    concepts: ['concept-data-evidence', 'concept-human-judgment'],
+    artifactLinks: ['artifact-ml-repo'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-07-baseline-action-score',
+    officialCode: 'ML-07',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Baseline Action Score and Top-10 Review',
+    sourceAliases: ['ML07'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 4,
+    workloadHours: 3,
+    phase: 'Build',
+    task: "Check two signals your rule relies on with real data, encode one hand-written rule with a score and reason code, write the ranked queue to a CSV, and review your top ten outputs row by row with a skeptic's eye.",
+    lesson:
+      'Building the baseline rule before the model forces you to be honest about what the rule actually leans on, and the signal checks reveal whether those assumptions hold.',
+    takeaway:
+      'A clearly explained negative signal verdict is not a failure. The brief says so explicitly. If your signal check comes back OPPOSITE or FALSE, that is useful information that may just have saved your rule design.',
+    concepts: ['concept-data-evidence', 'concept-baseline', 'concept-human-judgment'],
+    artifactLinks: ['artifact-ml-repo'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-08-capstone-modeling',
+    officialCode: 'ML-08',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Capstone Modeling Lane',
+    sourceAliases: ['ML08'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 5,
+    workloadHours: 6,
+    phase: 'Build',
+    task: 'Build the appropriate model or analysis for your lane, then produce a clear model-versus-baseline comparison table on the same data and same metric, with an interpretation of what the errors look like.',
+    lesson:
+      'Modeling comes last in the sequence because by this point you have something honest to beat and clean features to beat it with. The order of operations is not arbitrary.',
+    takeaway:
+      'The assignment explicitly says it does not reward complexity alone. A simpler model that beats the baseline on the right metric is better than a sophisticated one you cannot explain.',
+    concepts: ['concept-baseline', 'concept-evaluation'],
+    artifactLinks: ['artifact-ml-repo'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-09-validation-claim-audit',
+    officialCode: 'ML-09',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Validation and Research Claim Audit',
+    sourceAliases: ['ML09'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 6,
+    workloadHours: 5,
+    phase: 'Build+',
+    task: 'Audit your Week 5 model by re-running it under a grouped or time-aware split, checking features for leakage, reviewing real failure examples, and rewriting any claims that go further than the evidence, while also applying the same critical reading to two findings from the FlyRank research paper.',
+    lesson:
+      'Running your own model under a stricter validation design and seeing the before/after difference is what turns a model result into a trustworthy claim.',
+    takeaway:
+      'The paper audit is not about finding fault. It is practice for applying the same rigor to your own work. Frame both parts the way you would want your own work reviewed.',
+    concepts: ['concept-data-evidence', 'concept-evaluation', 'concept-human-judgment'],
+    artifactLinks: ['artifact-ml-repo'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-10-content-action-playbook',
+    officialCode: 'ML-10',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Content Action Playbook',
+    sourceAliases: ['ML10'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 7,
+    workloadHours: 4,
+    phase: 'Build+',
+    task: 'Convert your validated model output into a structured content action playbook with ranked actions, reason codes, human-review rules, monitoring triggers, and an explicit list of what should not be automated, then export the files your paper will use.',
+    lesson:
+      'A model score is not the end product. The playbook is the step where analytical output becomes something a person can actually use, with known limits attached.',
+    takeaway:
+      'Build this carefully because it becomes the recommendations section of your paper. Poor work here costs you twice.',
+    concepts: ['concept-workflow-design'],
+    artifactLinks: ['artifact-ml-repo'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-11-ship-paper',
+    officialCode: 'ML-11',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Ship the Paper',
+    sourceAliases: ['ML11'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 8,
+    workloadHours: 6,
+    phase: 'Submit',
+    task: 'Research how good research pages are structured, make deliberate choices about format and presentation, then deploy a paper that includes baseline, validation, interpretation, ranked recommendations, and honest claim language throughout.',
+    lesson:
+      '"Finding and judging best practices yourself is part of the assignment." This is the first place in the track where presentation decisions are explicitly your own to research and make.',
+    takeaway:
+      'Anyone with your repo should be able to rerun or inspect the work. Reproducibility is a required section, not an afterthought.',
+    concepts: ['concept-data-evidence', 'concept-deployment', 'concept-communication'],
+    artifactLinks: ['artifact-ml-paper'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'ml-12-tell-story',
+    officialCode: 'ML-12',
+    track: 'machine-learning',
+    strand: 'ml-spine',
+    title: 'Tell the Story',
+    sourceAliases: ['ML12'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 8,
+    workloadHours: 2,
+    phase: 'Submit',
+    task: "Reframe your paper's findings as a case study tied to a real FlyRank content problem, and prepare two audience-specific versions of the work for sharing and for a potential live demo.",
+    lesson:
+      'The case study lives inside the paper, not in a separate file. The assignment is mostly about making sure the paper already contains what you need, rather than adding more documents.',
+    takeaway:
+      'The demo outline is optional to present but worth writing either way. It forces you to identify your one honest result and one recommendation, which sharpens the paper itself.',
+    concepts: ['concept-communication'],
+    artifactLinks: ['artifact-ml-paper'],
+    canonicalisationStatus: 'reviewed',
+  },
+
+  /* ===================== AI FLUENCY — AI SYSTEMS / AGENTS ===================== */
+
+  {
+    id: 'fl-01-workflow-audit',
+    officialCode: 'FL-01',
+    track: 'ai-fluency',
+    strand: 'ai-systems-agents',
+    title: 'AI Workflow Audit and Tool Setup',
+    sourceAliases: ['FL01'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 1,
+    workloadHours: 4,
+    phase: 'Setup / Onboarding',
+    task: 'Audit your real workflow against an AI task-classification framework, configure your tooling including a Claude Project with custom instructions, and define what "done well" looks like for each of your three target tasks.',
+    lesson:
+      'Defining what "done well" means before you start prompting is what separates deliberate practice from just running more prompts.',
+    takeaway:
+      'At least two tasks must honestly be "just me" with a reason. That is not a formality. It is the most important part of the audit.',
+    concepts: ['concept-prompting', 'concept-workflow-design', 'concept-human-judgment'],
+    artifactLinks: ['artifact-automation-workflow'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-prompt-ladder',
+    track: 'ai-fluency',
+    strand: 'ai-systems-agents',
+    title: 'The Prompt Ladder',
+    sourceAliases: ['FL Prompt Ladder'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 2,
+    workloadHours: 2,
+    phase: 'Foundations',
+    task: 'Take a genuinely weak prompt from your own work, improve it across five versions where each version adds exactly one named layer, and document what actually changed in the output at each step.',
+    lesson:
+      'Changing one thing at a time is the only way to know which change caused the improvement. Changing several things at once and seeing a better result teaches you nothing.',
+    takeaway:
+      'The note that matters is "what improved in the output," not "what I changed in the prompt." If you can only write the second kind, you are not looking closely enough at the results.',
+    concepts: ['concept-evaluation', 'concept-prompting'],
+    artifactLinks: ['artifact-automation-workflow'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-02-prompting-fundamentals',
+    officialCode: 'FL-02',
+    track: 'ai-fluency',
+    strand: 'ai-systems-agents',
+    title: 'Prompting Fundamentals on Real Tasks v2',
+    sourceAliases: ['FL-02', 'FL-02 Prompting'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 2,
+    workloadHours: 6,
+    phase: 'Foundations',
+    task: "Work through Anthropic's prompt engineering tutorial, apply five named techniques to a real task from your FL-01 audit, run the final prompt on both Claude and ChatGPT, and distill the result into a reusable template.",
+    lesson:
+      'Practicing on a real task from your own audit is what makes the techniques stick. Toy examples do not surface the same failure points.',
+    takeaway:
+      'The cross-model comparison needs to say something specific. "Both were fine" does not pass. Compare tone, accuracy, structure, and failure points separately.',
+    concepts: ['concept-evaluation', 'concept-prompting', 'concept-human-judgment'],
+    artifactLinks: ['artifact-automation-workflow'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-04-automation-workflow',
+    officialCode: 'FL-04',
+    track: 'ai-fluency',
+    strand: 'ai-systems-agents',
+    title: 'Ship an Automation Workflow v2',
+    sourceAliases: ['FL04', 'Automation Workflow'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 4,
+    workloadHours: 7,
+    phase: 'Build core',
+    // SOURCE-SAFE EDIT (CONTENT_REGISTRY §2.2): the phrase "without your
+    // intervention" is dropped from the Task beat. The programme card supports
+    // "runs end to end," not necessarily full autonomy with no human step.
+    task: 'Build an end-to-end automated pipeline that runs on a brand new input, time it against doing the same task manually, and document what it cannot do.',
+    lesson:
+      'Timing yourself against the manual version and being honest about the setup cost is what distinguishes a genuine productivity tool from a demonstration.',
+    takeaway:
+      'Sketch the flow before you build. The brief says to do this and it is good advice. Building a multi-step workflow without a step diagram usually ends in an unworkable structure.',
+    concepts: ['concept-workflow-design'],
+    artifactLinks: ['artifact-automation-workflow'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-05-agent-mcp-basics',
+    officialCode: 'FL-05',
+    track: 'ai-fluency',
+    strand: 'ai-systems-agents',
+    title: 'Agent Concepts and MCP Basics',
+    sourceAliases: ['FL05', 'Agent Concepts'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 4,
+    workloadHours: 5,
+    phase: 'Build core',
+    task: 'Classify your FL-04 pipeline accurately as a workflow or an agent, demonstrate one real MCP connection working, and write a technically correct explainer that describes what your pipeline would need to become a true agent.',
+    lesson:
+      'MCP\'s three primitives, tools, resources, and prompts, are a useful framework. Understanding them is what lets you evaluate whether a tool\'s "agent" claims hold up.',
+    takeaway:
+      'One concrete agent upgrade named for your own pipeline is a required part of the explainer. Vague gestures toward "adding more tools" do not count.',
+    concepts: ['concept-workflow-design', 'concept-agents-tools', 'concept-human-judgment'],
+    artifactLinks: ['artifact-personal-agent'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-06-agent-design',
+    officialCode: 'FL-06',
+    track: 'ai-fluency',
+    strand: 'ai-systems-agents',
+    title: 'Design Your Personal Agent',
+    sourceAliases: ['FL06'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 5,
+    workloadHours: 4,
+    phase: 'Build',
+    task: 'Scope one job for an agent, justify your platform choice against at least one alternative, and specify what the agent must confirm and what it must never do before you write a line of configuration.',
+    lesson:
+      'The guardrails section is not an afterthought. Naming what the agent must never do is part of the design, not a disclaimer you add at the end.',
+    takeaway:
+      'Scope it to one job done well. The brief is explicit. The grading criteria cap the expected build time at roughly ten hours. If your spec requires more, the scope is too large.',
+    concepts: [
+      'concept-problem-framing',
+      'concept-evaluation',
+      'concept-agents-tools',
+      'concept-human-judgment',
+    ],
+    artifactLinks: ['artifact-personal-agent'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-07-build-agent',
+    officialCode: 'FL-07',
+    track: 'ai-fluency',
+    strand: 'ai-systems-agents',
+    title: 'Build the Agent',
+    sourceAliases: ['FL07'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 5,
+    workloadHours: 10,
+    phase: 'Build',
+    task: 'Ship an MVP agent that completes its core job end to end without mid-run hand-editing, with at least one live tool connection and a build log that shows real iteration.',
+    lesson:
+      'Build logs that show real iteration, including what you cut and why, are more credible than clean retrospective stories. The honest version of what happened is the valuable record.',
+    takeaway:
+      'Deviating from your FL-06 spec is normal. The requirement is to document why, not to pretend it did not happen.',
+    concepts: ['concept-agents-tools', 'concept-human-judgment', 'concept-deployment'],
+    artifactLinks: ['artifact-personal-agent'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-09-documentation-demo',
+    officialCode: 'FL-09',
+    track: 'ai-fluency',
+    strand: 'ai-systems-agents',
+    title: 'Documentation and Demo Video',
+    sourceAliases: [
+      'FL09',
+      'Show It / Tell the Story',
+      'Assignment 8.1',
+      'Documentation and demo',
+    ],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 8,
+    workloadHours: 5,
+    phase: 'Submit',
+    task: 'Make your agent legible to a stranger through a setup-reproducible README and an honest demo that includes one real limitation explained on camera.',
+    lesson:
+      'Including one limitation explained on camera is a required criterion, not a nice-to-have. Honesty about limitations reads as credibility, not weakness.',
+    takeaway:
+      'Add a line in the README naming what you built with AI and how. The brief explicitly requires transparency about AI involvement.',
+    concepts: ['concept-evaluation', 'concept-agents-tools', 'concept-deployment', 'concept-communication'],
+    artifactLinks: ['artifact-agent-readme', 'artifact-agent-demo-video'],
+    canonicalisationStatus: 'reviewed',
+  },
+
+  /* ================== AI FLUENCY — PORTFOLIO / PUBLIC WORK ================== */
+
+  {
+    id: 'fl-portfolio-proof',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'What Are You Proving?',
+    sourceAliases: ['FL Proving', 'What Are You Proving?'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 1,
+    workloadHours: 2,
+    phase: 'Setup',
+    task: 'Define the single most important thing your portfolio must prove, who it must prove it to, and what you want them to do, with AI as a questioning partner rather than a drafter.',
+    lesson:
+      'Everything downstream of this assignment is easier once the claim is settled. The brief says so plainly. The time spent here is not wasted on framing. It is the work.',
+    takeaway:
+      'Push back on the AI\'s output until the claim sounds like yours, not like something generated. The pass criterion explicitly says "could only describe your proof, not any portfolio."',
+    concepts: ['concept-problem-framing'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-portfolio-sitemap',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Draw the Path: Portfolio Sitemap + Toolkit',
+    sourceAliases: ['FL Sitemap', 'Draw the Path'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 1,
+    workloadHours: 3,
+    phase: 'Setup',
+    task: 'Design a sitemap with only the pages that earn their place, and immediately test it against your claim by prompting Claude to find the weaknesses.',
+    lesson:
+      'Using AI to pressure-test a plan you have just made is a different skill from using AI to generate ideas. The value is in having something concrete to test.',
+    takeaway:
+      'Resist adding pages. The brief says so directly and the pass criteria enforce it. Extra pages are a sign the claim is not narrow enough yet.',
+    concepts: ['concept-problem-framing'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-portfolio-cases',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Frame It as Cases: Work That Speaks for Itself',
+    sourceAliases: ['FL Frame', 'Frame It as Cases'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 2,
+    workloadHours: 3,
+    phase: 'Foundations',
+    task: 'Build case studies for every piece the sitemap calls for, using AI as an interviewer to pull out the honest messy version, then edit until it sounds like a specific person talking about a specific project.',
+    lesson:
+      'A portfolio is mostly the framing around the work. The framing is what a stranger reads first, and it is what makes them trust you or scroll past.',
+    takeaway:
+      'Start with the work you are making in this internship. The brief suggests it explicitly, and it means you are building the case study alongside the project rather than reconstructing it from memory.',
+    concepts: ['concept-communication'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-identity-kit',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Decide Once: Build Your Identity Kit',
+    sourceAliases: ['FL Identity', 'Identity Kit'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 3,
+    workloadHours: 2,
+    phase: 'Foundations',
+    task: 'Choose your fonts, colour palette, and logo, write a two-line style note, and add the style note to your Claude Project so all future build work inherits the same decisions.',
+    lesson:
+      'Visual consistency comes from making a small number of decisions once, not from having design talent. The kit makes every later page cheaper to build.',
+    takeaway:
+      'The palette should be calm enough that your work is the loudest thing on the page. That constraint is the design principle, not just a preference.',
+    concepts: [],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-curate-images',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Kill Your Darlings: Curate Your Images',
+    sourceAliases: ['FL Curate', 'Kill Your Darlings'],
+    tier: 'reference',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 3,
+    workloadHours: 2,
+    phase: 'Foundations',
+    task: 'Identify every image your portfolio actually needs, use real captures for your work and generate only connective-tissue images in a consistent style, and write a short note explaining at least one generated image you rejected and why.',
+    lesson:
+      'The skill is not generation. It is knowing when a real screenshot of your work beats anything generated, and being able to explain the difference.',
+    takeaway:
+      'The rejection note is graded. "I liked this one better" is not enough. The brief asks for genuine judgment about what serves your proof.',
+    concepts: ['concept-human-judgment'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-content-ctas',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'The Through-Line: Map Content and CTAs',
+    sourceAliases: ['FL Map Content', 'Through-Line'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 3,
+    workloadHours: 2,
+    phase: 'Foundations',
+    task: 'Write a single memorable one-line claim, build a content map that puts sections in order per page with the strongest work leading, and list anything you still need to gather before the build week.',
+    lesson:
+      'A good case in the wrong place still fails. The content map is what prevents you from building a site that is complete but incoherent.',
+    takeaway:
+      'The gather-list is not an optional extra. The brief says it exists so the build week is not blocked. Do it honestly.',
+    concepts: ['concept-problem-framing'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-empty-live-page',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Empty but Live: Ship a Blank Page',
+    sourceAliases: ['FL Ship', 'Empty but Live'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 4,
+    workloadHours: 2,
+    phase: 'Build',
+    task: 'Get a near-blank page live on a real public URL, confirm it works on your phone, and load your identity kit, case studies, and content map into your Claude Project so the build week can start without setup.',
+    lesson:
+      'Getting something live on a URL, even if it just says your name, removes a major setup barrier before the build week. The point is to start the build with something already deployed.',
+    takeaway:
+      'Test the URL on a second device, not just a resized browser. The pass criteria require it.',
+    concepts: ['concept-deployment'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-stack-choice',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Three Roads: Choose Your Stack with AI',
+    sourceAliases: ['FL Stack', 'Three Roads'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 4,
+    workloadHours: 2,
+    phase: 'Build',
+    task: 'Use AI as an options generator, not a decision-maker, to compare three genuine build paths for your portfolio, then commit to one in writing with reasons that include maintainability and whether it shows your work properly.',
+    lesson:
+      'Three genuine options with trade-offs considered, not one answer obeyed. The habit of extracting options before deciding is what the assignment is actually teaching.',
+    takeaway:
+      'The rationale must include "can I maintain this." Future-you has to update this site. That constraint rules out a lot of tempting options.',
+    concepts: [],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-explain-build',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Explain It Like You Built It',
+    sourceAliases: ['FL Explain'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 5,
+    phase: 'Build+',
+    task: 'Close one genuine gap in your understanding of your own build by using AI as a tutor, then prove you closed it by writing the explanation without jargon.',
+    lesson:
+      'Using AI to tutor you into genuine understanding, then explaining it yourself, is a different skill from using AI to explain something you do not care about understanding. The writing proves whether the learning happened.',
+    takeaway:
+      'Read every line out loud before submitting. If you would not say it to a friend, cut it.',
+    concepts: ['concept-communication'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'pf-04-personal-website',
+    officialCode: 'PF-04',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Personal Website Live on the FlyRank Domain',
+    sourceAliases: ['PF04', 'Personal Website Live'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 5,
+    workloadHours: 6,
+    phase: 'Build',
+    task: 'Plan and deploy a simple personal site on a free host with HTTPS, rename it to a clean URL, and write a plain-language DNS walkthrough explaining what actually happens between a browser request and the host responding.',
+    lesson:
+      'Building and deploying the site teaches you hosting, HTTPS, and basic web infrastructure regardless of what stack you choose. The DNS walkthrough forces you to understand the infrastructure rather than just following instructions.',
+    takeaway:
+      'You must be able to explain every file in the deployed site. That requirement is in the pass criteria. It is the practical test of whether you built it or just clicked through a template.',
+    concepts: ['concept-deployment'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-dynamic-feature',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Make It Do Something',
+    sourceAliases: ['FL Do Something'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 6,
+    workloadHours: 4,
+    phase: 'Submit',
+    task: 'Choose one dynamic feature your portfolio actually needs, build it to work on a free tier with AI as a build partner, and explain the data flow in your own words.',
+    lesson:
+      'The assignment calls this the most directly employable skill in the whole track. Wiring one real feature and understanding it is the line between a portfolio that tells and one that does.',
+    takeaway:
+      'One feature, not several. The pass criteria repeat this. Pick the one thing your portfolio most needs and make it work properly.',
+    concepts: ['concept-deployment'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-mobile-audit',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Open It on Your Phone',
+    sourceAliases: ['FL Phone'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 6,
+    workloadHours: 4,
+    phase: 'Build+',
+    task: 'Conduct a real device audit of your portfolio across mobile, tablet, and desktop, fix the obvious breaks, and document what you found and changed.',
+    lesson:
+      'Testing on a resized browser is not the same as testing on a real phone. Issues that are invisible in a browser window show up on a real device, and some of them matter.',
+    takeaway:
+      'Click every link including demo and repo. The fix log requires real problems found and fixed. If your log is empty, you did not look hard enough.',
+    concepts: [],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-crit-review',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Survive the Crit',
+    sourceAliases: ['FL Crit'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 6,
+    phase: 'Build+',
+    task: 'Get external feedback on whether your portfolio communicates what you do in ten seconds and whether the work backs it up, then act on the must-fixes before proceeding.',
+    lesson:
+      'The two questions to ask first, "what do I do?" and "would you believe I\'m good at it?", are structured so you get the most useful signal before the reviewer has a chance to be polite.',
+    takeaway:
+      'Engaging with feedback rather than defending is itself a graded criterion. If the must-fixes are acknowledged but not fixed on the live site, you have not passed.',
+    concepts: ['concept-evaluation', 'concept-human-judgment'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-site-hardening',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Break Your Own Site',
+    sourceAliases: ['FL Break'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 7,
+    workloadHours: 2,
+    phase: 'Submit',
+    task: 'Conduct real edge-case testing on your own site, add findability and speed basics, and submit a triage document that distinguishes between what you fixed and what you are acknowledging as a known limitation.',
+    lesson:
+      'The SEO and meta step is often treated as optional decoration. It is in this assignment because a portfolio that cannot be found or shared properly is missing a functional requirement.',
+    takeaway:
+      'This checkpoint must pass to proceed to launch. Do not treat it as a formality.',
+    concepts: ['concept-evaluation'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-domain-badge',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'Plant Your Flag: Domain + Badge',
+    sourceAliases: ['FL Flag', 'Plant Your Flag'],
+    tier: 'reference',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 7,
+    workloadHours: 20,
+    phase: 'Build+',
+    task: 'Complete the final public launch: custom domain, analytics, HTTPS confirmed, share preview working, and the badge installed.',
+    lesson:
+      'Launch hygiene, the social share preview, favicon, and page titles on the real address, is the last check before the site is genuinely public rather than just reachable.',
+    takeaway:
+      'Open the final address on your phone one more time after pointing the custom domain. DNS propagation can take time, and what worked on the old URL may not have transferred cleanly.',
+    concepts: ['concept-deployment'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+  {
+    id: 'fl-maintenance-plan',
+    track: 'ai-fluency',
+    strand: 'portfolio-public-work',
+    title: 'The Plan to Keep Building',
+    sourceAliases: ['FL Plan'],
+    tier: 'supporting',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 8,
+    workloadHours: 1,
+    phase: 'Submit',
+    task: 'Make a concrete maintenance plan for your portfolio, naming the next project and when you will add it, before the context from building it is gone.',
+    lesson:
+      'Setting a calendar nudge now, while you still remember how everything works, is the practical difference between a site that grows and one that stagnates.',
+    takeaway:
+      'The three-beat shape from Week 2, problem, what you did, what came of it, is reusable for every future case. You do not need to reinvent the format.',
+    concepts: ['concept-communication'],
+    artifactLinks: ['artifact-portfolio-site'],
+    canonicalisationStatus: 'reviewed',
+  },
+
+  /* ============================ CONVERGENCE NODE ============================ */
+
+  {
+    id: 'fl-10-final-package',
+    officialCode: 'FL-10',
+    track: 'ai-fluency',
+    strand: 'convergence',
+    title: 'Final Package, Retrospective, and Capstone',
+    sourceAliases: ['FL10', 'Assignment 8.2', 'final checkpoint'],
+    tier: 'core',
+    status: 'complete',
+    evidenceStatus: 'partial',
+    week: 8,
+    phase: 'Submit',
+    task: 'Assemble every deliverable from the whole track in one indexed place, write a 500-to-800 word retrospective aimed at the person you were in Week 1, complete your hours log, publish your site, and submit for final sign-off.',
+    lesson:
+      'The retrospective is where you account for what specifically changed in how you work, not what you learned in general. That specificity is what makes it useful.',
+    takeaway:
+      'The retrospective must be specific to your build. Generic reflection does not pass. The brief says so directly.',
+    concepts: ['concept-communication'],
+    artifactLinks: [
+      'artifact-learning-archive',
+      'artifact-final-retrospective',
+      'artifact-hours-log',
+      'artifact-build-in-public-post',
+    ],
+    canonicalisationStatus: 'reviewed',
+  },
+];
+
+/*
+ * ---------------------------------------------------------------------------
+ * NON-ASSIGNMENT SOURCE RECORDS (CONTENT_REGISTRY §1.2)
+ * These are deliberately NOT assignment nodes:
+ *
+ *   1. "Consistency, Not Talent" / "Frame, Not Upstage"
+ *      — Week 3 session / lesson page, not a deliverable-bearing assignment.
+ *
+ *   2. "Show It / Tell the Story"
+ *      — Week 8 page containing FL-09 and FL-10. Treated as an alias/source
+ *        page for `fl-09-documentation-demo` and `fl-10-final-package`.
+ *
+ * "Assignment 8.1" and "Assignment 8.2" are aliases of FL-09 and FL-10
+ * respectively and are recorded in their `sourceAliases` arrays above.
+ * ---------------------------------------------------------------------------
+ */
