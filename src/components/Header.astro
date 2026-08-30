@@ -27,6 +27,8 @@ const tracks = [
 function isActive(href: string): boolean {
   if (href === '/work/') return path.startsWith('/work');
   if (href.startsWith('/track/')) return path.startsWith(href);
+  // Sub-pages (e.g. /framework/wish-i-knew/) keep the parent section active.
+  if (href === '/framework/' || href === '/reflection/') return path.startsWith(href);
   return path === href;
 }
 ---

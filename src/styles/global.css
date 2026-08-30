@@ -19,6 +19,10 @@
   --green-bright: #4d8a70;
   --terracotta: #b9664e;
   --gold: #b9a36a;
+  /* Brightened gold for small/metadata text (DESIGN_SPEC §04, §31; the base
+     gold is reserved for rare accents and passes AA but this gives text a
+     safety margin and is used wherever gold is legible copy, never an accent). */
+  --gold-bright: #d4bc7e;
   --graph-grey: #5b625d;
 
   /* --- Rules / borders (DESIGN_SPEC §33) --- */
@@ -251,6 +255,11 @@ ol {
   text-transform: uppercase;
   color: var(--text-faint);
   margin-bottom: var(--space-5);
+}
+
+/* --- Long-form editorial measure (DESIGN_SPEC §29 final reflection) --- */
+.measure-wide {
+  max-width: 72ch;
 }
 
 /* --- Screen-reader-only --- */

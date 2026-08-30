@@ -1,0 +1,165 @@
+---
+/**
+ * /framework/wish-i-knew — "What I Wish I Knew in Week 1" (IMPLEMENTATION_PLAN
+ * Task 3.2.2, PRODUCT_SPEC §30, DESIGN_SPEC §28).
+ *
+ * A compact, practical, future-student reference. Each numbered statement is
+ * traceable to one or more canonical assignments (rendered as links). No
+ * inspirational-quote styling; plain, direct advice drafted from the archive.
+ */
+import Base from '../../layouts/Base.astro';
+import { wishIKnew } from '../../data/wish-i-knew';
+import { assignmentById, displayLabel } from '../../lib/archive';
+---
+
+<Base
+  title="What I Wish I Knew"
+  description="Concrete lessons for a future FlyRank student, each traceable to the assignment that earned it."
+  canonicalPath="/framework/wish-i-knew/"
+>
+  <div class="container section">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/framework/">Framework</a>
+    </nav>
+
+    <header class="wik-head">
+      <p class="eyebrow">For the next student</p>
+      <h1 class="wik-head__title">What I Wish I Knew in Week 1</h1>
+      <p class="wik-head__intro">
+        Six lessons I would hand to the person starting the programme. Each one
+        cites the assignment that taught it, so you can read the source rather
+        than take the advice on trust.
+      </p>
+    </header>
+
+    <ol class="wik">
+      {
+        wishIKnew.map((s, i) => {
+          const refs = s.assignmentIds.map((id) => assignmentById.get(id)).filter((a) => Boolean(a));
+          return (
+            <li class="wik__item">
+              <span class="wik__index">{String(i + 1).padStart(2, '0')}</span>
+              <div class="wik__body">
+                <p class="wik__text">{s.text}</p>
+                {refs.length > 0 && (
+                  <ul class="wik__refs" aria-label="Traceable to">
+                    {refs.map((a) => (
+                      <li class="wik__ref">
+                        <a href={`/work/${a!.id}/`}>{displayLabel(a!)}</a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+
+    <p class="wik__frame">
+      The fuller, step-by-step version of the same lesson is on the{" "}
+      <a href="/framework/">My Working Framework</a> page.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .crumbs {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-6);
+  }
+
+  .crumbs a {
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--text);
+  }
+
+  .wik-head {
+    margin-bottom: var(--space-7);
+  }
+
+  .wik-head__title {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    margin-top: var(--space-2);
+  }
+
+  .wik-head__intro {
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-3);
+  }
+
+  .wik {
+    display: flex;
+    flex-direction: column;
+    border-top: var(--rule);
+  }
+
+  .wik__item {
+    display: grid;
+    grid-template-columns: 3ch minmax(0, 1fr);
+    gap: var(--space-5);
+    padding: var(--space-6) 0;
+    border-bottom: var(--rule);
+  }
+
+  .wik__index {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    color: var(--text-faint);
+    padding-top: var(--space-1);
+  }
+
+  .wik__text {
+    font-size: var(--fs-body);
+    color: var(--text);
+    max-width: var(--measure);
+    margin: 0 0 var(--space-3);
+  }
+
+  .wik__refs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .wik__ref a {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--green-bright);
+    padding: var(--space-1) var(--space-2);
+    border: var(--rule);
+    border-radius: var(--radius-1);
+  }
+
+  .wik__ref a:hover {
+    border-color: var(--rule-active);
+  }
+
+  .wik__frame {
+    margin-top: var(--space-7);
+    color: var(--text-dim);
+    max-width: var(--measure);
+  }
+
+  .wik__frame a {
+    color: var(--text);
+  }
+</style>

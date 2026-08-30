@@ -1,0 +1,183 @@
+---
+/**
+ * FinalPackage.astro — the completion package section (PRODUCT_SPEC §33,
+ * IMPLEMENTATION_PLAN Task 3.2.4).
+ *
+ * Makes it obvious that this archive IS the FL-10 completion package: master
+ * index of all 35 assignments grouped by track/strand, the live site, the hours
+ * log reference, the build-in-public post, the final reflection, and the final
+ * review/sign-off reference. Administrative/source items are links only (never
+ * a big visual treatment — PRODUCT_SPEC §33, DESIGN_SPEC §21).
+ *
+ * All URLs below are PLACEHOLDER until the author supplies the real values;
+ * the UI renders the honest "link pending" state.
+ */
+import AssignmentCard from './AssignmentCard.astro';
+import { assignments } from '../data/assignments';
+import { artifactsForAssignment, strandLabel, trackLabel } from '../lib/archive';
+import { site } from '../config';
+import type { Strand, Track } from '../data/types';
+
+const fl10 = assignments.find((a) => a.id === 'fl-10-final-package');
+const completionEntries = fl10 ? artifactsForAssignment(fl10.id) : [];
+const artifactUrl = (id: string) => completionEntries.find((e) => e.artifact.id === id)?.artifact.url;
+
+const completionLinks: { id: string; label: string; url?: string }[] = [
+  { id: 'artifact-final-retrospective', label: 'Final reflection', url: '/reflection/' },
+  { id: 'artifact-build-in-public-post', label: 'Build-in-public post', url: artifactUrl('artifact-build-in-public-post') },
+  { id: 'artifact-hours-log', label: 'Hours log reference', url: artifactUrl('artifact-hours-log') },
+  { id: 'artifact-learning-archive', label: 'This archive (the index above)', url: artifactUrl('artifact-learning-archive') },
+];
+
+const trackOrder: Track[] = ['ai-fluency', 'machine-learning'];
+const strandOrder: Strand[] = ['portfolio-public-work', 'ai-systems-agents', 'convergence', 'ml-spine'];
+---
+
+<section class="final" aria-labelledby="final-heading">
+  <h2 class="final__heading" id="final-heading">The complete package</h2>
+  <p class="final__intro">
+    This archive is the FL-10 completion package. It indexes every assignment
+    from both tracks, and points to the source records that make the work
+    verifiable.
+  </p>
+
+  <div class="final__index">
+    {
+      trackOrder.map((track) => {
+        const inTrack = assignments.filter((a) => a.track === track);
+        const strands = strandOrder
+          .map((strand) => ({ strand, items: inTrack.filter((a) => a.strand === strand) }))
+          .filter((g) => g.items.length > 0);
+        return (
+          <div class="final__track">
+            <h3 class="final__track-name">{trackLabel(track)}</h3>
+            {strands.map((g) => (
+              <div class="final__strand">
+                <h4 class="final__strand-name">{strandLabel(g.strand)}</h4>
+                <ul class="final__grid">
+                  {g.items.map((a) => (
+                    <li>
+                      <AssignmentCard assignment={a} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <ul class="final__links" aria-label="Completion references">
+    <li class="final__link">
+      <span class="final__link-label">Live site</span>
+      <a href={site.url} rel="noopener noreferrer">{site.url.replace(/^https?:\/\//, '')}</a>
+    </li>
+    {
+      completionLinks.map(({ label, url }) => (
+        <li class="final__link">
+          <span class="final__link-label">{label}</span>
+          {url ? (
+            <a href={url} rel="noopener noreferrer">{url.replace(/^https?:\/\//, '')}</a>
+          ) : (
+            <span class="final__link-pending" title="Reference not supplied yet">Link pending</span>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .final {
+    border-top: var(--rule);
+    padding-top: var(--space-7);
+    margin-top: var(--space-7);
+  }
+
+  .final__heading {
+    font-size: var(--fs-section);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+  }
+
+  .final__intro {
+    color: var(--text-dim);
+    max-width: var(--measure);
+    margin-bottom: var(--space-6);
+  }
+
+  .final__track {
+    margin-bottom: var(--space-7);
+  }
+
+  .final__track-name {
+    font-size: var(--fs-section);
+    font-weight: 600;
+    padding-bottom: var(--space-3);
+    border-bottom: var(--rule);
+    margin-bottom: var(--space-5);
+  }
+
+  .final__strand {
+    margin-bottom: var(--space-6);
+  }
+
+  .final__strand-name {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-4);
+  }
+
+  .final__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .final__grid > li {
+    display: flex;
+  }
+
+  .final__grid > li > :global(*) {
+    width: 100%;
+  }
+
+  .final__links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    border-top: var(--rule);
+    padding-top: var(--space-5);
+    max-width: var(--measure-narrow);
+  }
+
+  .final__link {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    font-size: var(--fs-body);
+  }
+
+  .final__link-label {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .final__link a {
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  .final__link-pending {
+    color: var(--text-faint);
+  }
+</style>

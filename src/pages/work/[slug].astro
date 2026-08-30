@@ -5,6 +5,7 @@
  */
 import Base from '../../layouts/Base.astro';
 import DetailPanel from '../../components/DetailPanel.astro';
+import FinalPackage from '../../components/FinalPackage.astro';
 import { assignments } from '../../data/assignments';
 
 export function getStaticPaths() {
@@ -40,6 +41,9 @@ const title = assignment.officialCode
       </a>
     </nav>
     <DetailPanel assignment={assignment} />
+    {
+      assignment.id === 'fl-10-final-package' && <FinalPackage />
+    }
   </div>
 </Base>
 

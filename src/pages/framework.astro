@@ -1,37 +1,193 @@
 ---
 /**
- * /framework — stub. Real content (My Working Framework + What I Wish I Knew)
- * lands in Phase 3, drafted from the completed work. No invented synthesis
- * before then (PRODUCT_SPEC §30, §31).
+ * /framework — My Working Framework (IMPLEMENTATION_PLAN Task 3.2.1,
+ * PRODUCT_SPEC §31, DESIGN_SPEC §27).
+ *
+ * An EARNED synthesis, not a standalone motivational diagram. Every step links
+ * downward to the assignments that justify it, so the visitor can always drill
+ * from synthesis back to evidence.
  */
 import Base from '../layouts/Base.astro';
+import { frameworkSteps } from '../data/framework';
+import { assignmentById, displayLabel } from '../lib/archive';
+import { wishIKnew } from '../data/wish-i-knew';
 ---
 
 <Base
-  title="Framework"
-  description="My Working Framework for the FlyRank Learning Archive."
+  title="My Working Framework"
+  description="A working framework earned from the FlyRank Learning Archive: define, decide what good looks like, build small, test, find failure, explain, ship, each linked to the assignments that support it."
   canonicalPath="/framework/"
 >
   <div class="container section">
-    <p class="eyebrow">Framework</p>
-    <h1 class="stub__title">My Working Framework</h1>
-    <p class="stub__body">
-      This section is being written from the completed work. It will appear in
-      the final phase, with each step linked to the assignments that earned it.
-    </p>
+    <header class="fw-head">
+      <p class="eyebrow">Framework</p>
+      <h1 class="fw-head__title">My Working Framework</h1>
+      <p class="fw-head__intro">
+        This is not an abstract method. It is a synthesis of what the two tracks
+        consistently asked for: define, decide what good looks like, build
+        small, test, find failure, explain, then ship. Each step links to the
+        assignments that earned it, so you can drill from observation to
+        evidence.
+      </p>
+    </header>
+
+    <ol class="steps">
+      {
+        frameworkSteps.map((step, i) => {
+          const assignments = step.assignmentIds
+            .map((id) => assignmentById.get(id))
+            .filter((a) => Boolean(a));
+          return (
+            <li class="steps__item">
+              <span class="steps__index">{String(i + 1).padStart(2, '0')}</span>
+              <div class="steps__body">
+                <h2 class="steps__label">{step.label}</h2>
+                <p class="steps__desc">{step.description}</p>
+                <ul class="steps__links">
+                  {assignments.map((a) => (
+                    <li class="steps__link">
+                      <a href={`/work/${a!.id}/`}>
+                        <span class="steps__code">{displayLabel(a!)}</span>
+                        <span class="steps__title">{a!.title}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+
+    <section class="fw-note" aria-labelledby="wik-heading">
+      <h2 class="fw-note__label" id="wik-heading">For the next student</h2>
+      <p class="fw-note__body">
+        The shorter, more personal version of the same lesson lives on the{" "}
+        <a href="/framework/wish-i-knew/">What I Wish I Knew</a> page:
+        {wishIKnew.length} statements, each traceable to the work that earned it.
+      </p>
+    </section>
   </div>
 </Base>
 
 <style>
-  .stub__title {
+  .fw-head {
+    margin-bottom: var(--space-7);
+  }
+
+  .fw-head__title {
     font-size: var(--fs-assignment);
     font-weight: 600;
     margin-top: var(--space-2);
+  }
+
+  .fw-head__intro {
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-3);
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    border-top: var(--rule);
+  }
+
+  .steps__item {
+    display: grid;
+    grid-template-columns: 3ch minmax(0, 1fr);
+    gap: var(--space-5);
+    padding: var(--space-6) 0;
+    border-bottom: var(--rule);
+  }
+
+  .steps__index {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    color: var(--text-faint);
+    padding-top: var(--space-1);
+  }
+
+  .steps__label {
+    font-size: var(--fs-section);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-metadata);
+    margin-bottom: var(--space-3);
+  }
+
+  .steps__desc {
+    color: var(--text-dim);
+    max-width: var(--measure);
     margin-bottom: var(--space-4);
   }
 
-  .stub__body {
+  .steps__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .steps__link {
+    display: flex;
+  }
+
+  .steps__link a {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    text-decoration: none;
+    padding: var(--space-2) var(--space-3);
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    color: var(--text);
+  }
+
+  .steps__link a:hover {
+    border-color: var(--rule-active);
+  }
+
+  .steps__code {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--green-bright);
+  }
+
+  .steps__title {
+    font-size: var(--fs-body);
     color: var(--text-dim);
-    max-width: var(--measure-narrow);
+  }
+
+  .fw-note {
+    margin-top: var(--space-8);
+    padding: var(--space-6);
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    background: var(--bg-elevated);
+  }
+
+  .fw-note__label {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-3);
+  }
+
+  .fw-note__body {
+    color: var(--text-dim);
+    max-width: var(--measure);
+    margin: 0;
+  }
+
+  .fw-note__body a {
+    color: var(--text);
   }
 </style>
