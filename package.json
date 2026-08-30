@@ -12,7 +12,11 @@
     "validate": "node scripts/validate-data.mjs",
     "check": "astro check",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "playwright test",
+    "test:adapter": "playwright test tests/adapter.spec.ts",
+    "test:map": "playwright test tests/map.spec.ts",
+    "test:install": "playwright install chromium"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -25,7 +29,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.62.1",
     "@types/cytoscape": "^3.21.9",
+    "playwright": "^1.62.1",
     "typescript": "^6.0.3"
   }
 }
