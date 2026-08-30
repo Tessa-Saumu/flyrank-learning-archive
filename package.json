@@ -8,10 +8,15 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "prebuild": "npm run validate",
+    "validate": "node scripts/validate-data.mjs",
+    "check": "astro check",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/sora": "^5.3.0",
     "astro": "^7.2.9",
     "cytoscape": "^3.34.2"
   },
@@ -19,6 +24,8 @@
     "esbuild": true
   },
   "devDependencies": {
-    "@types/cytoscape": "^3.21.9"
+    "@astrojs/check": "^0.9.10",
+    "@types/cytoscape": "^3.21.9",
+    "typescript": "^6.0.3"
   }
 }
