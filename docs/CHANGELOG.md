@@ -8,6 +8,191 @@ files changed, the phase + task reference, and any assumptions made.
 
 ---
 
+## Phase 3 — Evidence, Experience, and Production
+
+### 3.1 — Artifact previews, notebooks, and embed fallbacks (complete)
+
+**What was implemented**
+
+- **`ArtifactPreview.astro`** — the single evidence renderer, replacing
+  `ArtifactCard` for all proof output. Implements the three registry display
+  modes (CONTENT_REGISTRY §3.1):
+  - `link` — administrative/source material (hours log, sign-off): a simple
+    labelled link row.
+  - `embed` — substantial stable artifacts: a **lazy-loaded** iframe with a
+    first-class fallback card. **No iframe exists in the initial HTML**; the
+    client script appends the iframe only when `data-src` is set and the embed
+    enters the viewport (IntersectionObserver, 200px margin). If the embed
+    cannot load, the fallback stays visible (DESIGN_SPEC §57).
+  - `preview` — compact technical card (title, one-sentence description, type,
+    optional image, open action, EVIDENCE status with text, never colour alone).
+- **`NotebookPreview.astro`** — the contained ML notebook viewport per
+  DESIGN_SPEC §22 (NOT an iframe): compact title bar, notebook heading,
+  results region (chart / metric table / code excerpt) and OPEN NOTEBOOK /
+  GITHUB actions. Data-driven from `src/data/notebooks.ts`.
+- **`src/data/notebooks.ts`** — 8 ML notebook previews (ml-01..ml-10) with
+  filenames from CONTENT_REGISTRY §3.2; charts/metrics/code empty until real
+  evidence is supplied (honest partial state).
+- **Map panel parity.** `src/components/map/panel.ts` now renders the three
+  display modes client-side (`renderArtifactPanel`) and mirrors the notebook
+  viewport without an iframe. `LearningMap.astro` gained the panel CSS so the
+  map detail panel is visually consistent.
+- **`DetailPanel.astro`** now uses `ArtifactPreview` (passing `assignment`) so
+  the static `/work/[slug]` pages render the full evidence layer.
+
+**Files changed**
+
+- `src/components/ArtifactPreview.astro` (new), `NotebookPreview.astro` (new),
+  `src/data/notebooks.ts` (new)
+- `src/components/DetailPanel.astro`, `src/components/map/panel.ts`,
+  `src/components/LearningMap.astro` (panel styles)
+
+**Assumptions**
+
+- No artifact URL exists yet, so every `embed`/`preview` renders the honest
+  `partial` state (EVIDENCE: PARTIAL) and `OPEN ARTIFACT` is the pending label.
+  The lazy-iframe + fallback machinery is fully wired so flipping `url`/
+  `embedUrl` in `artifacts.ts` activates real embeds without code changes.
+- `ArtifactCard.astro` is retained (unused) for backward compat; `ArtifactPreview`
+  is the canonical artifact renderer described by DESIGN_SPEC §55.
+
+### 3.2 — Framework, "What I Wish I Knew", Reflection, and Final Package (complete)
+
+**What was implemented**
+
+- **`/framework`** — `src/pages/framework.astro` replaces the stub with a real
+  earned synthesis: the seven candidate steps
+  (DEFINE → DECIDE WHAT GOOD LOOKS LIKE → BUILD SMALL → TEST → FIND FAILURE →
+  EXPLAIN → SHIP) from PRODUCT_SPEC §31, each linked downward to the
+  assignments that justify it. Data in `src/data/framework.ts`.
+- **`/framework/wish-i-knew`** — new route `src/pages/framework/wish-i-knew.astro`
+  (6 numbered statements, each traceable to canonical assignments rendered as
+  links). Data in `src/data/wish-i-knew.ts`.
+- **`/reflection`** — `src/pages/reflection.astro` replaces the stub with a
+  long-form editorial page (wider measure, Sora headings, Inter body),
+  rendering the 500–800 word retrospective from `src/data/reflection.ts`, plus
+  the FL-10 convergence treatment (Portfolio/Public Work ─┬→ FL-10;
+  Agent/Systems Work ─┘→ FL-10 → Retrospective, DESIGN_SPEC §29).
+- **Final Package section** — `FinalPackage.astro` (master index of all 35
+  assignments by track/strand + live site, hours log reference, build-in-public
+  post, final reflection, this-archive link) rendered on `/reflection/` and on
+  the FL-10 `/work/fl-10-final-package/` page (PRODUCT_SPEC §33).
+
+**Files changed**
+
+- `src/data/framework.ts`, `src/data/wish-i-knew.ts`, `src/data/reflection.ts` (new)
+- `src/pages/framework.astro`, `src/pages/framework/wish-i-knew.astro` (new),
+  `src/pages/reflection.astro`, `src/pages/work/[slug].astro`
+- `src/components/FinalPackage.astro` (new)
+- `src/components/Header.astro` (FRAMEWORK/REFLECTION sections stay active on sub-pages)
+
+**Assumptions**
+
+- The retrospective is a 566-word **editable draft** written from the completed
+  archive copy so the page and its word-count validation are exercised end to
+  end. It is flagged `PLACEHOLDER / EDITABLE DRAFT` in `src/data/reflection.ts`
+  and must be replaced by the author's own wording (still 500–800 words).
+- Framework step labels and assignment clusters follow PRODUCT_SPEC §31's
+  candidate structure; no step is invented beyond the completed work.
+
+### 3.3 — Responsive and accessibility pass (complete)
+
+**What was implemented**
+
+- `--gold-bright (#d4bc7e)` token added to `src/styles/global.css` for
+  small/metadata gold text (contrast safety margin; DESIGN_SPEC §04, §31).
+- `.measure-wide` utility for the long-form reflection.
+- Map detail panel (`.panel__*`) fully styled so the client-side panel is
+  readable, focusable, and not colour-only.
+- Header active-state fix for nested `/framework/wish-i-knew`.
+
+**Files changed**
+
+- `src/styles/global.css`, `src/components/LearningMap.astro`,
+  `src/components/Header.astro`
+
+**Assumptions**
+
+- Breakpoints, keyboard roster, reduced-motion guard, and non-graph fallback
+  already shipped in Phases 1–2; this pass closed the remaining contrast and
+  panel-styling gaps.
+
+### 3.4 — Performance and SEO hardening (complete)
+
+**What was implemented**
+
+- Default social preview image `public/og.png` (generated, Systems Atlas styled)
+  referenced from `src/config.ts` and emitted by `Base.astro`
+  (`og:image`/`twitter:image`, width/height, `robots` meta).
+- `src/pages/robots.txt.ts` (generated robots.txt pointing to `/sitemap.xml`).
+- `src/pages/sitemap.xml.ts` extended with `/framework/wish-i-knew/`.
+- Fonts remain self-hosted variable (no external CDN), `font-display: swap`.
+
+**Files changed**
+
+- `public/og.png` (new), `src/config.ts`, `src/layouts/Base.astro`,
+  `src/pages/robots.txt.ts` (new), `src/pages/sitemap.xml.ts`
+
+**Assumptions**
+
+- `site.url` remains a PLACEHOLDER; OG/canonical/sitemap absolute URLs use it.
+- No real screenshots/WebP/AVIF images yet (content dependency), so image
+  optimisation is deferred until assets arrive; dimensions are set (og) and the
+  artifact preview images are lazy-loaded.
+
+### 3.5 — Deployment config, validator, and Lighthouse/axe tooling (complete)
+
+**What was implemented**
+
+- `netlify.toml` (build `npm run build`, publish `dist/`, Node 22.12.0, cache
+  headers) for the Phase 3 Task 3.5.5 deployment.
+- `lighthouse.config.mjs` + `npm run lighthouse` script.
+- Dev deps `@axe-core/playwright` and `lighthouse` added (Phase 3 a11y/perf
+  requirements are acceptance criteria, not aspirations).
+- `scripts/validate-data.mjs` extended for Phase 3:
+  - framework step IDs/labels/assignment references resolve (Task 3.2.1);
+  - wish-i-knew statements traceable to assignments (Task 3.2.2);
+  - final retrospective 500–800 words + required four headings + exactly three
+    learnings (Task 3.2.3);
+  - new content added to the banned-pattern scan (em/en dash, voice words).
+- `tests/phase3.spec.ts` (7 tests) and `tests/axe.spec.ts` (5 tests) added;
+  `test:phase3`, `test:axe`, `lighthouse` scripts wired.
+
+**Files changed**
+
+- `netlify.toml` (new), `lighthouse.config.mjs` (new), `.gitignore`
+- `package.json` (scripts + dev deps)
+- `scripts/validate-data.mjs`
+- `tests/phase3.spec.ts` (new), `tests/axe.spec.ts` (new)
+
+**Assumptions**
+
+- The Netlify target is not yet confirmed; `netlify.toml` makes the build
+  reproducible in-repo but the exact site/CI location must be confirmed before
+  deploy (open question §4.4).
+- Lighthouse `npm run lighthouse` requires a Chromium binary and a running
+  preview server; it is the Phase 3 gate command, not run in this sandbox.
+
+**Verification (Phase 3)**
+
+- `npm run validate` green (census 35/10/11/34/5/58 + new Phase 3 checks).
+- `npx astro check` 0 errors / 0 warnings / 0 hints (44 files).
+- `npm run build` 53 pages (was 52; +`/framework/wish-i-knew/`).
+- Bundle check: `cytoscape` absent from `/work`, `/track`, `/framework`,
+  `/reflection` output; only on the map page.
+- No em/en dashes anywhere in `dist` content; no `iframe` in the initial HTML
+  of any Phase 3/embed page; embed fallback (`This artifact opens externally`)
+  renders on ml-11.
+- Smoke: all 55 valid routes return HTTP 200 via `npm run preview`.
+- `npm run test:adapter` 10/10 green.
+- Browser suite (map, phase3, axe) collected (33 tests) but could NOT be
+  executed here: Playwright chromium CDN is unreachable (ECONNRESET). Run
+  `npm run test:install && npm run test` on a machine with egress access.
+
+---
+
+<!-- NOTE: Phase 2 entries below are unchanged. -->
+
 ## Phase 2 — Learning Map: The Interactive Graph Layer
 
 ### 2.1–2.4 — Learning Map (complete)
