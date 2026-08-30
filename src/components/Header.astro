@@ -2,8 +2,8 @@
 /**
  * Header.astro — compact site header per DESIGN_SPEC §08.
  *
- * Phase 1 mapping:
- *  - MAP          → homepage browse index (the Phase 1 map placeholder)
+ * Phase 2 mapping:
+ *  - MAP          → homepage Learning Map section (#map)
  *  - WORK         → /work
  *  - FRAMEWORK    → /framework (stub until Phase 3)
  *  - REFLECTION   → /reflection (stub until Phase 3)
@@ -13,7 +13,7 @@
 const path = Astro.url.pathname;
 
 const nav = [
-  { label: 'MAP', href: '/#browse' },
+  { label: 'MAP', href: '/#map' },
   { label: 'WORK', href: '/work/' },
   { label: 'FRAMEWORK', href: '/framework/' },
   { label: 'REFLECTION', href: '/reflection/' },
