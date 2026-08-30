@@ -10,15 +10,61 @@
 import { assignmentById, artifactById, conceptById } from './adapter';
 import { artifactLinks } from '../../data/artifacts';
 import { publicEdges } from '../../data/graph';
+import { notebookForAssignment } from '../../data/notebooks';
 import {
   evidenceStatusLabel,
   relationshipLabel,
   trackLabel,
 } from '../../lib/archive';
-import type { Assignment } from '../../data/types';
+import type { Assignment, Artifact, ArtifactLink } from '../../data/types';
 
 function escapeHtml(s: string | undefined): string {
   return (s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/**
+ * Client-side equivalent of ArtifactPreview for the map panel. Renders the
+ * same display modes (CONTENT_REGISTRY §3.1) without an iframe (the map panel
+ * is intentionally light; deeper inspection links to the full /work page, which
+ * renders the real ArtifactPreview with lazy embeds). Status is always shown
+ * with text, never colour alone (DESIGN_SPEC §25).
+ */
+function renderArtifactPanel(assignmentId: string, art: Artifact, link: ArtifactLink): string {
+  const role = { produces: 'Produces', uses: 'Uses', documents: 'Documents', demonstrates: 'Demonstrates' }[link.role];
+  const hasUrl = Boolean(art.url);
+  const mode = link.displayMode;
+
+  if (mode === 'link') {
+    return `
+      <div class="panel__artifact panel__artifact--link">
+        <span class="panel__artifact-meta">${escapeHtml(art.type)} · ${role}</span>
+        <span class="panel__artifact-title">${escapeHtml(art.title)}</span>
+        ${hasUrl ? `<a class="panel__artifact-link" href="${escapeHtml(art.url)}" rel="noopener noreferrer">Open ↗</a>` : `<span class="panel__artifact-link panel__artifact-link--pending">Link pending</span>`}
+      </div>`;
+  }
+
+  const notebook = notebookForAssignment(assignmentId);
+  if (mode === 'embed' && notebook) {
+    return `
+      <article class="panel__artifact panel__artifact--notebook">
+        <span class="panel__artifact-meta">${escapeHtml(art.type)} · ${role} · ${escapeHtml(notebook.filename)}</span>
+        <h3 class="panel__artifact-title">${escapeHtml(art.title)}</h3>
+        <p class="panel__artifact-desc">${escapeHtml(notebook.outcome)}</p>
+        <p class="panel__artifact-pending">Evidence (charts, metric table, code excerpt) attaches here when supplied.</p>
+      </article>`;
+  }
+
+  // preview + embed (without a notebook) render as a compact evidence card.
+  return `
+    <article class="panel__artifact">
+      <span class="panel__artifact-meta">${escapeHtml(art.type)} · ${role}</span>
+      <h3 class="panel__artifact-title">${escapeHtml(art.title)}</h3>
+      <p class="panel__artifact-desc">${escapeHtml(art.description)}</p>
+      <div class="panel__artifact-foot">
+        <span class="panel__status">${escapeHtml(evidenceStatusLabel('partial'))}</span>
+        ${hasUrl ? `<a class="panel__artifact-link" href="${escapeHtml(art.url)}" rel="noopener noreferrer">Open artifact ↗</a>` : `<span class="panel__artifact-link panel__artifact-link--pending">Link pending</span>`}
+      </div>
+    </article>`;
 }
 
 export function renderAssignmentPanel(container: HTMLElement, a: Assignment): void {
@@ -41,20 +87,7 @@ export function renderAssignmentPanel(container: HTMLElement, a: Assignment): vo
     .map((l) => {
       const art = artifactById.get(l.artifactId);
       if (!art) return '';
-      const role = { produces: 'Produces', uses: 'Uses', documents: 'Documents', demonstrates: 'Demonstrates' }[l.role];
-      const action = art.url
-        ? `<a class="panel__artifact-link" href="${escapeHtml(art.url)}" rel="noopener noreferrer">Open artifact ↗</a>`
-        : `<span class="panel__artifact-link panel__artifact-link--pending">Link pending</span>`;
-      return `
-        <article class="panel__artifact">
-          <span class="panel__artifact-meta">${escapeHtml(art.type)} · ${role}</span>
-          <h3 class="panel__artifact-title">${escapeHtml(art.title)}</h3>
-          <p class="panel__artifact-desc">${escapeHtml(art.description)}</p>
-          <div class="panel__artifact-foot">
-            <span class="panel__status">${escapeHtml(evidenceStatusLabel(a.evidenceStatus))}</span>
-            ${action}
-          </div>
-        </article>`;
+      return renderArtifactPanel(a.id, art, l);
     })
     .join('');
 

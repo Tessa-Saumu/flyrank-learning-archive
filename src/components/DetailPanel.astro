@@ -5,7 +5,7 @@
  * (TASK / LESSON / TAKEAWAY), the PROOF block, Connections, and secondary
  * metadata. No graph code; plain server output.
  */
-import ArtifactCard from './ArtifactCard.astro';
+import ArtifactPreview from './ArtifactPreview.astro';
 import {
   artifactsForAssignment,
   conceptsForAssignment,
@@ -63,7 +63,7 @@ const metaLine = metaParts.join(' · ');
     <h2 class="detail__block-heading" id="proof-heading">Proof</h2>
     <div class="detail__artifacts">
       {artifactEntries.map(({ artifact, link }) => (
-        <ArtifactCard artifact={artifact} link={link} evidenceStatus={a.evidenceStatus} />
+        <ArtifactPreview artifact={artifact} link={link} evidenceStatus={a.evidenceStatus} assignment={a} />
       ))}
     </div>
   </section>

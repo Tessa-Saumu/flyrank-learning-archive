@@ -1,0 +1,269 @@
+---
+/**
+ * NotebookPreview.astro — a contained, integrated ML notebook viewport
+ * (DESIGN_SPEC §22–23). NOT an iframe.
+ *
+ * Dark technical frame: compact title bar, notebook heading, a results region
+ * (chart / metric table / code excerpt) and action buttons. The card
+ * communicates WHAT the artifact proves before inviting deeper inspection.
+ *
+ * PLACEHOLDER: charts/metrics/code come from `src/data/notebooks.ts` and are
+ * empty until the author supplies real evidence; an honest "evidence attaches
+ * here" region is shown instead of a fake embed.
+ */
+import { evidenceStatusLabel } from '../lib/archive';
+import type { NotebookPreview } from '../data/notebooks';
+import type { EvidenceStatus } from '../data/types';
+
+interface Props {
+  notebook: NotebookPreview;
+  evidenceStatus?: EvidenceStatus;
+  /** External "OPEN NOTEBOOK" URL (undefined until supplied; PLACEHOLDER). */
+  openUrl?: string;
+  /** GitHub repo URL (undefined until supplied; PLACEHOLDER). */
+  githubUrl?: string;
+}
+
+const { notebook, evidenceStatus = 'partial', openUrl, githubUrl } = Astro.props;
+const hasUrl = Boolean(openUrl || githubUrl);
+---
+
+<article class="nb" aria-label={notebook.filename}>
+  <header class="nb__bar">
+    <span class="nb__dot" aria-hidden="true"></span>
+    <span class="nb__file">{notebook.filename}</span>
+    <span class="nb__status" data-status={evidenceStatus}>
+      {evidenceStatusLabel(evidenceStatus)}
+    </span>
+  </header>
+
+  <div class="nb__body">
+    <p class="nb__outcome">{notebook.outcome}</p>
+
+    <div class="nb__results">
+      {
+        notebook.hasEvidence ? (
+          <>
+            {notebook.charts.length > 0 && (
+              <div class="nb__charts">
+                {notebook.charts.map((src) => (
+                  <figure class="nb__chart">
+                    <img src={src} alt={`${notebook.filename} chart`} loading="lazy" />
+                  </figure>
+                ))}
+              </div>
+            )}
+            {notebook.metrics.length > 0 && (
+              <table class="nb__table">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {notebook.metrics.map((m) => (
+                    <tr>
+                      <td>{m.label}</td>
+                      <td>{m.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            {notebook.code && <pre class="nb__code"><code>{notebook.code}</code></pre>}
+          </>
+        ) : (
+          <p class="nb__pending">
+            Charts, a metric/result table, and the code excerpt attach here when
+            the notebook evidence is supplied. Until then this card records what
+            the notebook is for.
+          </p>
+        )
+      }
+    </div>
+  </div>
+
+  <footer class="nb__actions">
+    {
+      hasUrl ? (
+        <>
+          <a class="nb__action nb__action--primary" href={openUrl} rel="noopener noreferrer">
+            Open notebook <span aria-hidden="true">↗</span>
+          </a>
+          <a class="nb__action" href={githubUrl} rel="noopener noreferrer">
+            GitHub
+          </a>
+        </>
+      ) : (
+        <span class="nb__action nb__action--pending" title="Notebook URL not supplied yet">
+          OPEN NOTEBOOK · GITHUB <span class="nb__pending-label">(pending)</span>
+        </span>
+      )
+    }
+  </footer>
+</article>
+
+<style>
+  .nb {
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    background: var(--bg-elevated);
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); /* subtle, artifact previews only (§35) */
+  }
+
+  .nb__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    border-bottom: var(--rule);
+    background: var(--bg);
+  }
+
+  .nb__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green-bright);
+    flex-shrink: 0;
+  }
+
+  .nb__file {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+  }
+
+  .nb__status {
+    margin-left: auto;
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .nb__body {
+    padding: var(--space-5);
+  }
+
+  .nb__outcome {
+    color: var(--text);
+    margin: 0 0 var(--space-4);
+    max-width: var(--measure);
+  }
+
+  .nb__results {
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    padding: var(--space-4);
+    background: var(--bg);
+  }
+
+  .nb__charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .nb__chart {
+    margin: 0;
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    padding: var(--space-2);
+    background: var(--bg-elevated);
+  }
+
+  .nb__chart img {
+    width: 100%;
+    height: auto;
+  }
+
+  .nb__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-metadata);
+    margin-bottom: var(--space-4);
+  }
+
+  .nb__table th,
+  .nb__table td {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: var(--rule);
+  }
+
+  .nb__table th {
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
+
+  .nb__code {
+    background: var(--bg);
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    padding: var(--space-3);
+    overflow-x: auto;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    margin: 0;
+  }
+
+  .nb__pending {
+    color: var(--text-faint);
+    font-size: var(--fs-body);
+    margin: 0;
+    max-width: var(--measure);
+  }
+
+  .nb__actions {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-top: var(--rule);
+  }
+
+  .nb__action {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text);
+    padding: var(--space-2) var(--space-3);
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+  }
+
+  .nb__action--primary {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+
+  .nb__action--primary:hover {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: var(--bg);
+  }
+
+  .nb__action--pending {
+    color: var(--text-faint);
+    border-color: transparent;
+    cursor: default;
+  }
+
+  .nb__pending-label {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+</style>
