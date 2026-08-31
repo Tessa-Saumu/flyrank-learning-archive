@@ -6,6 +6,12 @@
  *
  * Phase 1: server-rendered via query params (shareable URLs). The tier
  * filter is hidden when the concepts view is active (tier does not apply).
+ *
+ * V2 §14 (ARIA): the tier filters are real links (server-rendered filtering
+ * must work without JavaScript and produce shareable URLs), so the semantic
+ * model genuinely requires `<a>` elements. `aria-pressed` is only valid on
+ * toggle buttons; the active tier is therefore conveyed with
+ * `aria-current="true"`, which is valid on links.
  */
 interface Props {
   track?: string;
@@ -60,7 +66,7 @@ const tiers = [
           <a
             href={q({ track, tier: tier === t.value ? undefined : t.value })}
             class:list={['filterbar__item', 'filterbar__item--secondary', { 'is-active': tier === t.value }]}
-            aria-pressed={tier === t.value}
+            aria-current={tier === t.value ? 'true' : undefined}
           >
             {t.label}
           </a>
