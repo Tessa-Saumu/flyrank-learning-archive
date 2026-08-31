@@ -147,6 +147,10 @@ const externalRel = 'noopener noreferrer';
       <div class="embed-fallback" data-embed-fallback>
         <p class="embed-fallback__note">{fallbackLabel}</p>
         <div class="preview__foot">
+          <span class="preview__status" data-status={evidenceStatus}>
+            <span class="preview__dot" aria-hidden="true"></span>
+            {evidenceStatusLabel(evidenceStatus)}
+          </span>
           <span class="preview__action preview__action--filled" data-open-artifact>
             {
               hasUrl ? (
