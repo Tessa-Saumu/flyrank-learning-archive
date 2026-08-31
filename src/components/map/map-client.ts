@@ -52,6 +52,10 @@ function buildStyle(c: TokenColors): any[] {
     {
       selector: 'node',
       style: {
+        // V2 §7: every node displays its shortest useful descriptor directly
+        // beside the node (assignments use `descriptor`, concepts/artifacts
+        // their names — mapped into `label` by the adapter).
+        label: 'data(label)',
         'background-color': c.bg,
         'border-width': 1,
         'border-color': c.graphGrey,
@@ -358,6 +362,12 @@ export function initLearningMap(root: HTMLElement): void {
       expandBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
       expandBtn.textContent = expanded ? 'Collapse map' : 'Expand map';
     }
+    // Re-fit once the new layout has been applied so the graph actually uses
+    // the space it gains (or returns to the compact composition cleanly).
+    requestAnimationFrame(() => {
+      cy.resize();
+      fit();
+    });
   }
 
   if (expandBtn) {

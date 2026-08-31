@@ -43,6 +43,18 @@ test('assignment nodes display short descriptors, not raw codes (§7)', async ({
 
   // The full canonical title is retained for the hover tooltip (§8).
   expect(labels.ml09.title).toBe('Validation and Research Claim Audit');
+
+  // And the descriptor is actually rendered on the node (not just present in
+  // data): the stylesheet must resolve a non-empty `label` for every node.
+  const rendered = await page.evaluate(() => {
+    const cy = (window as any).__learningMap.cy;
+    return cy
+      .nodes()
+      .map((n: any) => String(n.style('label') ?? ''))
+      .filter((l: string) => l.trim().length > 0).length;
+  });
+  const total = await page.evaluate(() => (window as any).__learningMap.cy.nodes().length);
+  expect(rendered).toBe(total);
 });
 
 test('hovering a node reveals the full name and description (§8)', async ({ page }) => {

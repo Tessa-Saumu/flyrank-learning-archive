@@ -9,6 +9,51 @@ assumptions made.
 
 ## V2 Phase 3 — Navigation
 
+### V2-P3.4 — Phase 3 verification suite + two graph regressions surfaced by it
+
+**What was implemented**
+
+- **`tests/v2-phase3.spec.ts`** (8 tests) covering every Phase 3 acceptance
+  criterion: header primary-vs-secondary hierarchy and the labelled tracks
+  cluster (§1), primary-vs-tier tab hierarchy on `/`, `/work/`, and the map
+  controls (§1), no decorative containers introduced (§1), laptop legibility +
+  no overflow + preserved 64 px bar at 1366×768 and preserved mobile wrap at
+  375 px (§6), CTA position after the work listing, meaningful navigation into
+  the expanded graph, and the no-JS anchor fallback (§12).
+- **Graph re-fit on expand/collapse.** With `setExpanded` now shared by the
+  §13 control and the §12 CTA, expanding re-runs `cy.resize()` + fit on the
+  next frame, so the graph genuinely uses the width it gains (previously it
+  stayed fitted to the old, narrower container).
+- **Rendered node labels (Phase 2 §7 regression).** Visual review during
+  Phase 3 verification showed the Cytoscape stylesheet never set
+  `label: 'data(label)'`, so descriptors existed in data but **no label was
+  rendered on the graph** — §7's core criterion was visually unmet while the
+  Phase 2 test asserted data only. The base node style now renders
+  `data(label)` (all supporting text styles were already in place), and the
+  §7 test additionally asserts that a non-empty label *style* resolves for
+  every node so this cannot regress silently again.
+
+**Files changed**
+
+- `tests/v2-phase3.spec.ts` (new)
+- `tests/v2-phase2.spec.ts` (rendered-label assertion added to the §7 test)
+- `src/components/map/map-client.ts` (`label: 'data(label)'`; re-fit in
+  `setExpanded`)
+
+**Phase + task reference**
+
+- V2 Phase 3 verification; V2 §7 acceptance criteria ("remain readable at the
+  default zoom"); §13 "graph receives meaningfully more space"; §17
+  regression requirements.
+
+**Assumptions made**
+
+- Label overlap at the dense right edge of the browse-all view is within §7's
+  "avoid overlapping **where possible**"; zoom resolves it and the tooltip
+  (§8) always provides the full name.
+
+---
+
 ### V2-P3.3 — Move "Explore the Map" CTA (§12)
 
 **What was implemented**
