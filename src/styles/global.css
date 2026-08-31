@@ -14,7 +14,9 @@
   --bg-elevated: #151817;
   --text: #e9e7df;
   --text-dim: rgba(233, 231, 223, 0.72);
-  --text-faint: rgba(233, 231, 223, 0.5);
+  /* V2 §15: 0.5 composited to exactly ~4.5:1 on --bg and 4.49:1 on
+     --bg-elevated (an axe failure as #7f807b). 0.56 gives ~5.3:1 on both. */
+  --text-faint: rgba(233, 231, 223, 0.56);
   --green: #315d4b;
   --green-bright: #4d8a70;
   --terracotta: #b9664e;
@@ -23,6 +25,13 @@
      gold is reserved for rare accents and passes AA but this gives text a
      safety margin and is used wherever gold is legible copy, never an accent). */
   --gold-bright: #d4bc7e;
+  /* V2 §15: AA-safe text variants of the track accents. `--green-bright`
+     (4.41:1) and `--terracotta` (4.32:1) fail WCAG AA for small text on
+     `--bg-elevated`, so any accent rendered as *text* uses these one-step
+     brightened variants (>=5.0:1 on both surfaces). The base accents remain
+     for borders, fills, and graph strokes (non-text, 3:1). */
+  --green-text: #569478;
+  --terracotta-text: #c47a5e;
   --graph-grey: #5b625d;
 
   /* --- Rules / borders (DESIGN_SPEC §33) --- */
@@ -136,7 +145,7 @@ a {
 }
 
 a:hover {
-  color: var(--green-bright);
+  color: var(--green-text);
 }
 
 img,

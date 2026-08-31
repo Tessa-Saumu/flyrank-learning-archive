@@ -88,18 +88,25 @@ const href = `/work/${a.id}/`;
   }
 
   .acard--reference {
-    opacity: 0.72;
+    /* V2 §15: tier recession was previously a whole-card `opacity: 0.72`,
+       which multiplied every child's contrast below WCAG AA (track meta
+       composited to #3c6956 ≈ 2.97:1). The reference tier now recedes via a
+       fainter border (non-text) and dimmer text tokens that stay AA. */
+    border-color: rgba(233, 231, 223, 0.1);
   }
   .acard--reference .acard__code {
     color: var(--text-dim);
     font-weight: 500;
   }
+  .acard--reference .acard__meta {
+    font-weight: 400;
+  }
 
   /* Track accent (paired with text label, never colour alone) */
   .acard.track-ai-fluency .acard__meta {
-    color: var(--green-bright);
+    color: var(--green-text);
   }
   .acard.track-machine-learning .acard__meta {
-    color: var(--terracotta);
+    color: var(--terracotta-text);
   }
 </style>
