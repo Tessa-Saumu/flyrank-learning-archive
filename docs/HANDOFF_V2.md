@@ -1,8 +1,9 @@
 # V2 Handoff
 
 This handoff records the state of the **V2 improvement work** after completing
-**Phase 1 — Structural interaction**, **Phase 2 — Knowledge Graph**, and
-**Phase 3 — Navigation** of `docs/V2_IMPROVEMENT_SPEC.md`.
+**all four phases** of `docs/V2_IMPROVEMENT_SPEC.md`: Phase 1 — Structural
+interaction, Phase 2 — Knowledge Graph, Phase 3 — Navigation, and
+Phase 4 — QA.
 
 ---
 
@@ -40,6 +41,15 @@ This handoff records the state of the **V2 improvement work** after completing
 | §12 Move `Explore the Map` CTA | The hero's `Explore the map` button (beside the map preview) was removed; the hero keeps a single `Browse the work` CTA. A new CTA block closes the homepage work section ("Seen the work? Explore how all of it connects." + `Explore the map`). The journey is now Hero → map preview → assignments → Explore the Map. Clicking navigates to `#map` and, with JS, expands the map into the full-width graph experience via the shared §13 `setExpanded` path; without JS it is a plain working anchor. |
 | Tests | `tests/v2-phase3.spec.ts` (8 tests covering all §1/§6/§12 acceptance criteria, including the no-JS fallback). |
 
+### Phase 4 — QA (complete — this session)
+
+| Spec section | Work completed |
+| :--- | :--- |
+| §14 ARIA | `aria-pressed` removed from the tier filter `<a>`s. The links genuinely must stay links (server-rendered, no-JS filtering, shareable `/work/?tier=…` URLs — the spec's sanctioned alternative to buttons); the active tier is conveyed with `aria-current="true"`, which is valid on links. Axe `aria-allowed-attr`: clear. |
+| §15 Contrast | AA-safe text accents `--green-text: #569478` and `--terracotta-text: #c47a5e` (≥5.0:1 on both `--bg` and `--bg-elevated`) replace the base accents in all 21 text usages; borders/fills/graph strokes keep the original palette. `--text-faint` 0.5 → 0.56 alpha (the #7f807b 4.49:1 failure → ~5.3:1). The reference-card whole-card `opacity: 0.72` (which composited track meta to #3c6956 = 2.97:1) was replaced with fainter border + dim text tokens. The spec's flag on `#4D8A70` was confirmed by measurement (4.41:1 on elevated at small sizes) and resolved via `--green-text`. Axe `color-contrast`: clear on every audited page. |
+| §16 Reflection overflow | The exact overflowing element was identified by measurement — the convergence diagram (nowrap five-column grid, scrollWidth 400 at 375 px). It restacks vertically below 560 px; structure retained; **0 px** document overflow at 375 px; no global `overflow-x: hidden`. |
+| §17 Regression | Full suite **55/55**; validate/check/build clean; final visual review at 1366×768 and 375×720 (see §2 below). |
+
 ---
 
 ## 2. How correctness was verified
@@ -51,7 +61,7 @@ This handoff records the state of the **V2 improvement work** after completing
 | `npm run validate` | **Passed** — 35 assignments / 10 concepts / 11 artifacts / 34 public edges, no violations. |
 | `npm run check` (`astro check`) | **Passed** — 0 errors, 0 warnings, 0 hints. |
 | `npm run build` | **Passed** — 53 pages built. |
-| Full Playwright suite (55 tests) | **49 passed / 6 failed — all 6 are documented V2 Phase 4 scope** (see below). |
+| Full Playwright suite (55 tests) | **55 passed / 0 failed** after Phase 4. |
 
 Unlike the Phase 1/2 sessions (browser CDN blocked), this session ran the
 **complete browser suite** against a locally vendored Chromium via the new
@@ -69,11 +79,16 @@ npx playwright install chromium && npm test
 | :--- | :--- | :--- |
 | `tests/adapter.spec.ts` | **10/10** | Adapter unit tests. |
 | `tests/map.spec.ts` | **11/11** | Map interaction. |
-| `tests/phase3.spec.ts` (V1 QA) | **6/7** | Only failure: `/reflection/` 375 px overflow — V2 §16, Phase 4 scope. |
+| `tests/phase3.spec.ts` (V1 QA) | **7/7** | Includes the 375 px overflow check — green after §16. |
 | `tests/v2-phase1.spec.ts` | **7/7** | Modal / evidence / typography. |
-| `tests/v2-phase2.spec.ts` | **7/7** | Includes the new rendered-label guard. |
-| `tests/v2-phase3.spec.ts` | **8/8** | New this session. |
-| `tests/axe.spec.ts` | **0/5** | Failures are exactly V2 §14 (`aria-allowed-attr` from `aria-pressed` on tier `<a>`s) and §15 (contrast pairs `#3c6956/#101312`, `#7f807b/#151817`, `#b9664e/#151817`) — Phase 4 scope, signatures identical before and after Phase 3 (no new violations introduced). |
+| `tests/v2-phase2.spec.ts` | **7/7** | Includes the rendered-label guard. |
+| `tests/v2-phase3.spec.ts` | **8/8** | Navigation phase. |
+| `tests/axe.spec.ts` | **5/5** | **0 critical/serious axe violations** on home+map, work index, detail, reflection, framework after §14/§15. |
+
+This meets the spec's §17 V2 target table: all Playwright suites green
+(the V1 "33/33" baseline has since grown to 55 tests), adapter 10/10, map
+11/11, V1 QA 7/7, **0 axe violations, 0 mobile overflow**, design review
+passed (visual checks below).
 
 ### Manual/visual checks
 
@@ -81,9 +96,14 @@ npx playwright install chromium && npm test
   CTA, and the expanded graph were reviewed: header hierarchy reads at a
   glance, tier clusters read as subordinate, CTA closes the work section, and
   the expanded graph fills the container with labels and arrowheads visible.
-- Mobile 375 px: header wraps as before; homepage and `/work/` show no
-  horizontal overflow (`/reflection/` remains the known §16 item).
-- No-JS: browse route intact, CTA anchors to `#map`, map fallback unchanged.
+- Phase 4 visual review: reference-tier cards still recede (fainter border,
+  dim code/title) without the AA-breaking opacity; accent text is one step
+  brighter but the palette reads unchanged; the reflection convergence
+  diagram stacks cleanly at 375 px (measured 0 px document overflow).
+- Mobile 375 px: no horizontal overflow on `/`, `/work/`, `/framework/`, or
+  `/reflection/`.
+- No-JS: browse route intact, CTA anchors to `#map`, map fallback unchanged,
+  tier filter links still work (they are the reason §14 kept them as links).
 
 ### Regression fixes made during Phase 3 verification
 
@@ -104,6 +124,9 @@ npx playwright install chromium && npm test
   latent defects fixed, 7/7 green in a real browser run.
 - **V2 Phase 3** (section/tab hierarchy, laptop navigation scale, moved
   `Explore the Map` CTA) — implemented and 8/8 green.
+- **V2 Phase 4** (valid ARIA, WCAG AA contrast, reflection mobile overflow,
+  full regression, final visual review) — implemented; the entire 55-test
+  suite is green including 5/5 axe audits.
 - Data validation, Astro type-checking, and the static build all pass.
 - `docs/CHANGELOG_V2.md` documents every V2 step, files changed, phase/task
   references, and assumptions.
@@ -112,18 +135,8 @@ npx playwright install chromium && npm test
 
 ## 4. What is intentionally incomplete or requires real artifacts/inputs
 
-**Not yet implemented (remaining V2 phase, per the spec's §18 order):**
-
-- **Phase 4 — QA:**
-  - §14 ARIA fix (tier filter `aria-pressed` on `<a>` → real `<button>`s or
-    proper semantics). Deliberately untouched in Phase 3 even while editing
-    `FilterBar.astro`, to keep the phase boundary clean.
-  - §15 contrast fixes (`#3c6956/#101312` 2.97:1, `#7f807b/#151817` 4.49:1,
-    `#b9664e/#151817` 4.31:1; re-evaluate `#4D8A70` at small sizes).
-  - §16 `/reflection/` mobile overflow at 375 px.
-  - §17 full regression to the 33/33-equivalent target + final visual review.
-  - The 6 currently failing tests (5 axe + 1 mobile overflow) are the exact
-    executable acceptance criteria for that phase.
+**All four phases of `docs/V2_IMPROVEMENT_SPEC.md` are implemented.** Nothing
+in the spec's scope remains open.
 
 **Requires real author inputs:**
 
@@ -162,9 +175,9 @@ Source of truth: `src/data/artifacts.ts`, `src/data/notebooks.ts`, and
 
 ## 6. Commit / branch
 
-All Phase 3 changes are committed to the session branch
-`arena/01a057ea-flyrank-learning-archive` (this Arena session is fixed to that
-branch; it fast-forwards from `feat/v2-phase2` and is the intended source for
-a `feat/v2-phase3` branch/PR if desired). The committed working set includes
-the Phase 3 code, `tests/v2-phase3.spec.ts`, the Phase 2 regression fixes,
+All Phase 3 and Phase 4 changes are committed to the session branch
+`arena/01a057ea-flyrank-learning-archive` (this Arena session is fixed to
+that branch; it fast-forwards from `feat/v2-phase2` and is the intended
+source for `feat/v2-phase3` / `feat/v2-phase4` branches or a PR). The
+committed working set includes the Phase 3 + Phase 4 code, the test suites,
 `docs/CHANGELOG_V2.md`, and this handoff.

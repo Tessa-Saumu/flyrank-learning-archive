@@ -7,6 +7,123 @@ assumptions made.
 
 ---
 
+## V2 Phase 4 — QA
+
+### V2-P4.1 — Valid ARIA on tier filters (§14)
+
+**What was implemented**
+
+- The tier filter controls in `FilterBar.astro` no longer carry
+  `aria-pressed` (valid only on toggle buttons). The spec's preferred fix —
+  converting to `<button>`s — was evaluated and rejected deliberately: the
+  tier filters are server-rendered links whose whole point is no-JS filtering
+  and shareable URLs (`/work/?tier=core`), so the semantic model genuinely
+  requires `<a>` elements (the spec's sanctioned alternative). The active
+  tier is now conveyed with `aria-current="true"`, which is valid on links,
+  alongside the existing visual active state.
+- Axe no longer reports `aria-allowed-attr` on any audited page.
+
+**Files changed**
+
+- `src/components/FilterBar.astro`
+
+**Phase + task reference**
+
+- V2 Phase 4, task 16 — §14 "Fix V1 accessibility failures / ARIA".
+
+**Assumptions made**
+
+- `aria-current="true"` (not `"page"`) is used because a tier is a filter
+  state within the page, not a distinct page. The map's tier controls are
+  real `<button>`s and legitimately keep `aria-pressed`.
+
+---
+
+### V2-P4.2 — WCAG AA contrast (§15) + §16 (same commit)
+
+**What was implemented**
+
+- **AA-safe text accents.** Measured (WCAG relative-luminance math, confirmed
+  by axe): `--green-bright` #4d8a70 = 4.61:1 on `--bg` but **4.41:1 on
+  `--bg-elevated`** (the spec's suspicion about #4D8A70 confirmed);
+  `--terracotta` #b9664e = 4.51:1 / **4.32:1**. Added one-step brightened
+  text variants `--green-text: #569478` (5.25 / 5.02) and
+  `--terracotta-text: #c47a5e` (5.60 / 5.36) following the existing
+  `--gold-bright` precedent, and swapped **all 21 accent `color:` (text)
+  usages** across 11 components/pages. Borders, fills, focus outlines, and
+  graph strokes keep the original palette (non-text ≥3:1), so the Systems
+  Atlas palette is preserved.
+- **`--text-faint`** alpha 0.5 → 0.56: it composited to #7f807b on
+  `--bg-elevated` = 4.49:1 (the reported failure); now ~5.3:1 on both
+  surfaces, still clearly fainter than `--text-dim` (~8:1).
+- **Reference-tier cards.** The whole-card `opacity: 0.72` multiplied every
+  child's contrast below AA (track meta composited to #3c6956 = 2.97:1 — the
+  worst reported failure). Tier recession is now expressed per DESIGN_SPEC
+  §47's contrast/border vocabulary without the destructive multiplier: a
+  fainter card border (non-text) + `--text-dim` code/title + weight-400 meta.
+- **§16 `/reflection/` mobile overflow (shipped in the same commit).** The
+  exact overflowing element was identified by measurement: the convergence
+  diagram `.refl-convergence__diagram` (nowrap five-column grid, scrollWidth
+  400 in a 375 px viewport). Below 560 px it restacks vertically (strand →
+  FL-10 node → strand → `└→ Retrospective`), keeping the intended structure.
+  No global `overflow-x: hidden` was added. Document overflow at 375 px is
+  now **0 px**.
+
+**Files changed**
+
+- `src/styles/global.css` (tokens, `a:hover`)
+- `src/components/AssignmentCard.astro` (reference tier + accent text)
+- `src/components/{DetailPanel,Header,LearningMap,Hero,ArtifactPreview}.astro`
+- `src/pages/{framework,reflection}.astro`, `src/pages/framework/wish-i-knew.astro`
+- `src/pages/track/{ai-fluency,machine-learning}.astro`
+
+**Phase + task reference**
+
+- V2 Phase 4, tasks 17–18 — §15 "Fix color contrast", §16 "Fix reflection
+  page mobile overflow".
+
+**Assumptions made**
+
+- §15 lists failures against both `#101312` and `#151817`; the text tokens
+  were made to pass on **both** surfaces so elevated panels (evidence, modal,
+  map panel) can host the same semantic text.
+- `.btn--filled:hover` keeps its `--green-bright` fill: dark text on that
+  fill is 4.61:1 (AA) and it is a transient state.
+
+---
+
+### V2-P4.3 — Full regression + final visual review (§17)
+
+**What was implemented**
+
+- Full Playwright suite: **55/55 passed** (adapter 10/10, map 11/11, V1 QA
+  phase3 7/7, v2-phase1 7/7, v2-phase2 7/7, v2-phase3 8/8, **axe 5/5 — 0
+  critical/serious violations on home+map, work index, detail, reflection,
+  framework**). `npm run validate` and `npm run check` clean; build 53 pages.
+- V2 §17 target table met in its current form: Playwright all-green
+  (33/33-equivalent → 55/55 after the V2 suites were added), adapter 10/10,
+  map 11/11, V1 QA 7/7, **0 axe violations, 0 mobile overflow**.
+- Final visual review at 1366×768 and 375×720 against the built site:
+  tier hierarchy on cards is preserved without the opacity trick, accent
+  text is brighter but the palette reads unchanged, the reflection diagram
+  stacks cleanly on mobile.
+
+**Files changed**
+
+- None (verification step).
+
+**Phase + task reference**
+
+- V2 Phase 4, tasks 19–20 — §17 "Regression requirements", final visual
+  review.
+
+**Assumptions made**
+
+- The V1 baseline "33/33" maps onto today's grown suite; the equivalent
+  criterion (every existing + new test green) is met.
+
+---
+
 ## V2 Phase 3 — Navigation
 
 ### V2-P3.4 — Phase 3 verification suite + two graph regressions surfaced by it
