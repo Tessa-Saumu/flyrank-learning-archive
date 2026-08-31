@@ -7,6 +7,29 @@ assumptions made.
 
 ---
 
+## V2 Phase 1 — Embed fallback regression guard (complete)
+
+**What was implemented**
+
+- Restored the evidence-status text inside the embed fallback card in
+  `ArtifactPreview.astro`. This keeps the existing Phase 3 “embed failure
+  drill” contract intact while preserving the new `Show evidence` preview state.
+
+**Files changed**
+
+- `src/components/ArtifactPreview.astro`
+
+**Phase + task reference**
+
+- V2 Phase 1 §4 and existing V1 Phase 3 §57 fallback regression.
+
+**Assumptions made**
+
+- The fallback remains visible until the visitor explicitly reveals the heavy
+  asset, and still exposes the open/pending artifact control plus status text.
+
+---
+
 ## V2 Phase 1 — Handoff document (complete)
 
 **What was implemented**
