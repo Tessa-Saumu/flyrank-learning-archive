@@ -210,4 +210,21 @@ function isActive(href: string): boolean {
       margin-left: auto;
     }
   }
+
+  /* V2 §6: comfortable laptop reading. At laptop/desktop widths the primary
+     items get more air between them; the bar keeps its height, structure,
+     and visual language (no oversized navigation). */
+  @media (min-width: 1024px) {
+    .header__inner {
+      gap: var(--space-7);
+    }
+
+    .header__nav {
+      gap: var(--space-6);
+    }
+
+    .header__tracks {
+      gap: var(--space-4);
+    }
+  }
 </style>

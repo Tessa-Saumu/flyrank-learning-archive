@@ -9,6 +9,39 @@ assumptions made.
 
 ## V2 Phase 3 — Navigation
 
+### V2-P3.2 — Laptop navigation scale (§6)
+
+**What was implemented**
+
+- Navigation text is no longer metadata-sized at laptop widths. The V1 header
+  rendered every nav label at `--fs-metadata` — `clamp(9px, 0.6vw, 11px)`,
+  i.e. **9 px** on a 1280–1440 px laptop. Primary items now use
+  `--fs-nav` (`clamp(12px, 0.95vw, 14px)` → **12.2–13.7 px** at typical
+  laptop widths) and track links `--fs-nav-secondary` (`clamp(10px, 0.75vw,
+  12px)`).
+- At `min-width: 1024px` the header gains breathing room: inner gap
+  `--space-7`, primary nav gap `--space-6`, tracks gap `--space-4`. The bar
+  keeps its 64 px height, sticky behaviour, structure, and mobile wrap
+  behaviour (≤900 px block unchanged).
+
+**Files changed**
+
+- `src/components/Header.astro` (laptop media query; sizes were tokenised in
+  V2-P3.1)
+- `src/styles/global.css` (the `--fs-nav*` tokens, added in V2-P3.1)
+
+**Phase + task reference**
+
+- V2 Phase 3, task 14 — §6 "Increase laptop navigation scale".
+
+**Assumptions made**
+
+- "Typical laptop viewport widths" is taken as 1024–1536 px; verified at
+  1366×768 in the Phase 3 test suite. The clamp minimums also lift mobile
+  label legibility slightly; mobile layout/behaviour itself is untouched.
+
+---
+
 ### V2-P3.1 — Section/tab hierarchy (§1)
 
 **What was implemented**
