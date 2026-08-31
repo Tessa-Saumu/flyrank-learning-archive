@@ -7,6 +7,235 @@ assumptions made.
 
 ---
 
+## V2 Phase 2 — Knowledge Graph (complete)
+
+### V2-P2.1 — Short node descriptors (§7)
+
+**What was implemented**
+
+- Added a required `descriptor` field to the `Assignment` type and populated a
+  short, action-oriented descriptor for all 35 assignments in
+  `src/data/assignments.ts`.
+- The map adapter now uses `a.descriptor` (falling back to `a.title`) as the
+  assignment node label, replacing the previous `officialCode ?? title` value,
+  so every node is identified by a human-readable phrase rather than a bare
+  code.
+
+**Files changed**
+
+- `src/data/types.ts` (`descriptor` field + doc comment)
+- `src/data/assignments.ts` (35 descriptors)
+- `src/components/map/adapter.ts` (node label uses `descriptor`)
+
+**Phase + task reference**
+
+- V2 Phase 2 §7 "Add labels/descriptors to Knowledge Graph nodes".
+
+**Assumptions made**
+
+- The registry has no dedicated short-label column, so each descriptor is
+  derived from the canonical title/source aliases: the pre-colon action phrase
+  where the title is colonated ("Draw the Path", "Frame It as Cases"), and a
+  concise verb phrase otherwise ("Ship the Paper", "Validate the Claim"). The
+  full title remains available on the node for the hover tooltip.
+
+---
+
+### V2-P2.2 — Hover information (§8)
+
+**What was implemented**
+
+- Node data now carries `title` (full canonical name) and `description`
+  (`task` for assignments, `description` for concepts/artifacts) for tooltip use.
+- `map-client.ts` renders a single DOM tooltip (`[data-map-tooltip]`) on node
+  hover, showing the full name + short description. It is positioned beside the
+  node, clamped to the region, flipped below the node near the top edge, and
+  re-anchored during pan/zoom. Moving off the node hides it.
+
+**Files changed**
+
+- `src/components/map/adapter.ts` (node `title`/`description` data)
+- `src/components/map/map-client.ts` (tooltip show/hide/position)
+- `src/components/LearningMap.astro` (tooltip element + styles)
+
+**Phase + task reference**
+
+- V2 Phase 2 §8 "Improve Knowledge Graph hover behavior".
+
+**Assumptions made**
+
+- The short description uses the canonical `task` field (the registry has no
+  dedicated one-line summary); it is the single source-of-truth "what this
+  assignment asks" copy. The graph label stays the short descriptor, the hover
+  the fuller explanation, as required.
+
+---
+
+### V2-P2.3 — Interaction instructions (§9)
+
+**What was implemented**
+
+- Added a compact legend (`[data-map-legend]`) under the map controls:
+  "Explore the map — Scroll/pinch to zoom · Drag to pan · Click a node to open
+  · Esc to close", wording matched to the actual implemented controls.
+
+**Files changed**
+
+- `src/components/LearningMap.astro` (legend markup + styles)
+
+**Phase + task reference**
+
+- V2 Phase 2 §9 "Add graph interaction instructions".
+
+**Assumptions made**
+
+- The legend is one quiet metadata line, discoverable but subordinate to the
+  graph, per the "not a large instructional block" constraint.
+
+---
+
+### V2-P2.4 — Visible arrowheads (§10.1)
+
+**What was implemented**
+
+- Directional edges now carry clearly visible triangle arrowheads:
+  `builds-on` (bright `textDim` arrow, scale 1), `connects-to` (subtle grey
+  triangle, scale 0.8, previously undirected), and `cross-track` (terracotta,
+  scale 1). Connective concept/artifact edges deliberately carry no arrowhead
+  (membership, not flow).
+
+**Files changed**
+
+- `src/components/map/map-client.ts` (edge style config)
+
+**Phase + task reference**
+
+- V2 Phase 2 §10.1 "Arrowheads must be visually clear".
+
+**Assumptions made**
+
+- `connects-to` is a directional relationship in the data model (source →
+  target), so it receives a subtle arrowhead; connective concept/artifact
+  edges remain undirected per DESIGN_SPEC §14 ("only explicit dependency
+  relationships should visually suggest direction").
+
+---
+
+### V2-P2.5 — Concept relationships (§10.2)
+
+**What was implemented**
+
+- The adapter now emits a connective edge for every concept mapping
+  (`assignment → concept`), derived from the canonical `concept.assignments`
+  arrays. No concept node can float without an intentional relationship in any
+  assignment-bearing view.
+- Track-view dimming was extended so connective edges stay bright while their
+  assignment endpoint is in the selected track.
+
+**Files changed**
+
+- `src/components/map/adapter.ts` (connective concept edges)
+- `src/components/map/map-client.ts` (connective edge style + track dimming)
+
+**Phase + task reference**
+
+- V2 Phase 2 §10.2 "Connect concept nodes correctly".
+
+**Assumptions made**
+
+- Concept relationships are expressed as `assignment → concept` edges matching
+  the canonical concept mapping (58 instances); they render subordinate to
+  dependency edges (thin, gold, low opacity, no arrowhead).
+
+---
+
+### V2-P2.6 — Default artifact visibility (§11)
+
+**What was implemented**
+
+- Artifacts are now visible on initial load: the default view shows all 11
+  artifacts linked to the anchor assignments, plus assignment → artifact
+  connective edges. The `concepts` filter still hides artifacts; the tier and
+  primary filters are unchanged.
+
+**Files changed**
+
+- `src/components/map/adapter.ts` (artifact visibility + connective artifact
+  edges)
+- `src/components/map/map-client.ts` (artifact edge style)
+
+**Phase + task reference**
+
+- V2 Phase 2 §11 "Show artifacts by default".
+
+**Assumptions made**
+
+- "Visible by default" is implemented as "any artifact linked to a visible
+  assignment" (all 11 in the default anchor view); artifacts remain visually
+  subordinate (small markers, dotted grey connective edges).
+
+---
+
+### V2-P2.7 — Expandable homepage graph (§13)
+
+**What was implemented**
+
+- Added an "Expand map / Collapse map" control to the map controls. It toggles
+  `.map-section.is-expanded`, collapsing the adjacent context panel so the
+  graph takes the full container width and gains vertical room (stage height
+  560px → 760px). The existing ResizeObserver re-fits the graph after the
+  layout change.
+
+**Files changed**
+
+- `src/components/LearningMap.astro` (expand control + expanded stage height)
+- `src/components/map/map-client.ts` (toggle handler)
+- `src/pages/index.astro` (expanded grid + hidden intro styles)
+
+**Phase + task reference**
+
+- V2 Phase 2 §13 "Make the homepage map preview collapsible".
+
+**Assumptions made**
+
+- The "adjacent information panel" is the homepage hero/intro column
+  (`.map-section__intro`); collapsing it gives the graph the full container
+  width while preserving the Systems Atlas visual language.
+
+---
+
+### V2-P2.8 — Phase 2 verification and test suite (complete)
+
+**What was implemented**
+
+- Added `tests/v2-phase2.spec.ts` covering the Phase 2 acceptance criteria
+  (descriptors, hover tooltip, legend, arrowheads, concept connectivity, default
+  artifact visibility + filterability, and expand/collapse).
+- Updated `tests/adapter.spec.ts` and `tests/map.spec.ts` for the new default
+  graph state (artifacts + connective edges: default 80 edges, browse-all 131).
+- Ran and passed data validation, Astro type-check, static build, and the Node
+  adapter suite (see `docs/HANDOFF_V2.md` for exact results).
+
+**Files changed**
+
+- `tests/v2-phase2.spec.ts` (new)
+- `tests/adapter.spec.ts`, `tests/map.spec.ts` (updated counts)
+- `docs/CHANGELOG_V2.md` (this file)
+
+**Phase + task reference**
+
+- V2 Phase 2 acceptance criteria and the "verification steps and tests"
+  requirement of the execution rules.
+
+**Assumptions made**
+
+- The full Chromium Playwright browser suite could not execute in this sandbox
+  (blocked browser download, same limitation recorded in Phase 1); the suite is
+  authored and included, and the adapter suite that runs without a browser
+  passes 10/10.
+
+---
+
 ## V2 Phase 1 — Embed fallback regression guard (complete)
 
 **What was implemented**

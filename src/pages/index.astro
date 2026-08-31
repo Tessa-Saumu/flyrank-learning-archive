@@ -83,6 +83,16 @@ import { assignments } from '../data/assignments';
     align-items: start;
   }
 
+  /* Expanded map state (V2 §13): the graph takes the full width and the
+     adjacent context panel recedes. Toggled by the map's expand control. */
+  .map-section.is-expanded .map-section__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .map-section.is-expanded .map-section__intro {
+    display: none;
+  }
+
   @media (max-width: 1023px) {
     .map-section__grid {
       grid-template-columns: 1fr;

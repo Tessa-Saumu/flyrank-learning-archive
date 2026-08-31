@@ -37,11 +37,27 @@ import { assignments } from '../data/assignments';
       <input id="map-search" class="learning-map__search-input" type="search" placeholder="Search title, code, concept, artifact" data-map-search autocomplete="off" />
       <div class="learning-map__search-results" data-map-search-results hidden></div>
     </div>
+
+    <button
+      type="button"
+      class="map-expand"
+      data-map-expand
+      aria-expanded="false"
+      aria-controls="map"
+    >
+      Expand map
+    </button>
   </div>
+
+  <p class="learning-map__legend" data-map-legend>
+    <span class="learning-map__legend-label">Explore the map</span>
+    Scroll/pinch to zoom · Drag to pan · Click a node to open · Esc to close
+  </p>
 
   <div class="learning-map__region-row">
     <div class="learning-map__region" data-map-region>
       <div class="learning-map__stage" data-map-stage></div>
+      <div class="learning-map__tooltip" data-map-tooltip hidden></div>
       <div class="learning-map__roster sr-only" data-map-roster></div>
     </div>
 
@@ -85,6 +101,7 @@ import { assignments } from '../data/assignments';
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2);
+    margin-right: auto;
   }
 
   .learning-map__sep {
@@ -114,6 +131,75 @@ import { assignments } from '../data/assignments';
   .map-filter.is-active {
     color: var(--text);
     border-color: var(--rule-active);
+  }
+
+  .map-expand {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-1);
+    color: var(--text-dim);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    padding: var(--space-1) var(--space-2);
+    transition: color var(--motion-fast) var(--ease), border-color var(--motion-fast) var(--ease);
+  }
+
+  .map-expand:hover {
+    color: var(--text);
+    border-color: var(--rule-active);
+  }
+
+  .map-expand[aria-expanded='true'] {
+    color: var(--text);
+    border-color: var(--rule-active);
+  }
+
+  .learning-map__legend {
+    margin: 0 0 var(--space-4);
+    color: var(--text-faint);
+    font-size: var(--fs-metadata);
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+  }
+
+  .learning-map__legend-label {
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-right: var(--space-3);
+  }
+
+  .learning-map__region {
+    position: relative;
+  }
+
+  .learning-map__tooltip {
+    position: absolute;
+    z-index: 60;
+    max-width: 280px;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+    pointer-events: none;
+  }
+
+  .learning-map__tooltip strong {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    margin-bottom: var(--space-1);
+  }
+
+  .learning-map__tooltip span {
+    display: block;
+    font-size: var(--fs-metadata);
+    color: var(--text-dim);
+    line-height: 1.5;
   }
 
   .learning-map__search {
@@ -200,6 +286,13 @@ import { assignments } from '../data/assignments';
 
   .learning-map.js-map-ready .learning-map__stage {
     display: block;
+  }
+
+  /* When the homepage map is expanded, give the graph more vertical room too.
+     `.map-section.is-expanded` is an ancestor owned by the homepage, so it is
+     left global. */
+  :global(.map-section.is-expanded) .learning-map__stage {
+    height: 760px;
   }
 
   .learning-map.js-map-ready .learning-map__fallback {

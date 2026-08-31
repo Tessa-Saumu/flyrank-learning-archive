@@ -34,6 +34,12 @@ export interface Assignment {
   track: Track;
   title: string;
   displayLabel?: string;
+  /**
+   * Short graph-node descriptor (V2_IMPROVEMENT_SPEC §7): the shortest useful
+   * label for the Knowledge Graph node, derived from the canonical title /
+   * source aliases. Identifies the assignment without explaining it.
+   */
+  descriptor: string;
   officialCode?: string;
   sourceAliases?: string[];
   strand: Strand;

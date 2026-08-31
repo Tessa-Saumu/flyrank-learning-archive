@@ -4,7 +4,8 @@
  * These run under the Playwright node runner (esbuild TS transform, no browser
  * required) and assert the pure data-to-renderer contract:
  *  - node count by type per view
- *  - edge count = 34 in browse-all; 18 in the calm default
+ *  - edge count = 131 in browse-all (34 assignment + 58 concept + 39 artifact);
+ *    80 in the default (18 assignment + 39 concept + 23 artifact)
  *  - no `approved: false` edges ever reach the renderer
  *  - rejected-edge pairs are absent as direct edges
  *  - every concept's members match the locked registry
@@ -41,8 +42,10 @@ test('default view: calm anchor state', () => {
   const refTier = assignments.filter((n) => (n.data as { tier?: string }).tier === 'reference');
   expect(refTier.length).toBe(0);
 
-  // Only approved high-confidence edges, calm default.
-  expect(edges.length).toBe(18);
+  // 18 high-confidence assignment edges + 39 concept + 23 artifact connective
+  // edges (V2 §10.2, §11). Every edge is approved; assignment edges are all
+  // high-confidence in the calm default.
+  expect(edges.length).toBe(80);
   for (const e of edges) {
     expect(e.data.approved).toBe(true);
     expect((e.data as { confidence: string }).confidence).toBe('high');
@@ -53,8 +56,9 @@ test('browse-all view: full archive', () => {
   const { nodes, edges } = buildGraphElements({ kind: 'browse-all', tier: 'all' });
   expect(nodes.filter((n) => typeOf(n) === 'assignment').length).toBe(35);
   expect(nodes.filter((n) => typeOf(n) === 'concept').length).toBe(10);
-  // All 34 approved public edges.
-  expect(edges.length).toBe(34);
+  expect(nodes.filter((n) => typeOf(n) === 'artifact').length).toBe(11);
+  // 34 approved assignment edges + 58 concept + 39 artifact connective edges.
+  expect(edges.length).toBe(131);
   for (const e of edges) expect(e.data.approved).toBe(true);
 });
 

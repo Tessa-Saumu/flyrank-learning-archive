@@ -28,6 +28,7 @@ export const assignments: Assignment[] = [
 
   {
     id: 'ml-01-run-starter-notebooks',
+    descriptor: 'Run the Starter Notebooks',
     officialCode: 'ML-01',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -50,6 +51,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-02-research-question-lane',
+    descriptor: 'Set the Research Question',
     officialCode: 'ML-02',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -72,6 +74,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-03-ml-task-framing',
+    descriptor: 'Frame the ML Task',
     officialCode: 'ML-03',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -94,6 +97,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-04-data-contract',
+    descriptor: 'Define the Data Contract',
     officialCode: 'ML-04',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -116,6 +120,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-07-baseline-action-score',
+    descriptor: 'Build the Baseline',
     officialCode: 'ML-07',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -138,6 +143,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-08-capstone-modeling',
+    descriptor: 'Model the Capstone',
     officialCode: 'ML-08',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -160,6 +166,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-09-validation-claim-audit',
+    descriptor: 'Validate the Claim',
     officialCode: 'ML-09',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -182,6 +189,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-10-content-action-playbook',
+    descriptor: 'Write the Playbook',
     officialCode: 'ML-10',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -204,6 +212,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-11-ship-paper',
+    descriptor: 'Ship the Paper',
     officialCode: 'ML-11',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -226,6 +235,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'ml-12-tell-story',
+    descriptor: 'Tell the Story',
     officialCode: 'ML-12',
     track: 'machine-learning',
     strand: 'ml-spine',
@@ -251,6 +261,7 @@ export const assignments: Assignment[] = [
 
   {
     id: 'fl-01-workflow-audit',
+    descriptor: 'Audit Your Workflow',
     officialCode: 'FL-01',
     track: 'ai-fluency',
     strand: 'ai-systems-agents',
@@ -273,6 +284,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-prompt-ladder',
+    descriptor: 'Climb the Prompt Ladder',
     track: 'ai-fluency',
     strand: 'ai-systems-agents',
     title: 'The Prompt Ladder',
@@ -294,6 +306,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-02-prompting-fundamentals',
+    descriptor: 'Practice Prompting',
     officialCode: 'FL-02',
     track: 'ai-fluency',
     strand: 'ai-systems-agents',
@@ -316,6 +329,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-04-automation-workflow',
+    descriptor: 'Ship the Workflow',
     officialCode: 'FL-04',
     track: 'ai-fluency',
     strand: 'ai-systems-agents',
@@ -341,6 +355,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-05-agent-mcp-basics',
+    descriptor: 'Understand Agents & MCP',
     officialCode: 'FL-05',
     track: 'ai-fluency',
     strand: 'ai-systems-agents',
@@ -363,6 +378,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-06-agent-design',
+    descriptor: 'Design Your Agent',
     officialCode: 'FL-06',
     track: 'ai-fluency',
     strand: 'ai-systems-agents',
@@ -390,6 +406,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-07-build-agent',
+    descriptor: 'Build the Agent',
     officialCode: 'FL-07',
     track: 'ai-fluency',
     strand: 'ai-systems-agents',
@@ -412,6 +429,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-09-documentation-demo',
+    descriptor: 'Document the Agent',
     officialCode: 'FL-09',
     track: 'ai-fluency',
     strand: 'ai-systems-agents',
@@ -442,6 +460,7 @@ export const assignments: Assignment[] = [
 
   {
     id: 'fl-portfolio-proof',
+    descriptor: 'What Are You Proving?',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'What Are You Proving?',
@@ -463,6 +482,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-portfolio-sitemap',
+    descriptor: 'Draw the Path',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Draw the Path: Portfolio Sitemap + Toolkit',
@@ -484,6 +504,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-portfolio-cases',
+    descriptor: 'Frame It as Cases',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Frame It as Cases: Work That Speaks for Itself',
@@ -505,6 +526,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-identity-kit',
+    descriptor: 'Decide Once',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Decide Once: Build Your Identity Kit',
@@ -526,6 +548,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-curate-images',
+    descriptor: 'Kill Your Darlings',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Kill Your Darlings: Curate Your Images',
@@ -547,6 +570,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-content-ctas',
+    descriptor: 'The Through-Line',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'The Through-Line: Map Content and CTAs',
@@ -568,6 +592,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-empty-live-page',
+    descriptor: 'Empty but Live',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Empty but Live: Ship a Blank Page',
@@ -589,6 +614,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-stack-choice',
+    descriptor: 'Three Roads',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Three Roads: Choose Your Stack with AI',
@@ -610,6 +636,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-explain-build',
+    descriptor: 'Explain It Like You Built It',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Explain It Like You Built It',
@@ -630,6 +657,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'pf-04-personal-website',
+    descriptor: 'Deploy the Website',
     officialCode: 'PF-04',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
@@ -652,6 +680,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-dynamic-feature',
+    descriptor: 'Make It Do Something',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Make It Do Something',
@@ -673,6 +702,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-mobile-audit',
+    descriptor: 'Open It on Your Phone',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Open It on Your Phone',
@@ -694,6 +724,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-crit-review',
+    descriptor: 'Survive the Crit',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Survive the Crit',
@@ -714,6 +745,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-site-hardening',
+    descriptor: 'Break Your Own Site',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Break Your Own Site',
@@ -735,6 +767,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-domain-badge',
+    descriptor: 'Plant Your Flag',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'Plant Your Flag: Domain + Badge',
@@ -756,6 +789,7 @@ export const assignments: Assignment[] = [
   },
   {
     id: 'fl-maintenance-plan',
+    descriptor: 'The Plan to Keep Building',
     track: 'ai-fluency',
     strand: 'portfolio-public-work',
     title: 'The Plan to Keep Building',
@@ -780,6 +814,7 @@ export const assignments: Assignment[] = [
 
   {
     id: 'fl-10-final-package',
+    descriptor: 'Ship the Final Package',
     officialCode: 'FL-10',
     track: 'ai-fluency',
     strand: 'convergence',
