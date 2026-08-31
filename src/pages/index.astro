@@ -67,6 +67,17 @@ import { assignments } from '../data/assignments';
       <h2 class="section-label" id="browse-heading">Browse the work</h2>
       <FilterBar basePath="/work/" />
       <BrowseWork assignments={assignments} searchId="home-search" />
+
+      <!-- V2 §12: the Explore the Map CTA closes the work section, so it is a
+           deliberate transition — "I've seen the work, now show me how it
+           connects." With JS it also expands the map into the full-width
+           graph experience; without JS it remains a plain anchor to #map. -->
+      <div class="browse-cta">
+        <p class="browse-cta__lead">
+          Seen the work? Explore how all of it connects.
+        </p>
+        <a class="btn btn--filled" href="#map" data-explore-map>Explore the map</a>
+      </div>
     </div>
   </section>
 </Base>
@@ -118,5 +129,23 @@ import { assignments } from '../data/assignments';
   .orientation__item p {
     color: var(--text-dim);
     margin: 0;
+  }
+
+  /* V2 §12: end-of-work-section transition to the full map experience. */
+  .browse-cta {
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+  }
+
+  .browse-cta__lead {
+    margin: 0;
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
   }
 </style>

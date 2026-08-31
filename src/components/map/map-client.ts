@@ -349,14 +349,33 @@ export function initLearningMap(root: HTMLElement): void {
   // Toggles the `.map-section` composition so the graph takes the full width
   // and the adjacent context panel recedes. Layout changes are picked up by
   // the existing ResizeObserver on the stage.
-  if (expandBtn) {
-    expandBtn.addEventListener('click', () => {
-      const section = root.closest<HTMLElement>('.map-section');
-      const expanded = section ? section.classList.toggle('is-expanded') : false;
+  const sectionEl = root.closest<HTMLElement>('.map-section');
+
+  function setExpanded(expanded: boolean): void {
+    if (!sectionEl) return;
+    sectionEl.classList.toggle('is-expanded', expanded);
+    if (expandBtn) {
       expandBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
       expandBtn.textContent = expanded ? 'Collapse map' : 'Expand map';
+    }
+  }
+
+  if (expandBtn) {
+    expandBtn.addEventListener('click', () => {
+      setExpanded(!(sectionEl?.classList.contains('is-expanded') ?? false));
     });
   }
+
+  // V2 §12: the end-of-work-section `Explore the map` CTA. The anchor's
+  // default navigation to #map is kept (it works without JS); with JS the
+  // map additionally expands into the full-width graph experience so the
+  // click lands on the actual full Knowledge Graph, not a cramped preview.
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest?.('a[data-explore-map]')) {
+      setExpanded(true);
+    }
+  });
 
   function applyViewClasses() {
     if (state.kind === 'track') {

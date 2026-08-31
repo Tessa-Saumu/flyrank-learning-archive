@@ -9,6 +9,48 @@ assumptions made.
 
 ## V2 Phase 3 — Navigation
 
+### V2-P3.3 — Move "Explore the Map" CTA (§12)
+
+**What was implemented**
+
+- The hero's `Explore the map` button (which sat directly beside the map
+  preview and produced almost no movement) was removed; the hero keeps a
+  single `Browse the work` CTA.
+- A new CTA block closes the homepage work section (after the browse index):
+  lead line "Seen the work? Explore how all of it connects." + the
+  `Explore the map` button. The homepage journey is now
+  Hero → map preview → assignments/all work → **Explore the Map**.
+- Clicking the CTA navigates to `#map` (a long, meaningful move from the end
+  of the work section) **and**, with JS available, expands the map into the
+  full-width Knowledge Graph experience by reusing the §13 expand state
+  (`setExpanded(true)` — same code path as the Expand map control, so the
+  control's label/`aria-expanded` stay in sync). Without JS the CTA is a
+  plain working anchor to the map.
+- `map-client.ts`: the §13 expand logic was extracted into `setExpanded()`
+  and a delegated click listener handles `a[data-explore-map]`.
+
+**Files changed**
+
+- `src/components/Hero.astro` (CTA removed beside the map)
+- `src/pages/index.astro` (`.browse-cta` block at the end of #browse)
+- `src/components/map/map-client.ts` (`setExpanded` + `[data-explore-map]` hook)
+
+**Phase + task reference**
+
+- V2 Phase 3, task 15 — §12 "Move 'Explore the Map' CTA".
+
+**Assumptions made**
+
+- "The actual full Knowledge Graph experience" is the homepage Learning Map in
+  its §13 expanded (full-width) state — the site's canonical graph — rather
+  than a separate route, which the V1 information architecture does not have
+  and §19 forbids inventing ("do not make the graph permanently full-screen",
+  "do not redesign the entire homepage").
+- The `/work/` index page keeps its existing composition; §12 scopes the CTA
+  move to the homepage work section.
+
+---
+
 ### V2-P3.2 — Laptop navigation scale (§6)
 
 **What was implemented**
