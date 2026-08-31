@@ -569,6 +569,19 @@ export function initLearningMap(root: HTMLElement): void {
     hoveredNode = null;
     hideTooltip();
   });
+  // Robustness: if the pointer leaves the map stage in a single jump (fast
+  // mouse move, coalesced events), Cytoscape may never emit the node
+  // `mouseout`. Clean up on the DOM `mouseleave` so the tooltip and hover
+  // state never linger once the pointer is outside the graph (V2 §8 —
+  // "hover does not permanently clutter the graph").
+  stageEl.addEventListener('mouseleave', () => {
+    if (hoveredNode) {
+      hoveredNode.removeClass('hover');
+      hoveredNode.closedNeighborhood().forEach((el: any) => el.removeClass('bright'));
+      hoveredNode = null;
+    }
+    hideTooltip();
+  });
   // Keep the tooltip anchored while the viewport is panned/zoomed.
   cy.on('pan zoom', () => {
     if (hoveredNode) positionTooltip(hoveredNode);

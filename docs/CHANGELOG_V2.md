@@ -7,6 +7,48 @@ assumptions made.
 
 ---
 
+## V2 Phase 3 — Navigation
+
+### V2-P3.0 — Baseline verification, browser-test enablement, and Phase 2 hover regression fix
+
+**What was implemented**
+
+- **Full browser-suite baseline established.** The Phase 1/2 sessions could not
+  run the Playwright browser suites (browser CDN blocked). This session runs
+  the complete suite against a locally vendored Chromium binary via a new
+  opt-in `PW_CHROMIUM_EXECUTABLE` environment hook in `playwright.config.ts`
+  (no behaviour change when the variable is unset — the stock Playwright
+  browser is used as before).
+- **Baseline result (before any Phase 3 change):** 40/47 passed. The 7
+  failures are exactly the items the spec assigns to Phase 4 — 5 × axe
+  (`aria-allowed-attr` §14, `color-contrast` §15 pairs `#3c6956/#101312`,
+  `#7f807b/#151817`, `#b9664e/#151817`), 1 × `/reflection/` 375 px overflow
+  (§16) — plus one genuine Phase 2 hover defect, fixed below.
+- **Phase 2 hover fix (§8 acceptance: "hover does not permanently clutter the
+  graph").** The tooltip was hidden only by Cytoscape's node `mouseout`, which
+  is not emitted when the pointer leaves the canvas in a single jump; the
+  tooltip could linger indefinitely. `map-client.ts` now also cleans up the
+  hover state + tooltip on the stage's DOM `mouseleave`. `tests/v2-phase2.spec.ts`
+  is now **7/7**.
+
+**Files changed**
+
+- `playwright.config.ts` (env-gated `launchOptions.executablePath`)
+- `src/components/map/map-client.ts` (stage `mouseleave` cleanup)
+
+**Phase + task reference**
+
+- V2 Phase 3 pre-flight ("Do not proceed if a phase's acceptance criteria are
+  not met"); V2 §8 acceptance criteria; §17 regression requirements.
+
+**Assumptions made**
+
+- The 6 remaining failures (ARIA, contrast, reflection overflow) are
+  intentionally left for V2 Phase 4 per the spec's implementation order (§18)
+  and are not touched in Phase 3.
+
+---
+
 ## V2 Phase 2 — Knowledge Graph (complete)
 
 ### V2-P2.1 — Short node descriptors (§7)
