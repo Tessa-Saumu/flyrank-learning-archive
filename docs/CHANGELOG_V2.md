@@ -9,6 +9,54 @@ assumptions made.
 
 ## V2 Phase 3 — Navigation
 
+### V2-P3.1 — Section/tab hierarchy (§1)
+
+**What was implemented**
+
+- **Two-level typographic hierarchy tokens** in `src/styles/global.css`:
+  `--fs-nav` (primary section navigation), `--fs-nav-secondary` (secondary
+  nav — tracks), and `--fs-tab` (primary tabs within a section). Secondary
+  tabs keep `--fs-metadata`. Hierarchy comes from typography, spacing,
+  grouping, and active state only — no new cards, gradients, shadows, or
+  decorative containers.
+- **Header.** Primary sections (MAP · WORK · FRAMEWORK · REFLECTION) now use
+  the heading family at `--fs-nav`/600 so they read as structural
+  navigation. The track links are a labelled, tighter cluster (`TRACKS`
+  kicker, `--fs-nav-secondary`/500), so the header no longer reads as one
+  continuous flat row of six identical items.
+- **FilterBar (browse/work sections).** Primary tabs (All · AI Fluency ·
+  Machine Learning · Concepts) are heavier (`--fs-tab`/600) with the chip
+  active state; the tier tabs are a labelled (`TIER` kicker), tighter,
+  lighter cluster (weight 400) whose active state is a thin underline —
+  clearly subordinate to their parent group.
+- **Learning Map controls.** The same two-level treatment: primary map
+  filters + `Browse all` are `--fs-tab`/600; the tier cluster is labelled
+  `TIER` and lighter, with the underline active state.
+- **Section labels.** `.section-label` (e.g. "Browse the work") steps up to
+  `--fs-nav`/`--text-dim` so primary page sections read one clear level above
+  the tabs that belong to them.
+
+**Files changed**
+
+- `src/styles/global.css` (tokens + `.section-label`)
+- `src/components/Header.astro`
+- `src/components/FilterBar.astro`
+- `src/components/LearningMap.astro`
+
+**Phase + task reference**
+
+- V2 Phase 3, task 13 — §1 "Fix section/tab hierarchy".
+
+**Assumptions made**
+
+- The tier `aria-pressed`-on-`<a>` markup is intentionally untouched here; the
+  spec assigns the ARIA fix to Phase 4 (§14).
+- Secondary tabs keep `--text-dim` text (lightness is expressed through
+  weight/size/grouping) so no new WCAG AA contrast risk is introduced ahead of
+  the Phase 4 contrast pass (§15).
+
+---
+
 ### V2-P3.0 — Baseline verification, browser-test enablement, and Phase 2 hover regression fix
 
 **What was implemented**

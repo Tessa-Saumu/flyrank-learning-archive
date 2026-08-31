@@ -58,6 +58,16 @@
   --fs-card-status: var(--fs-metadata);
   --fs-card-action: var(--fs-metadata);
 
+  /* V2 navigation hierarchy tokens (V2_IMPROVEMENT_SPEC §1, §6).
+     Primary structural navigation reads larger and heavier; secondary
+     tabs/controls stay lighter and visually grouped under their section.
+     Hierarchy comes from typography, spacing, grouping, and active state —
+     not from decorative containers. */
+  --fs-nav: clamp(12px, 0.95vw, 14px); /* primary section navigation */
+  --fs-nav-secondary: clamp(10px, 0.75vw, 12px); /* secondary nav (tracks) */
+  --fs-tab: clamp(11px, 0.8vw, 12px); /* primary tabs within a section */
+  /* secondary tabs (tier etc.) keep --fs-metadata */
+
   --tracking-metadata: 0.08em;
 
   /* --- Font stacks --- */
@@ -259,11 +269,13 @@ ol {
 }
 
 .section-label {
-  font-size: var(--fs-metadata);
+  /* V2 §1: primary section labels read as structure, one clear step above
+     the tabs/controls that belong to them (size + colour, no decoration). */
+  font-size: var(--fs-nav);
   font-weight: 600;
   letter-spacing: var(--tracking-metadata);
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--text-dim);
   margin-bottom: var(--space-5);
 }
 

@@ -19,18 +19,18 @@ import { assignments } from '../data/assignments';
 <div class="learning-map" data-learning-map>
   <div class="learning-map__controls">
     <div class="learning-map__filters" role="group" aria-label="Filters">
-      <button type="button" class="map-filter" data-filter-primary="all">All</button>
-      <button type="button" class="map-filter" data-filter-primary="ai-fluency">AI Fluency</button>
-      <button type="button" class="map-filter" data-filter-primary="machine-learning">Machine Learning</button>
-      <button type="button" class="map-filter" data-filter-primary="concepts">Concepts</button>
-      <button type="button" class="map-filter" data-filter-primary="artifacts">Artifacts</button>
+      <button type="button" class="map-filter map-filter--primary" data-filter-primary="all">All</button>
+      <button type="button" class="map-filter map-filter--primary" data-filter-primary="ai-fluency">AI Fluency</button>
+      <button type="button" class="map-filter map-filter--primary" data-filter-primary="machine-learning">Machine Learning</button>
+      <button type="button" class="map-filter map-filter--primary" data-filter-primary="concepts">Concepts</button>
+      <button type="button" class="map-filter map-filter--primary" data-filter-primary="artifacts">Artifacts</button>
+      <span class="learning-map__kicker" aria-hidden="true">Tier</span>
+      <button type="button" class="map-filter map-filter--secondary" data-filter-tier="all">All</button>
+      <button type="button" class="map-filter map-filter--secondary" data-filter-tier="core">Core</button>
+      <button type="button" class="map-filter map-filter--secondary" data-filter-tier="supporting">Supporting</button>
+      <button type="button" class="map-filter map-filter--secondary" data-filter-tier="reference">Reference</button>
       <span class="learning-map__sep" aria-hidden="true"></span>
-      <button type="button" class="map-filter" data-filter-tier="all">All</button>
-      <button type="button" class="map-filter" data-filter-tier="core">Core</button>
-      <button type="button" class="map-filter" data-filter-tier="supporting">Supporting</button>
-      <button type="button" class="map-filter" data-filter-tier="reference">Reference</button>
-      <span class="learning-map__sep" aria-hidden="true"></span>
-      <button type="button" class="map-filter" data-filter-browseall>Browse all</button>
+      <button type="button" class="map-filter map-filter--primary" data-filter-browseall>Browse all</button>
     </div>
     <div class="learning-map__search">
       <label class="sr-only" for="map-search">Search the map</label>
@@ -111,6 +111,17 @@ import { assignments } from '../data/assignments';
     margin: 0 var(--space-2);
   }
 
+  /* V2 §1: the tier cluster is labelled and lighter so it reads as
+     secondary controls grouped under the map section's primary tabs. */
+  .learning-map__kicker {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 0 var(--space-1) 0 var(--space-3);
+  }
+
   .map-filter {
     background: transparent;
     border: 1px solid transparent;
@@ -124,13 +135,31 @@ import { assignments } from '../data/assignments';
     transition: color var(--motion-fast) var(--ease), border-color var(--motion-fast) var(--ease);
   }
 
+  /* Primary map tabs: heavier + slightly larger (V2 §1). */
+  .map-filter--primary {
+    font-size: var(--fs-tab);
+    font-weight: 600;
+  }
+
+  /* Secondary (tier) tabs: lighter weight, underline active state. */
+  .map-filter--secondary {
+    font-weight: 400;
+  }
+
   .map-filter:hover {
     color: var(--text);
   }
 
-  .map-filter.is-active {
+  .map-filter--primary.is-active {
     color: var(--text);
     border-color: var(--rule-active);
+  }
+
+  .map-filter--secondary.is-active {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
   }
 
   .map-expand {

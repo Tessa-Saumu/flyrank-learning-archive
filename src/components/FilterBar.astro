@@ -38,12 +38,12 @@ const tiers = [
 ---
 
 <nav class="filterbar" aria-label="Filters">
-  <div class="filterbar__group">
+  <div class="filterbar__group filterbar__group--primary">
     {
       primary.map((item) => (
         <a
           href={item.href}
-          class:list={['filterbar__item', { 'is-active': item.active }]}
+          class:list={['filterbar__item', 'filterbar__item--primary', { 'is-active': item.active }]}
           aria-current={item.active ? 'page' : undefined}
         >
           {item.label}
@@ -55,11 +55,11 @@ const tiers = [
   {
     view !== 'concepts' && (
       <div class="filterbar__group filterbar__group--tier" aria-label="Tier">
-        <span class="filterbar__sep" aria-hidden="true"></span>
+        <span class="filterbar__kicker" aria-hidden="true">Tier</span>
         {tiers.map((t) => (
           <a
             href={q({ track, tier: tier === t.value ? undefined : t.value })}
-            class:list={['filterbar__item', { 'is-active': tier === t.value }]}
+            class:list={['filterbar__item', 'filterbar__item--secondary', { 'is-active': tier === t.value }]}
             aria-pressed={tier === t.value}
           >
             {t.label}
@@ -75,7 +75,7 @@ const tiers = [
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-5);
     padding: var(--space-3) 0 var(--space-5);
     border-bottom: var(--rule);
     margin-bottom: var(--space-6);
@@ -88,11 +88,21 @@ const tiers = [
     gap: var(--space-2);
   }
 
-  .filterbar__sep {
-    width: 1px;
-    height: 16px;
-    background: var(--rule);
-    margin: 0 var(--space-2);
+  /* V2 §1: the tier tabs are a labelled, tighter, visibly lighter cluster so
+     they read as controls belonging to the section — not as more primary
+     tabs continuing the same flat row. */
+  .filterbar__group--tier {
+    gap: var(--space-1);
+    margin-left: var(--space-4);
+  }
+
+  .filterbar__kicker {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-right: var(--space-2);
   }
 
   .filterbar__item {
@@ -108,12 +118,32 @@ const tiers = [
     transition: color var(--motion-fast) var(--ease), border-color var(--motion-fast) var(--ease);
   }
 
+  /* Primary tabs: heavier, slightly larger, chip-style active state. */
+  .filterbar__item--primary {
+    font-size: var(--fs-tab);
+    font-weight: 600;
+  }
+
+  /* Secondary tabs: lighter weight and metadata size; the active state is a
+     thin underline instead of the primary chip border. */
+  .filterbar__item--secondary {
+    font-weight: 400;
+    padding: var(--space-2) var(--space-2);
+  }
+
   .filterbar__item:hover {
     color: var(--text);
   }
 
-  .filterbar__item.is-active {
+  .filterbar__item--primary.is-active {
     color: var(--text);
     border-color: var(--rule-active);
+  }
+
+  .filterbar__item--secondary.is-active {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
   }
 </style>
