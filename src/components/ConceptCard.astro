@@ -1,0 +1,47 @@
+---
+/**
+ * ConceptCard.astro — rectangular "atlas label" treatment (DESIGN_SPEC §48).
+ * Concepts are visually unmistakable from assignment circles: a bordered,
+ * uppercase label.
+ */
+import type { Concept } from '../data/types';
+
+interface Props {
+  concept: Concept;
+}
+
+const { concept } = Astro.props;
+---
+
+<a class="concept-card" href={`/concepts/${concept.id}/`}>
+  <span class="concept-card__name">{concept.name}</span>
+</a>
+
+<style>
+  .concept-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 72px;
+    padding: var(--space-4) var(--space-5);
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+    text-decoration: none;
+    color: var(--text);
+    text-align: center;
+    transition: border-color var(--motion-hover) var(--ease), background var(--motion-hover) var(--ease);
+  }
+
+  .concept-card:hover {
+    border-color: var(--text);
+    background: var(--bg-elevated);
+  }
+
+  .concept-card__name {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+  }
+</style>

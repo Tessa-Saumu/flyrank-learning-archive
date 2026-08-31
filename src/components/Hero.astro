@@ -1,0 +1,101 @@
+---
+/**
+ * Hero.astro — orientation panel per DESIGN_SPEC §09.
+ * Both CTAs anchor to the browse index in Phase 1 (the map placeholder).
+ */
+---
+
+<section class="hero">
+  <div class="container">
+    <p class="hero__eyebrow">
+      <span class="hero__track hero__track--ai">AI FLUENCY</span>
+      <span class="hero__cross">×</span>
+      <span class="hero__track hero__track--ml">MACHINE LEARNING</span>
+    </p>
+
+    <h1 class="hero__headline">
+      <span class="hero__line">Two tracks.</span>
+      <span class="hero__line">One evolving way of working.</span>
+    </h1>
+
+    <p class="hero__supporting">
+      A visual archive of what I built, what the work taught me, and how the
+      pieces connect.
+    </p>
+
+    <p class="hero__subordinate">
+      Built for the next person trying to find their footing.
+    </p>
+
+    <div class="hero__actions">
+      <a class="btn btn--filled" href="#map">Explore the map</a>
+      <a class="btn" href="#browse">Browse the work</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: var(--space-8) 0 var(--space-7);
+  }
+
+  .hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-5);
+  }
+
+  .hero__track {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+  }
+
+  .hero__track--ai {
+    color: var(--green-bright);
+  }
+
+  .hero__track--ml {
+    color: var(--terracotta);
+  }
+
+  .hero__cross {
+    color: var(--text-faint);
+  }
+
+  .hero__headline {
+    font-size: var(--fs-hero);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    max-width: 18ch;
+    margin-bottom: var(--space-6);
+  }
+
+  .hero__line {
+    display: block;
+  }
+
+  .hero__supporting {
+    font-size: var(--fs-body);
+    color: var(--text);
+    max-width: var(--measure-narrow);
+    margin-bottom: var(--space-3);
+  }
+
+  .hero__subordinate {
+    font-size: var(--fs-body);
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
+    margin-bottom: var(--space-6);
+  }
+
+  .hero__actions {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+</style>

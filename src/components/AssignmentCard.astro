@@ -1,0 +1,95 @@
+---
+/**
+ * AssignmentCard.astro — tier-weighted archive card (DESIGN_SPEC §12, §47).
+ * Core: strongest contrast + largest label. Supporting: medium. Reference: quiet.
+ * Track identity is always paired with a text label, never colour alone.
+ */
+import { displayLabel, metadataLine } from '../lib/archive';
+import type { Assignment } from '../data/types';
+
+interface Props {
+  assignment: Assignment;
+}
+
+const { assignment: a } = Astro.props;
+const href = `/work/${a.id}/`;
+---
+
+<a class:list={['acard', `acard--${a.tier}`, `track-${a.track}`]} href={href}>
+  <span class="acard__code">{displayLabel(a)}</span>
+  <span class="acard__meta">{metadataLine(a)}</span>
+  <span class="acard__title">{a.title}</span>
+</a>
+
+<style>
+  .acard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    text-decoration: none;
+    color: var(--text);
+    background: transparent;
+    transition: border-color var(--motion-hover) var(--ease), background var(--motion-hover) var(--ease);
+    min-height: 100%;
+  }
+
+  .acard:hover {
+    border-color: var(--rule-active);
+    background: var(--bg-elevated);
+  }
+
+  .acard__code {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .acard__meta {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .acard__title {
+    font-size: var(--fs-body);
+    line-height: 1.4;
+    color: var(--text-dim);
+  }
+
+  /* Tier weighting (DESIGN_SPEC §47) */
+  .acard--core {
+    border-color: var(--rule-active);
+  }
+  .acard--core .acard__code {
+    font-size: var(--fs-assignment);
+    color: var(--text);
+  }
+  .acard--core .acard__title {
+    color: var(--text);
+  }
+
+  .acard--supporting .acard__code {
+    font-size: var(--fs-section);
+  }
+
+  .acard--reference {
+    opacity: 0.72;
+  }
+  .acard--reference .acard__code {
+    font-size: var(--fs-body);
+    font-weight: 500;
+  }
+
+  /* Track accent (paired with text label, never colour alone) */
+  .acard.track-ai-fluency .acard__meta {
+    color: var(--green-bright);
+  }
+  .acard.track-machine-learning .acard__meta {
+    color: var(--terracotta);
+  }
+</style>

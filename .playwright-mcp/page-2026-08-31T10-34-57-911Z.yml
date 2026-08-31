@@ -1,0 +1,223 @@
+- generic [active] [ref=f6e1]:
+  - link "Skip to content" [ref=f6e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=f6e3]:
+    - generic [ref=f6e4]:
+      - link "FLYRANK LEARNING ARCHIVE" [ref=f6e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f6e6]: FLYRANK
+        - generic [ref=f6e7]: LEARNING ARCHIVE
+      - navigation "Primary" [ref=f6e8]:
+        - link "MAP" [ref=f6e9] [cursor=pointer]:
+          - /url: /#map
+        - link "WORK" [ref=f6e10] [cursor=pointer]:
+          - /url: /work/
+        - link "FRAMEWORK" [ref=f6e11] [cursor=pointer]:
+          - /url: /framework/
+        - link "REFLECTION" [ref=f6e12] [cursor=pointer]:
+          - /url: /reflection/
+      - navigation "Tracks" [ref=f6e13]:
+        - link "AI FLUENCY" [ref=f6e14] [cursor=pointer]:
+          - /url: /track/ai-fluency/
+        - link "MACHINE LEARNING" [ref=f6e15] [cursor=pointer]:
+          - /url: /track/machine-learning/
+  - main [ref=f6e16]:
+    - generic [ref=f6e17]:
+      - generic [ref=f6e18]:
+        - paragraph [ref=f6e19]: Framework
+        - heading "My Working Framework" [level=1] [ref=f6e20]
+        - paragraph [ref=f6e21]: "This is not an abstract method. It is a synthesis of what the two tracks consistently asked for: define, decide what good looks like, build small, test, find failure, explain, then ship. Each step links to the assignments that earned it, so you can drill from observation to evidence."
+      - list [ref=f6e22]:
+        - listitem [ref=f6e23]:
+          - generic [ref=f6e24]: "01"
+          - generic [ref=f6e25]:
+            - heading "Define" [level=2] [ref=f6e26]
+            - paragraph [ref=f6e27]: Name the claim, question, or problem before choosing the tool or writing the code.
+            - list [ref=f6e28]:
+              - listitem [ref=f6e29]:
+                - link "What Are You Proving? What Are You Proving?" [ref=f6e30] [cursor=pointer]:
+                  - /url: /work/fl-portfolio-proof/
+                  - generic [ref=f6e31]: What Are You Proving?
+                  - generic [ref=f6e32]: What Are You Proving?
+              - listitem [ref=f6e33]:
+                - link "ML-02 Research Question and Provisional Lane" [ref=f6e34] [cursor=pointer]:
+                  - /url: /work/ml-02-research-question-lane/
+                  - generic [ref=f6e35]: ML-02
+                  - generic [ref=f6e36]: Research Question and Provisional Lane
+              - listitem [ref=f6e37]:
+                - link "ML-03 Frame Your Lane as an ML Task" [ref=f6e38] [cursor=pointer]:
+                  - /url: /work/ml-03-ml-task-framing/
+                  - generic [ref=f6e39]: ML-03
+                  - generic [ref=f6e40]: Frame Your Lane as an ML Task
+              - listitem [ref=f6e41]:
+                - link "FL-06 Design Your Personal Agent" [ref=f6e42] [cursor=pointer]:
+                  - /url: /work/fl-06-agent-design/
+                  - generic [ref=f6e43]: FL-06
+                  - generic [ref=f6e44]: Design Your Personal Agent
+        - listitem [ref=f6e45]:
+          - generic [ref=f6e46]: "02"
+          - generic [ref=f6e47]:
+            - heading "Decide what good looks like" [level=2] [ref=f6e48]
+            - paragraph [ref=f6e49]: Turn the definition into a measurable target, a unit of analysis, and a checkable success metric.
+            - list [ref=f6e50]:
+              - listitem [ref=f6e51]:
+                - link "ML-04 Search Intelligence Data Contract" [ref=f6e52] [cursor=pointer]:
+                  - /url: /work/ml-04-data-contract/
+                  - generic [ref=f6e53]: ML-04
+                  - generic [ref=f6e54]: Search Intelligence Data Contract
+              - listitem [ref=f6e55]:
+                - link "ML-07 Baseline Action Score and Top-10 Review" [ref=f6e56] [cursor=pointer]:
+                  - /url: /work/ml-07-baseline-action-score/
+                  - generic [ref=f6e57]: ML-07
+                  - generic [ref=f6e58]: Baseline Action Score and Top-10 Review
+              - listitem [ref=f6e59]:
+                - link "FL-04 Ship an Automation Workflow v2" [ref=f6e60] [cursor=pointer]:
+                  - /url: /work/fl-04-automation-workflow/
+                  - generic [ref=f6e61]: FL-04
+                  - generic [ref=f6e62]: Ship an Automation Workflow v2
+              - listitem [ref=f6e63]:
+                - link "FL-05 Agent Concepts and MCP Basics" [ref=f6e64] [cursor=pointer]:
+                  - /url: /work/fl-05-agent-mcp-basics/
+                  - generic [ref=f6e65]: FL-05
+                  - generic [ref=f6e66]: Agent Concepts and MCP Basics
+        - listitem [ref=f6e67]:
+          - generic [ref=f6e68]: "03"
+          - generic [ref=f6e69]:
+            - heading "Build small" [level=2] [ref=f6e70]
+            - paragraph [ref=f6e71]: Ship a small, runnable slice first so the work is testable before it is polished.
+            - list [ref=f6e72]:
+              - listitem [ref=f6e73]:
+                - 'link "Three Roads: Choose Your Stack with AI Three Roads: Choose Your Stack with AI" [ref=f6e74] [cursor=pointer]':
+                  - /url: /work/fl-stack-choice/
+                  - generic [ref=f6e75]: "Three Roads: Choose Your Stack with AI"
+                  - generic [ref=f6e76]: "Three Roads: Choose Your Stack with AI"
+              - listitem [ref=f6e77]:
+                - 'link "Empty but Live: Ship a Blank Page Empty but Live: Ship a Blank Page" [ref=f6e78] [cursor=pointer]':
+                  - /url: /work/fl-empty-live-page/
+                  - generic [ref=f6e79]: "Empty but Live: Ship a Blank Page"
+                  - generic [ref=f6e80]: "Empty but Live: Ship a Blank Page"
+              - listitem [ref=f6e81]:
+                - link "ML-07 Baseline Action Score and Top-10 Review" [ref=f6e82] [cursor=pointer]:
+                  - /url: /work/ml-07-baseline-action-score/
+                  - generic [ref=f6e83]: ML-07
+                  - generic [ref=f6e84]: Baseline Action Score and Top-10 Review
+              - listitem [ref=f6e85]:
+                - link "ML-08 Capstone Modeling Lane" [ref=f6e86] [cursor=pointer]:
+                  - /url: /work/ml-08-capstone-modeling/
+                  - generic [ref=f6e87]: ML-08
+                  - generic [ref=f6e88]: Capstone Modeling Lane
+        - listitem [ref=f6e89]:
+          - generic [ref=f6e90]: "04"
+          - generic [ref=f6e91]:
+            - heading "Test" [level=2] [ref=f6e92]
+            - paragraph [ref=f6e93]: Run the thing against the reference point and the metric, rather than trusting the thing.
+            - list [ref=f6e94]:
+              - listitem [ref=f6e95]:
+                - link "The Prompt Ladder The Prompt Ladder" [ref=f6e96] [cursor=pointer]:
+                  - /url: /work/fl-prompt-ladder/
+                  - generic [ref=f6e97]: The Prompt Ladder
+                  - generic [ref=f6e98]: The Prompt Ladder
+              - listitem [ref=f6e99]:
+                - link "ML-08 Capstone Modeling Lane" [ref=f6e100] [cursor=pointer]:
+                  - /url: /work/ml-08-capstone-modeling/
+                  - generic [ref=f6e101]: ML-08
+                  - generic [ref=f6e102]: Capstone Modeling Lane
+              - listitem [ref=f6e103]:
+                - link "ML-09 Validation and Research Claim Audit" [ref=f6e104] [cursor=pointer]:
+                  - /url: /work/ml-09-validation-claim-audit/
+                  - generic [ref=f6e105]: ML-09
+                  - generic [ref=f6e106]: Validation and Research Claim Audit
+              - listitem [ref=f6e107]:
+                - link "Break Your Own Site Break Your Own Site" [ref=f6e108] [cursor=pointer]:
+                  - /url: /work/fl-site-hardening/
+                  - generic [ref=f6e109]: Break Your Own Site
+                  - generic [ref=f6e110]: Break Your Own Site
+        - listitem [ref=f6e111]:
+          - generic [ref=f6e112]: "05"
+          - generic [ref=f6e113]:
+            - heading "Find failure" [level=2] [ref=f6e114]
+            - paragraph [ref=f6e115]: Deliberately look for where the evidence is weak, the claim overreaches, or the build breaks.
+            - list [ref=f6e116]:
+              - listitem [ref=f6e117]:
+                - link "ML-04 Search Intelligence Data Contract" [ref=f6e118] [cursor=pointer]:
+                  - /url: /work/ml-04-data-contract/
+                  - generic [ref=f6e119]: ML-04
+                  - generic [ref=f6e120]: Search Intelligence Data Contract
+              - listitem [ref=f6e121]:
+                - link "ML-09 Validation and Research Claim Audit" [ref=f6e122] [cursor=pointer]:
+                  - /url: /work/ml-09-validation-claim-audit/
+                  - generic [ref=f6e123]: ML-09
+                  - generic [ref=f6e124]: Validation and Research Claim Audit
+              - listitem [ref=f6e125]:
+                - link "Survive the Crit Survive the Crit" [ref=f6e126] [cursor=pointer]:
+                  - /url: /work/fl-crit-review/
+                  - generic [ref=f6e127]: Survive the Crit
+                  - generic [ref=f6e128]: Survive the Crit
+              - listitem [ref=f6e129]:
+                - link "Open It on Your Phone Open It on Your Phone" [ref=f6e130] [cursor=pointer]:
+                  - /url: /work/fl-mobile-audit/
+                  - generic [ref=f6e131]: Open It on Your Phone
+                  - generic [ref=f6e132]: Open It on Your Phone
+        - listitem [ref=f6e133]:
+          - generic [ref=f6e134]: "06"
+          - generic [ref=f6e135]:
+            - heading "Explain" [level=2] [ref=f6e136]
+            - paragraph [ref=f6e137]: Make the work understandable to someone who was not in your head when you built it.
+            - list [ref=f6e138]:
+              - listitem [ref=f6e139]:
+                - link "Explain It Like You Built It Explain It Like You Built It" [ref=f6e140] [cursor=pointer]:
+                  - /url: /work/fl-explain-build/
+                  - generic [ref=f6e141]: Explain It Like You Built It
+                  - generic [ref=f6e142]: Explain It Like You Built It
+              - listitem [ref=f6e143]:
+                - 'link "Frame It as Cases: Work That Speaks for Itself Frame It as Cases: Work That Speaks for Itself" [ref=f6e144] [cursor=pointer]':
+                  - /url: /work/fl-portfolio-cases/
+                  - generic [ref=f6e145]: "Frame It as Cases: Work That Speaks for Itself"
+                  - generic [ref=f6e146]: "Frame It as Cases: Work That Speaks for Itself"
+              - listitem [ref=f6e147]:
+                - link "ML-12 Tell the Story" [ref=f6e148] [cursor=pointer]:
+                  - /url: /work/ml-12-tell-story/
+                  - generic [ref=f6e149]: ML-12
+                  - generic [ref=f6e150]: Tell the Story
+              - listitem [ref=f6e151]:
+                - link "FL-09 Documentation and Demo Video" [ref=f6e152] [cursor=pointer]:
+                  - /url: /work/fl-09-documentation-demo/
+                  - generic [ref=f6e153]: FL-09
+                  - generic [ref=f6e154]: Documentation and Demo Video
+        - listitem [ref=f6e155]:
+          - generic [ref=f6e156]: "07"
+          - generic [ref=f6e157]:
+            - heading "Ship" [level=2] [ref=f6e158]
+            - paragraph [ref=f6e159]: Move the work into a form someone else can run, access, inspect, and build on.
+            - list [ref=f6e160]:
+              - listitem [ref=f6e161]:
+                - 'link "Empty but Live: Ship a Blank Page Empty but Live: Ship a Blank Page" [ref=f6e162] [cursor=pointer]':
+                  - /url: /work/fl-empty-live-page/
+                  - generic [ref=f6e163]: "Empty but Live: Ship a Blank Page"
+                  - generic [ref=f6e164]: "Empty but Live: Ship a Blank Page"
+              - listitem [ref=f6e165]:
+                - link "PF-04 Personal Website Live on the FlyRank Domain" [ref=f6e166] [cursor=pointer]:
+                  - /url: /work/pf-04-personal-website/
+                  - generic [ref=f6e167]: PF-04
+                  - generic [ref=f6e168]: Personal Website Live on the FlyRank Domain
+              - listitem [ref=f6e169]:
+                - link "FL-07 Build the Agent" [ref=f6e170] [cursor=pointer]:
+                  - /url: /work/fl-07-build-agent/
+                  - generic [ref=f6e171]: FL-07
+                  - generic [ref=f6e172]: Build the Agent
+              - listitem [ref=f6e173]:
+                - link "ML-11 Ship the Paper" [ref=f6e174] [cursor=pointer]:
+                  - /url: /work/ml-11-ship-paper/
+                  - generic [ref=f6e175]: ML-11
+                  - generic [ref=f6e176]: Ship the Paper
+      - region [ref=f6e177]:
+        - heading "For the next student" [level=2] [ref=f6e178]
+        - paragraph [ref=f6e179]:
+          - text: The shorter, more personal version of the same lesson lives on the
+          - link "What I Wish I Knew" [ref=f6e180] [cursor=pointer]:
+            - /url: /framework/wish-i-knew/
+          - text: page:6 statements, each traceable to the work that earned it.
+  - contentinfo [ref=f6e181]:
+    - generic [ref=f6e182]:
+      - paragraph [ref=f6e183]: FLYRANK / LEARNING ARCHIVE
+      - paragraph [ref=f6e184]: A visual archive of work across the AI Fluency and Machine Learning tracks. Built for the next person trying to find their footing.

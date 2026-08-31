@@ -1,0 +1,284 @@
+---
+/**
+ * DetailPanel.astro — server-rendered assignment detail (DESIGN_SPEC §17–20).
+ * Reusable by the Phase 2 map panel. Renders the header, the three beats
+ * (TASK / LESSON / TAKEAWAY), the PROOF block, Connections, and secondary
+ * metadata. No graph code; plain server output.
+ */
+import ArtifactPreview from './ArtifactPreview.astro';
+import {
+  artifactsForAssignment,
+  conceptsForAssignment,
+  displayLabel,
+  edgesForAssignment,
+  evidenceStatusLabel,
+  relationshipLabel,
+  trackLabel,
+} from '../lib/archive';
+import type { Assignment } from '../data/types';
+
+interface Props {
+  assignment: Assignment;
+  /** When true, render a compact variant suited to a side panel. */
+  compact?: boolean;
+}
+
+const { assignment: a, compact = false } = Astro.props;
+
+const concepts = conceptsForAssignment(a.id);
+const artifactEntries = artifactsForAssignment(a.id);
+const edges = edgesForAssignment(a.id);
+
+const metaParts: string[] = [];
+if (a.week !== undefined) metaParts.push(`Week ${a.week}`);
+metaParts.push(trackLabel(a.track), a.tier.toUpperCase());
+const metaLine = metaParts.join(' · ');
+---
+
+<article class:list={['detail', { 'detail--compact': compact }]}>
+  <header class="detail__header">
+    <p class="detail__code">{displayLabel(a)}</p>
+    <p class="detail__meta">{metaLine}</p>
+    <h1 class="detail__title">{a.title}</h1>
+  </header>
+
+  <div class="detail__beats">
+    <section class="beat">
+      <h2 class="beat__label">Task</h2>
+      <p class="beat__body">{a.task}</p>
+    </section>
+    <hr class="rule rule--tight" />
+    <section class="beat">
+      <h2 class="beat__label">Lesson</h2>
+      <p class="beat__body">{a.lesson}</p>
+    </section>
+    <hr class="rule rule--tight" />
+    <section class="beat">
+      <h2 class="beat__label">Takeaway</h2>
+      <p class="beat__body">{a.takeaway}</p>
+    </section>
+  </div>
+
+  <section class="detail__proof" aria-labelledby="proof-heading">
+    <h2 class="detail__block-heading" id="proof-heading">Proof</h2>
+    <div class="detail__artifacts">
+      {artifactEntries.map(({ artifact, link }) => (
+        <ArtifactPreview artifact={artifact} link={link} evidenceStatus={a.evidenceStatus} assignment={a} />
+      ))}
+    </div>
+  </section>
+
+  {
+    (concepts.length > 0 || edges.length > 0) && (
+      <section class="detail__connections" aria-labelledby="conn-heading">
+        <h2 class="detail__block-heading" id="conn-heading">Connections</h2>
+
+        {concepts.length > 0 && (
+          <div class="detail__concepts">
+            {concepts.map((c) => (
+              <a class="chip" href={`/concepts/${c.id}/`}>
+                {c.name}
+              </a>
+            ))}
+          </div>
+        )}
+
+        {edges.length > 0 && (
+          <ul class="detail__edges">
+            {edges.map(({ edge, other }) => (
+              <li class="detail__edge">
+                <span class="detail__edge-rel">{relationshipLabel(edge.relationship)}</span>
+                <a href={`/work/${other.id}/`}>{other.title}</a>
+                {edge.relationship === 'cross-track' && (
+                  <span class="detail__edge-track">cross-track</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    )
+  }
+
+  <section class="detail__secondary" aria-label="Secondary metadata">
+    <dl class="detail__facts">
+      {a.workloadHours !== undefined && (
+        <>
+          <dt>Workload</dt>
+          <dd>{a.workloadHours}h</dd>
+        </>
+      )}
+      {a.phase && (
+        <>
+          <dt>Phase</dt>
+          <dd>{a.phase}</dd>
+        </>
+      )}
+      <dt>Evidence</dt>
+      <dd>{evidenceStatusLabel(a.evidenceStatus)}</dd>
+      {a.sourceAliases && a.sourceAliases.length > 0 && (
+        <>
+          <dt>Source aliases</dt>
+          <dd>{a.sourceAliases.join(', ')}</dd>
+        </>
+      )}
+      <dt>Canonicalisation</dt>
+      <dd>{a.canonicalisationStatus === 'reviewed' ? 'Reviewed' : 'Unreviewed'}</dd>
+    </dl>
+  </section>
+</article>
+
+<style>
+  .detail__code {
+    font-family: var(--font-heading);
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-1);
+  }
+
+  .detail__meta {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 0 0 var(--space-3);
+  }
+
+  .detail__title {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    line-height: 1.1;
+    padding-bottom: var(--space-5);
+    border-bottom: var(--rule);
+    margin-bottom: var(--space-6);
+  }
+
+  .detail__beats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    margin-bottom: var(--space-7);
+  }
+
+  .beat__label {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-2);
+  }
+
+  .beat__body {
+    margin: 0;
+    color: var(--text);
+    max-width: var(--measure);
+  }
+
+  .rule--tight {
+    margin: 0;
+  }
+
+  .detail__block-heading {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-4);
+  }
+
+  .detail__artifacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+  }
+
+  .detail__connections {
+    margin-bottom: var(--space-7);
+  }
+
+  .detail__concepts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .chip {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text);
+    padding: var(--space-1) var(--space-3);
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    transition: border-color var(--motion-fast) var(--ease);
+  }
+
+  .chip:hover {
+    border-color: var(--text);
+  }
+
+  .detail__edges {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .detail__edge {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: var(--fs-body);
+  }
+
+  .detail__edge-rel {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    min-width: 90px;
+  }
+
+  .detail__edge a {
+    color: var(--text);
+  }
+
+  .detail__edge-track {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--terracotta);
+  }
+
+  .detail__facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-2) var(--space-5);
+    font-size: var(--fs-body);
+  }
+
+  .detail__facts dt {
+    color: var(--text-faint);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    align-self: baseline;
+  }
+
+  .detail__facts dd {
+    margin: 0;
+    color: var(--text-dim);
+  }
+</style>

@@ -1,0 +1,377 @@
+---
+/**
+ * ArtifactPreview.astro — the single evidence renderer (DESIGN_SPEC §21–23,
+ * §44, §56–57). Replaces ArtifactCard for all proof output.
+ *
+ * Three registry display modes (CONTENT_REGISTRY §3.1):
+ *   - embed   — substantial, stable, public artifacts (ML paper, portfolio,
+ *               runnable agent demo). Lazy-loaded iframe with a first-class
+ *               fallback (DESIGN_SPEC §57). ML notebooks render as a contained
+ *               NotebookPreview viewport instead of an iframe (§22).
+ *   - preview — compact technical card: title, one-sentence description, type,
+ *               optional screenshot, open action (supporting evidence).
+ *   - link    — administrative/source material (hours log, sign-off): a simple
+ *               labelled link, no visual real estate.
+ *
+ * Honesty rule: until a real URL/screenshot is supplied, `url` is undefined and
+ * the component renders the honest `partial` state (EVIDENCE: PARTIAL), never a
+ * fake embed. Status is always shown with text, never colour alone (§25).
+ */
+import NotebookPreview from './NotebookPreview.astro';
+import { evidenceStatusLabel } from '../lib/archive';
+import { notebookForAssignment } from '../data/notebooks';
+import type { Artifact, ArtifactLink, Assignment, EvidenceStatus } from '../data/types';
+
+interface Props {
+  artifact: Artifact;
+  link?: ArtifactLink;
+  evidenceStatus?: EvidenceStatus;
+  /** The owning assignment, used to render per-assignment notebook previews. */
+  assignment?: Assignment;
+}
+
+const { artifact, link, evidenceStatus = 'partial', assignment } = Astro.props;
+
+const mode = link?.displayMode ?? 'preview';
+const hasUrl = Boolean(artifact.url);
+const notebook = assignment ? notebookForAssignment(assignment.id) : undefined;
+const hostIsEmbeddable = artifact.type === 'live' || artifact.type === 'video';
+
+const roleLabel = link
+  ? { produces: 'Produces', uses: 'Uses', documents: 'Documents', demonstrates: 'Demonstrates' }[
+      link.role
+    ]
+  : undefined;
+
+// The embed fallback contract (DESIGN_SPEC §57).
+const fallbackLabel = `[artifact preview] · ${artifact.title} · This artifact opens externally.`;
+---
+
+{
+  /* ---------- LINK mode: administrative/source material ---------- */
+  mode === 'link' && (
+    <div class="preview preview--link">
+      <span class="preview__dot" aria-hidden="true"></span>
+      <span class="preview__link-title">{artifact.title}</span>
+      {hasUrl ? (
+        <a class="preview__action" href={artifact.url} rel="noopener noreferrer">
+          Open <span aria-hidden="true">↗</span>
+        </a>
+      ) : (
+        <span class="preview__action preview__action--pending" title="No artifact URL supplied yet">
+          Link pending
+        </span>
+      )}
+      <span class="preview__status" data-status={evidenceStatus}>{evidenceStatusLabel(evidenceStatus)}</span>
+    </div>
+  )
+}
+
+{
+  /* ---------- EMBED mode (notebook): contained viewport, not an iframe ---------- */
+  mode === 'embed' && notebook && (
+    <NotebookPreview notebook={notebook} evidenceStatus={evidenceStatus} openUrl={artifact.embedUrl} githubUrl={artifact.url} />
+  )
+}
+
+{
+  /* ---------- EMBED mode (live/video): lazy iframe + first-class fallback ---------- */
+  mode === 'embed' && !notebook && (
+    <div
+      class="preview preview--embed"
+      data-artifact-embed
+      data-src={artifact.embedUrl ?? artifact.url ?? ''}
+      data-title={artifact.title}
+    >
+      <div class="embed-fallback" data-embed-fallback>
+        <div class="preview__bar">
+          <span class="preview__type">{artifact.type}</span>
+          {roleLabel && <span class="preview__role">{roleLabel}</span>}
+        </div>
+        <h3 class="preview__title">{artifact.title}</h3>
+        <p class="preview__desc">{artifact.description}</p>
+        <p class="embed-fallback__note" data-embed-note>
+          {fallbackLabel}
+        </p>
+        <div class="preview__foot">
+          <span class="preview__status" data-status={evidenceStatus}>
+            <span class="preview__dot" aria-hidden="true"></span>
+            {evidenceStatusLabel(evidenceStatus)}
+          </span>
+          <span class="preview__action preview__action--filled" data-open-artifact>
+            {hasUrl ? (
+              <a href={artifact.url} rel="noopener noreferrer">
+                Open artifact <span aria-hidden="true">↗</span>
+              </a>
+            ) : (
+              <span class="preview__action--pending" title="No artifact URL supplied yet">Open artifact</span>
+            )}
+          </span>
+        </div>
+      </div>
+      {/* No iframe in the initial HTML (DESIGN_SPEC §56). The client script
+          appends the iframe only when data-src is present and the embed enters
+          the viewport. */}
+    </div>
+  )
+}
+
+{
+  /* ---------- PREVIEW mode (and embed-mode fallback for non-notebook, non-embed previews) ---------- */
+  mode === 'preview' && (
+    <article class="preview" data-artifact-preview>
+      <div class="preview__bar">
+        <span class="preview__type">{artifact.type}</span>
+        {roleLabel && <span class="preview__role">{roleLabel}</span>}
+        {hostIsEmbeddable && hasUrl && <span class="preview__embeddable">embed</span>}
+      </div>
+      {
+        artifact.previewImage && (
+          <img class="preview__image" src={artifact.previewImage} alt={artifact.title} loading="lazy" />
+        )
+      }
+      <h3 class="preview__title">{artifact.title}</h3>
+      <p class="preview__desc">{artifact.description}</p>
+      <div class="preview__foot">
+        <span class="preview__status" data-status={evidenceStatus}>
+          <span class="preview__dot" aria-hidden="true"></span>
+          {evidenceStatusLabel(evidenceStatus)}
+        </span>
+        {
+          hasUrl ? (
+            <a class="preview__action" href={artifact.url} rel="noopener noreferrer">
+              Open artifact <span aria-hidden="true">↗</span>
+            </a>
+          ) : (
+            <span class="preview__action preview__action--pending" title="No artifact URL supplied yet">
+              Link pending
+            </span>
+          )
+        }
+      </div>
+    </article>
+  )
+}
+
+<script>
+  // Lazy-load embeds on scroll (DESIGN_SPEC §56): no iframe exists in the
+  // initial HTML. A selected notebook is never preloaded here (it renders as a
+  // NotebookPreview, not an iframe). When an embed HAS a src and enters the
+  // viewport, an iframe is created lazily; if it cannot load (blocked/failed),
+  // the first-class fallback card stays visible (DESIGN_SPEC §57).
+  (function () {
+    const containers = document.querySelectorAll<HTMLElement>('[data-artifact-embed]');
+    if (containers.length === 0) return;
+
+    function init(el: HTMLElement) {
+      const src = el.getAttribute('data-src');
+      const fallback = el.querySelector<HTMLElement>('[data-embed-fallback]');
+      if (!src) {
+        // No URL supplied: keep the honest fallback visible (never an empty box).
+        if (fallback) fallback.hidden = false;
+        return;
+      }
+      const frame = document.createElement('iframe');
+      frame.className = 'embed-frame';
+      frame.title = el.getAttribute('data-title') || 'Embedded artifact';
+      frame.loading = 'lazy';
+      frame.src = src;
+      frame.addEventListener(
+        'load',
+        () => {
+          frame.hidden = false;
+          if (fallback) fallback.hidden = true;
+        },
+        { once: true }
+      );
+      el.appendChild(frame);
+    }
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              init(entry.target as HTMLElement);
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '200px' }
+      );
+      containers.forEach((el) => io.observe(el));
+    } else {
+      containers.forEach(init);
+    }
+  })();
+</script>
+
+<style>
+  .preview {
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    padding: var(--space-5);
+    background: var(--bg-elevated);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); /* subtle, artifact previews only (§35) */
+  }
+
+  .preview--link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+  }
+
+  .preview--embed {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .preview__bar {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    margin-bottom: var(--space-3);
+  }
+
+  .preview__type {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+
+  .preview__role {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .preview__embeddable {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-left: auto;
+  }
+
+  .preview__image {
+    width: 100%;
+    height: auto;
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    margin-bottom: var(--space-4);
+  }
+
+  .preview__title {
+    font-size: var(--fs-section);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+
+  .preview__desc {
+    color: var(--text-dim);
+    margin-bottom: var(--space-4);
+  }
+
+  .preview__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    border-top: var(--rule);
+    padding-top: var(--space-4);
+  }
+
+  .preview__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .preview__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--graph-grey);
+  }
+
+  .preview__status[data-status='available'] .preview__dot {
+    background: var(--green-bright);
+  }
+  .preview__status[data-status='partial'] .preview__dot {
+    background: var(--gold);
+  }
+  .preview__status[data-status='private'] .preview__dot,
+  .preview__status[data-status='missing'] .preview__dot {
+    background: var(--terracotta);
+  }
+
+  .preview__action {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .preview__action--filled {
+    padding: var(--space-2) var(--space-3);
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+
+  .preview__action--filled:hover {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: var(--bg);
+  }
+
+  .preview__action--pending {
+    color: var(--text-faint);
+    cursor: default;
+  }
+
+  .preview__link-title {
+    color: var(--text);
+    font-size: var(--fs-body);
+    flex: 1;
+  }
+
+  .preview--link .preview__status {
+    margin-left: auto;
+  }
+
+  .embed-fallback {
+    padding: var(--space-5);
+  }
+
+  .embed-fallback__note {
+    color: var(--text-faint);
+    font-size: var(--fs-metadata);
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    margin-bottom: var(--space-4);
+  }
+
+  .embed-frame {
+    width: 100%;
+    height: 520px;
+    border: 0;
+    display: block;
+  }
+</style>

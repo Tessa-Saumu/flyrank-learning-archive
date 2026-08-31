@@ -1,0 +1,141 @@
+---
+/**
+ * /concepts/[id] — one page per concept: name, description, the assignments
+ * it connects (grouped by track), and a note that it mediates relationships
+ * (DESIGN_SPEC §13, §48).
+ */
+import Base from '../../layouts/Base.astro';
+import AssignmentCard from '../../components/AssignmentCard.astro';
+import { concepts } from '../../data/concepts';
+import { assignmentsForConcept, trackLabel } from '../../lib/archive';
+import type { Track } from '../../data/types';
+
+export function getStaticPaths() {
+  return concepts.map((c) => ({ params: { id: c.id } }));
+}
+
+const { id } = Astro.params;
+const concept = concepts.find((c) => c.id === id);
+
+if (!concept) {
+  return Astro.redirect('/work/?view=concepts');
+}
+
+const linked = assignmentsForConcept(concept.id);
+
+const groups: { track: Track; items: typeof linked }[] = [];
+for (const track of ['ai-fluency', 'machine-learning'] as Track[]) {
+  const items = linked.filter((a) => a.track === track);
+  if (items.length > 0) groups.push({ track, items });
+}
+---
+
+<Base
+  title={concept.name}
+  description={concept.description}
+  canonicalPath={`/concepts/${concept.id}/`}
+>
+  <div class="container section">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/work/?view=concepts">Concepts</a>
+    </nav>
+
+    <header class="concept-head">
+      <p class="eyebrow">Shared concept</p>
+      <h1 class="concept-head__name">{concept.name}</h1>
+      <p class="concept-head__desc">{concept.description}</p>
+    </header>
+
+    <p class="mediation">
+      This concept connects assignments across the archive. Relationships that
+      are explained by a shared concept are shown here rather than drawn as
+      direct assignment links.
+    </p>
+
+    {groups.map((g) => (
+      <section class="group" aria-labelledby={`group-${g.track}`}>
+        <h2 class="group__heading" id={`group-${g.track}`}>{trackLabel(g.track)}</h2>
+        <ul class="grid">
+          {g.items.map((a) => (
+            <li>
+              <AssignmentCard assignment={a} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .crumbs {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: var(--space-6);
+  }
+
+  .crumbs a {
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--text);
+  }
+
+  .concept-head__name {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    margin-top: var(--space-2);
+  }
+
+  .concept-head__desc {
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-3);
+  }
+
+  .mediation {
+    font-size: var(--fs-metadata);
+    color: var(--text-faint);
+    max-width: var(--measure);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-7);
+  }
+
+  .group {
+    margin-bottom: var(--space-7);
+  }
+
+  .group__heading {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding-bottom: var(--space-3);
+    border-bottom: var(--rule);
+    margin-bottom: var(--space-5);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .grid > li {
+    display: flex;
+  }
+
+  .grid > li > :global(*) {
+    width: 100%;
+  }
+</style>

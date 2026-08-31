@@ -1,0 +1,112 @@
+---
+/**
+ * /track/machine-learning — the ML spine as an ordered learning path,
+ * with ML-01 visibly at the entrance (PRODUCT_SPEC §11).
+ */
+import Base from '../../layouts/Base.astro';
+import { orderedAssignmentsForStrand, displayLabel } from '../../lib/archive';
+
+const spine = orderedAssignmentsForStrand('ml-spine');
+---
+
+<Base
+  title="Machine Learning"
+  description="The Machine Learning track of the FlyRank Learning Archive: a sequential spine from starter notebooks to a shipped, reproducible research paper."
+  canonicalPath="/track/machine-learning/"
+>
+  <div class="container section">
+    <header class="track-head">
+      <p class="eyebrow track-head__accent">Machine Learning</p>
+      <h1 class="track-head__title">The ML spine</h1>
+      <p class="track-head__intro">
+        A single sequential path from orientation and setup to a shipped,
+        reproducible research paper. Every step builds on the one before it.
+      </p>
+    </header>
+
+    <ol class="path">
+      {spine.map((a, i) => (
+        <li class="path__item">
+          <a class="path__link" href={`/work/${a.id}/`}>
+            <span class="path__index">{String(i + 1).padStart(2, '0')}</span>
+            <span class="path__code">{displayLabel(a)}</span>
+            <span class="path__title">{a.title}</span>
+          </a>
+          {i === 0 && <span class="path__note">entrance and orientation</span>}
+        </li>
+      ))}
+    </ol>
+  </div>
+</Base>
+
+<style>
+  .track-head__accent {
+    color: var(--terracotta);
+  }
+
+  .track-head__title {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    margin-top: var(--space-2);
+  }
+
+  .track-head__intro {
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+
+  .path {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .path__item {
+    position: relative;
+    padding: var(--space-4) 0;
+    border-bottom: var(--rule);
+  }
+
+  .path__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-5);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .path__index {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    color: var(--text-faint);
+    min-width: 2ch;
+  }
+
+  .path__code {
+    font-family: var(--font-heading);
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--terracotta);
+    min-width: 7ch;
+  }
+
+  .path__title {
+    font-size: var(--fs-body);
+    color: var(--text);
+  }
+
+  .path__item:hover .path__title {
+    color: var(--terracotta);
+  }
+
+  .path__note {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-left: calc(2ch + var(--space-5) + 7ch + var(--space-5));
+  }
+</style>

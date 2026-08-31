@@ -1,0 +1,40 @@
+---
+/**
+ * 404 — quiet not-found page, with a route back into the archive.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found" description="This page does not exist." canonicalPath="/404/">
+  <div class="container section">
+    <p class="eyebrow">404</p>
+    <h1 class="notfound__title">Nothing here</h1>
+    <p class="notfound__body">
+      This page does not exist in the archive.
+    </p>
+    <div class="notfound__actions">
+      <a class="btn btn--filled" href="/work/">Browse the work</a>
+      <a class="btn" href="/">Back to the start</a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .notfound__title {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .notfound__body {
+    color: var(--text-dim);
+    margin-bottom: var(--space-6);
+  }
+
+  .notfound__actions {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+</style>

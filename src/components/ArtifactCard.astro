@@ -1,0 +1,151 @@
+---
+/**
+ * ArtifactCard.astro — evidence card for an artifact.
+ *
+ * Phase 1 renders everything in `preview`/`link` mode: compact evidence card
+ * with title, one-sentence description, type, and an honest EVIDENCE status.
+ * The external link is disabled/absent until a real URL exists (CONTENT_REGISTRY
+ * §3: nothing is `available` until a real URL/file is attached).
+ *
+ * DESIGN_SPEC §25: status is never colour-only (text + mark).
+ */
+import { evidenceStatusLabel } from '../lib/archive';
+import type { Artifact, ArtifactLink, EvidenceStatus } from '../data/types';
+
+interface Props {
+  artifact: Artifact;
+  link?: ArtifactLink;
+  evidenceStatus?: EvidenceStatus;
+}
+
+const { artifact, link, evidenceStatus = 'partial' } = Astro.props;
+const hasUrl = Boolean(artifact.url);
+const roleLabel = link
+  ? { produces: 'Produces', uses: 'Uses', documents: 'Documents', demonstrates: 'Demonstrates' }[
+      link.role
+    ]
+  : undefined;
+---
+
+<article class="artifact">
+  <div class="artifact__bar">
+    <span class="artifact__type">{artifact.type}</span>
+    {roleLabel && <span class="artifact__role">{roleLabel}</span>}
+  </div>
+  <h3 class="artifact__title">{artifact.title}</h3>
+  <p class="artifact__desc">{artifact.description}</p>
+  <div class="artifact__foot">
+    <span class="artifact__status" data-status={evidenceStatus}>
+      <span class="artifact__dot" aria-hidden="true"></span>
+      {evidenceStatusLabel(evidenceStatus)}
+    </span>
+    {
+      hasUrl ? (
+        <a class="artifact__action" href={artifact.url} rel="noopener noreferrer">
+          Open artifact <span aria-hidden="true">↗</span>
+        </a>
+      ) : (
+        <span class="artifact__action artifact__action--pending" title="No artifact URL supplied yet">
+          Link pending
+        </span>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .artifact {
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    padding: var(--space-5);
+    background: var(--bg-elevated);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); /* subtle, artifact previews only (§35) */
+  }
+
+  .artifact__bar {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    margin-bottom: var(--space-3);
+  }
+
+  .artifact__type {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--gold); /* metadata accent only (§04) */
+  }
+
+  .artifact__role {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .artifact__title {
+    font-size: var(--fs-section);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+
+  .artifact__desc {
+    color: var(--text-dim);
+    margin-bottom: var(--space-4);
+  }
+
+  .artifact__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    border-top: var(--rule);
+    padding-top: var(--space-4);
+  }
+
+  .artifact__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .artifact__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--graph-grey);
+  }
+
+  .artifact__status[data-status='available'] .artifact__dot {
+    background: var(--green-bright);
+  }
+  .artifact__status[data-status='partial'] .artifact__dot {
+    background: var(--gold);
+  }
+  .artifact__status[data-status='private'] .artifact__dot,
+  .artifact__status[data-status='missing'] .artifact__dot {
+    background: var(--terracotta);
+  }
+
+  .artifact__action {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .artifact__action--pending {
+    color: var(--text-faint);
+    cursor: default;
+  }
+</style>

@@ -1,5 +1,11 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "exclude": [
+    "dist",
+    // Playwright test files and config are type-checked/transpiled by the
+    // Playwright runner (esbuild) and are not part of the Astro app build.
+    "tests",
+    "playwright.config.ts"
+  ]
 }

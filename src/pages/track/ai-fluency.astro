@@ -1,0 +1,169 @@
+---
+/**
+ * /track/ai-fluency — two parallel strands (Portfolio / Public Work and
+ * AI Systems / Agents) converging at FL-10 (PRODUCT_SPEC §11).
+ */
+import Base from '../../layouts/Base.astro';
+import { orderedAssignmentsForStrand, displayLabel } from '../../lib/archive';
+
+const portfolio = orderedAssignmentsForStrand('portfolio-public-work');
+const agents = orderedAssignmentsForStrand('ai-systems-agents');
+const convergence = orderedAssignmentsForStrand('convergence');
+---
+
+<Base
+  title="AI Fluency"
+  description="The AI Fluency track of the FlyRank Learning Archive: two parallel strands, portfolio and agent work, that converge at the final package."
+  canonicalPath="/track/ai-fluency/"
+>
+  <div class="container section">
+    <header class="track-head">
+      <p class="eyebrow track-head__accent">AI Fluency</p>
+      <h1 class="track-head__title">Two strands, one convergence</h1>
+      <p class="track-head__intro">
+        The track runs as two parallel strands that converge at the final
+        package: the public portfolio work, and the agent and systems work.
+      </p>
+    </header>
+
+    <section class="strand" aria-labelledby="strand-portfolio">
+      <h2 class="strand__heading" id="strand-portfolio">Portfolio / Public Work</h2>
+      <ol class="path">
+        {portfolio.map((a, i) => (
+          <li class="path__item">
+            <a class="path__link" href={`/work/${a.id}/`}>
+              <span class="path__index">{String(i + 1).padStart(2, '0')}</span>
+              <span class="path__code">{displayLabel(a)}</span>
+              <span class="path__title">{a.title}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="strand" aria-labelledby="strand-agents">
+      <h2 class="strand__heading" id="strand-agents">AI Systems / Agents</h2>
+      <ol class="path">
+        {agents.map((a, i) => (
+          <li class="path__item">
+            <a class="path__link" href={`/work/${a.id}/`}>
+              <span class="path__index">{String(i + 1).padStart(2, '0')}</span>
+              <span class="path__code">{displayLabel(a)}</span>
+              <span class="path__title">{a.title}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="convergence" aria-labelledby="convergence-heading">
+      <h2 class="strand__heading" id="convergence-heading">Convergence</h2>
+      {convergence.map((a) => (
+        <a class="convergence__link" href={`/work/${a.id}/`}>
+          <span class="convergence__code">{displayLabel(a)}</span>
+          <span class="convergence__title">{a.title}</span>
+        </a>
+      ))}
+    </section>
+  </div>
+</Base>
+
+<style>
+  .track-head__accent {
+    color: var(--green-bright);
+  }
+
+  .track-head__title {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    margin-top: var(--space-2);
+  }
+
+  .track-head__intro {
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+
+  .strand {
+    margin-bottom: var(--space-7);
+  }
+
+  .strand__heading {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding-bottom: var(--space-3);
+    border-bottom: var(--rule);
+    margin-bottom: var(--space-4);
+  }
+
+  .path {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .path__item {
+    padding: var(--space-3) 0;
+    border-bottom: var(--rule);
+  }
+
+  .path__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-5);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .path__index {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    color: var(--text-faint);
+    min-width: 2ch;
+  }
+
+  .path__code {
+    font-family: var(--font-heading);
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--green-bright);
+    min-width: 8ch;
+  }
+
+  .path__title {
+    font-size: var(--fs-body);
+    color: var(--text);
+  }
+
+  .path__item:hover .path__title {
+    color: var(--green-bright);
+  }
+
+  .convergence__link {
+    display: flex;
+    gap: var(--space-5);
+    align-items: baseline;
+    padding: var(--space-5);
+    border: var(--rule-active);
+    border-radius: var(--radius-2);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .convergence__code {
+    font-family: var(--font-heading);
+    font-size: var(--fs-section);
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .convergence__title {
+    font-size: var(--fs-body);
+  }
+</style>

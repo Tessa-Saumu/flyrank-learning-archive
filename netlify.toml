@@ -1,0 +1,27 @@
+# Netlify deployment configuration (IMPLEMENTATION_PLAN Task 3.5.5).
+# Reproducible, in-repo build for the static Astro site. Publish `dist/`.
+# Node version is pinned to satisfy the lock file and Astro 7's requirement.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22.12.0"
+
+# Netlify serves static files plus these generated routes (sitemap, robots).
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Static assets: long cache, immutable (Astro hashes filenames in /_astro).
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -1,0 +1,102 @@
+---
+/**
+ * /work/ — the full Work Index. Server-rendered filtering via query params
+ * (?track=, ?tier=, ?concept=, ?view=concepts), preserving shareable URLs.
+ * No JavaScript is required to browse.
+ */
+import Base from '../../layouts/Base.astro';
+import FilterBar from '../../components/FilterBar.astro';
+import BrowseWork from '../../components/BrowseWork.astro';
+import ConceptCard from '../../components/ConceptCard.astro';
+import { assignments } from '../../data/assignments';
+import { concepts } from '../../data/concepts';
+import { assignmentsForConcept, getConcept } from '../../lib/archive';
+
+const url = Astro.url;
+const track = url.searchParams.get('track') ?? undefined;
+const tier = url.searchParams.get('tier') ?? undefined;
+const view = url.searchParams.get('view') ?? undefined;
+const conceptId = url.searchParams.get('concept') ?? undefined;
+
+const validTrack = track === 'ai-fluency' || track === 'machine-learning' ? track : undefined;
+const validTier =
+  tier === 'core' || tier === 'supporting' || tier === 'reference' ? tier : undefined;
+
+let filtered = assignments;
+
+if (conceptId) {
+  filtered = assignmentsForConcept(conceptId);
+} else if (validTrack) {
+  filtered = filtered.filter((a) => a.track === validTrack);
+}
+
+if (validTier) {
+  filtered = filtered.filter((a) => a.tier === validTier);
+}
+
+const concept = conceptId ? getConcept(conceptId) : undefined;
+const isConceptsView = view === 'concepts' && !conceptId;
+
+const title = concept
+  ? `${concept.name} · Work`
+  : 'All Work';
+const description = concept
+  ? `Assignments connected to the ${concept.name} concept in the FlyRank Learning Archive.`
+  : 'Browse every assignment in the FlyRank Learning Archive, filterable by track, tier, and concept.';
+---
+
+<Base title={title} description={description} canonicalPath={concept ? `/work/?concept=${concept.id}` : '/work/'}>
+  <div class="container section">
+    <header class="work-head">
+      <p class="eyebrow">Work index</p>
+      <h1 class="work-head__title">{concept ? concept.name : 'All Work'}</h1>
+      {concept && <p class="work-head__desc">{concept.description}</p>}
+    </header>
+
+    <FilterBar track={validTrack} tier={validTier} view={isConceptsView ? 'concepts' : 'work'} />
+
+    {
+      isConceptsView ? (
+        <ul class="concepts-grid">
+          {concepts.map((c) => (
+            <li>
+              <ConceptCard concept={c} />
+            </li>
+          ))}
+        </ul>
+      ) : filtered.length > 0 ? (
+        <BrowseWork assignments={filtered} searchId="work-search" />
+      ) : (
+        <p class="empty">No assignments match these filters.</p>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .work-head {
+    margin-bottom: var(--space-6);
+  }
+
+  .work-head__title {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    margin-top: var(--space-2);
+  }
+
+  .work-head__desc {
+    color: var(--text-dim);
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-3);
+  }
+
+  .concepts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .empty {
+    color: var(--text-faint);
+  }
+</style>

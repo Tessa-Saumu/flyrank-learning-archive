@@ -1,0 +1,448 @@
+---
+/**
+ * LearningMap.astro — presentational shell for the interactive graph layer
+ * (IMPLEMENTATION_PLAN Phase 2, Task 2.1.1).
+ *
+ * The heavy Cytoscape client code lives in src/components/map/ and is bundled
+ * by Astro only when this component is used (the homepage). The shell renders
+ * the controls, the map stage, the detail panel, a keyboard roster, and a
+ * static browse fallback.
+ *
+ * Failure-safe (DESIGN_SPEC §58): with JavaScript disabled or Cytoscape failing,
+ * the `.learning-map__fallback` (the static BrowseWork list) is shown and the
+ * stage is hidden. The client flips the `js-map-ready`/`map-failed` classes.
+ */
+import BrowseWork from './BrowseWork.astro';
+import { assignments } from '../data/assignments';
+---
+
+<div class="learning-map" data-learning-map>
+  <div class="learning-map__controls">
+    <div class="learning-map__filters" role="group" aria-label="Filters">
+      <button type="button" class="map-filter" data-filter-primary="all">All</button>
+      <button type="button" class="map-filter" data-filter-primary="ai-fluency">AI Fluency</button>
+      <button type="button" class="map-filter" data-filter-primary="machine-learning">Machine Learning</button>
+      <button type="button" class="map-filter" data-filter-primary="concepts">Concepts</button>
+      <button type="button" class="map-filter" data-filter-primary="artifacts">Artifacts</button>
+      <span class="learning-map__sep" aria-hidden="true"></span>
+      <button type="button" class="map-filter" data-filter-tier="all">All</button>
+      <button type="button" class="map-filter" data-filter-tier="core">Core</button>
+      <button type="button" class="map-filter" data-filter-tier="supporting">Supporting</button>
+      <button type="button" class="map-filter" data-filter-tier="reference">Reference</button>
+      <span class="learning-map__sep" aria-hidden="true"></span>
+      <button type="button" class="map-filter" data-filter-browseall>Browse all</button>
+    </div>
+    <div class="learning-map__search">
+      <label class="sr-only" for="map-search">Search the map</label>
+      <input id="map-search" class="learning-map__search-input" type="search" placeholder="Search title, code, concept, artifact" data-map-search autocomplete="off" />
+      <div class="learning-map__search-results" data-map-search-results hidden></div>
+    </div>
+  </div>
+
+  <div class="learning-map__region-row">
+    <div class="learning-map__region" data-map-region>
+      <div class="learning-map__stage" data-map-stage></div>
+      <div class="learning-map__roster sr-only" data-map-roster></div>
+    </div>
+
+    <aside class="learning-map__panel" data-map-panel aria-label="Selected work" tabindex="-1"></aside>
+  </div>
+
+  <div class="learning-map__fallback" data-map-fallback>
+    <p class="learning-map__fallback-note">
+      The interactive map is unavailable here. Browse the work instead:
+    </p>
+    <noscript>
+      <BrowseWork assignments={assignments} searchId="map-fallback-search" />
+    </noscript>
+  </div>
+</div>
+
+<script>
+  // Side-effect import: map-client auto-initialises every [data-learning-map]
+  // on DOMContentLoaded. Bundling cytoscape happens only here (map pages only).
+  import './map/map-client';
+</script>
+
+<style>
+  .learning-map {
+    width: 100%;
+  }
+
+  .learning-map__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-4);
+    border-bottom: var(--rule);
+    margin-bottom: var(--space-4);
+  }
+
+  .learning-map__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .learning-map__sep {
+    width: 1px;
+    height: 16px;
+    background: var(--rule);
+    margin: 0 var(--space-2);
+  }
+
+  .map-filter {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-1);
+    color: var(--text-dim);
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    padding: var(--space-1) var(--space-2);
+    transition: color var(--motion-fast) var(--ease), border-color var(--motion-fast) var(--ease);
+  }
+
+  .map-filter:hover {
+    color: var(--text);
+  }
+
+  .map-filter.is-active {
+    color: var(--text);
+    border-color: var(--rule-active);
+  }
+
+  .learning-map__search {
+    position: relative;
+    min-width: 240px;
+  }
+
+  .learning-map__search-input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+  }
+
+  .learning-map__search-input:focus {
+    outline: 2px solid var(--green-bright);
+    outline-offset: 2px;
+  }
+
+  .learning-map__search-input::placeholder {
+    color: var(--text-faint);
+  }
+
+  .learning-map__search-results {
+    position: absolute;
+    z-index: 50;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-elevated);
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+    margin-top: var(--space-1);
+    max-height: 260px;
+    overflow: auto;
+  }
+
+  .learning-map__search-results button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    background: transparent;
+    border: 0;
+    color: var(--text-dim);
+    font-size: var(--fs-metadata);
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+  }
+
+  .learning-map__search-results button:hover {
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  /* Stage hidden until the map initialises; fallback shown otherwise. */
+  .learning-map__stage {
+    display: none;
+    width: 100%;
+    height: 560px;
+    border: var(--rule);
+    border-radius: var(--radius-1);
+    background:
+      radial-gradient(circle at center, rgba(233, 231, 223, 0.03) 0, transparent 60%);
+  }
+
+  .learning-map__fallback {
+    display: block;
+    border-top: var(--rule);
+    padding-top: var(--space-5);
+  }
+
+  .learning-map__fallback-note {
+    color: var(--text-faint);
+    font-size: var(--fs-metadata);
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    margin-bottom: var(--space-4);
+  }
+
+  .learning-map.js-map-ready .learning-map__stage {
+    display: block;
+  }
+
+  .learning-map.js-map-ready .learning-map__fallback {
+    display: none;
+  }
+
+  .learning-map.map-failed .learning-map__stage {
+    display: none;
+  }
+
+  .learning-map.map-failed .learning-map__fallback {
+    display: block;
+  }
+
+  /* Region + panel: panel appears beside the map on selection (DESIGN_SPEC §17). */
+  .learning-map__region-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  .learning-map.is-open .learning-map__region-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  }
+
+  .learning-map__panel {
+    border-left: var(--rule);
+    padding-left: var(--space-5);
+    min-height: 200px;
+  }
+
+  .learning-map.is-open .learning-map__panel {
+    max-height: 620px;
+    overflow: auto;
+  }
+
+  @media (max-width: 1023px) {
+    .learning-map__stage {
+      height: 460px;
+    }
+    .learning-map.is-open .learning-map__region-row {
+      grid-template-columns: 1fr;
+    }
+    .learning-map__panel {
+      border-left: 0;
+      border-top: var(--rule);
+      padding-left: 0;
+      padding-top: var(--space-5);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .learning-map__stage {
+      height: 400px;
+    }
+  }
+</style>
+
+<style>
+  /* --- Detail panel (rendered client-side by map/panel.ts) --- */
+  .panel__detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .panel__header {
+    border-bottom: var(--rule);
+    padding-bottom: var(--space-5);
+  }
+  .panel__eyebrow,
+  .panel__code {
+    font-family: var(--font-heading);
+    font-size: var(--fs-section);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-1);
+  }
+  .panel__meta {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 0 0 var(--space-3);
+  }
+  .panel__title {
+    font-size: var(--fs-section);
+    font-weight: 600;
+    line-height: 1.15;
+    margin: 0;
+  }
+  .panel__beats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .panel__beat-label,
+  .panel__section-label {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 0 0 var(--space-2);
+  }
+  .panel__beat-body {
+    margin: 0;
+    color: var(--text);
+    max-width: var(--measure);
+  }
+  .panel__section {
+    border-top: var(--rule);
+    padding-top: var(--space-5);
+  }
+  .panel__artifacts,
+  .panel__chips {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .panel__chip {
+    align-self: flex-start;
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text);
+    padding: var(--space-1) var(--space-3);
+    border: var(--rule);
+    border-radius: var(--radius-1);
+  }
+  .panel__chip:hover {
+    border-color: var(--text);
+  }
+  .panel__edges {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .panel__edge {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: var(--fs-body);
+  }
+  .panel__edge-rel {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    min-width: 90px;
+  }
+  .panel__edge a {
+    color: var(--text);
+  }
+  .panel__edge-track {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--terracotta);
+  }
+  .panel__artifact {
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    padding: var(--space-4);
+    background: var(--bg-elevated);
+  }
+  .panel__artifact--link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+  .panel__artifact--link .panel__artifact-title {
+    flex: 1;
+    font-size: var(--fs-body);
+  }
+  .panel__artifact-meta {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .panel__artifact-title {
+    font-size: var(--fs-body);
+    font-weight: 600;
+    margin: var(--space-1) 0;
+  }
+  .panel__artifact-desc {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: var(--fs-body);
+  }
+  .panel__artifact-pending {
+    margin: var(--space-2) 0 0;
+    color: var(--text-faint);
+    font-size: var(--fs-metadata);
+  }
+  .panel__artifact-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    border-top: var(--rule);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+  }
+  .panel__status {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .panel__artifact-link {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .panel__artifact-link--pending {
+    color: var(--text-faint);
+  }
+  .panel__none,
+  .panel__note {
+    color: var(--text-faint);
+    font-size: var(--fs-metadata);
+    margin: 0;
+  }
+  .panel__full {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--green-bright);
+    text-decoration: none;
+  }
+</style>

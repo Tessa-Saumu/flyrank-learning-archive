@@ -1,0 +1,206 @@
+---
+/**
+ * /reflection — Final Reflection (IMPLEMENTATION_PLAN Task 3.2.3,
+ * PRODUCT_SPEC §32, DESIGN_SPEC §29).
+ *
+ * The 500–800 word retrospective is presented as a readable long-form document:
+ * wider measure, Sora headings, Inter body, calmer rhythm. The one place the
+ * interface relaxes. FL-10 reads as the convergence of both AI Fluency strands
+ * (DESIGN_SPEC §29), not as another child of the agent strand.
+ */
+import Base from '../layouts/Base.astro';
+import FinalPackage from '../components/FinalPackage.astro';
+import { finalReflection as r } from '../data/reflection';
+---
+
+<Base
+  title="Final Reflection"
+  description={`A 500 to 800 word retrospective for the FlyRank Learning Archive: what I set out to do, what changed, what I would build next, and the three most transferable things I learned.`}
+  canonicalPath="/reflection/"
+>
+  <div class="container section reflection">
+    <header class="refl-head">
+      <p class="eyebrow">{r.eyebrow}</p>
+      <h1 class="refl-head__title">{r.title}</h1>
+      <p class="refl-head__intro">{r.intro}</p>
+    </header>
+
+    <div class="refl-convergence" role="note" aria-label="FL-10 convergence">
+      <div class="refl-convergence__diagram" aria-hidden="true">
+        <span class="refl-convergence__strand">Portfolio / Public Work</span>
+        <span class="refl-convergence__line">─┐</span>
+        <span class="refl-convergence__node">FL-10</span>
+        <span class="refl-convergence__line">─┘</span>
+        <span class="refl-convergence__strand">Agent / Systems Work</span>
+        <span class="refl-convergence__arrow">└→ Retrospective</span>
+      </div>
+      <p class="refl-convergence__note">{r.convergenceNote}</p>
+    </div>
+
+    <div class="refl-body">
+      {
+        r.sections.map((s) => (
+          <section class="refl-section" aria-labelledby={`refl-${s.id}`}>
+            <h2 class="refl-section__heading" id={`refl-${s.id}`}>{s.heading}</h2>
+            {s.body.map((para) => (
+              <p class="refl-section__para">{para}</p>
+            ))}
+            {s.id === 'learnings' && (
+              <ol class="refl-learnings">
+                {r.learnings.map((l, i) => (
+                  <li class="refl-learnings__item">
+                    <span class="refl-learnings__index">{String(i + 1).padStart(2, '0')}</span>
+                    <span class="refl-learnings__text">{l}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+        ))
+      }
+    </div>
+
+    <p class="refl-cross">
+      The next-student version of this reflection, distilled into six traceable
+      lessons, is on the <a href="/framework/wish-i-knew/">What I Wish I Knew</a>{" "}
+      page. The step-by-step method it points to is on{" "}
+      <a href="/framework/">My Working Framework</a>.
+    </p>
+
+    <FinalPackage />
+  </div>
+</Base>
+
+<style>
+  .reflection {
+    max-width: 1000px;
+  }
+
+  .refl-head {
+    margin-bottom: var(--space-7);
+  }
+
+  .refl-head__title {
+    font-size: var(--fs-assignment);
+    font-weight: 600;
+    margin-top: var(--space-2);
+  }
+
+  .refl-head__intro {
+    color: var(--text-dim);
+    max-width: var(--measure-wide);
+    margin-top: var(--space-4);
+    font-size: var(--fs-body);
+  }
+
+  .refl-convergence {
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    background: var(--bg-elevated);
+    padding: var(--space-5) var(--space-6);
+    margin-bottom: var(--space-7);
+  }
+
+  .refl-convergence__diagram {
+    display: grid;
+    grid-template-columns: minmax(0, auto) max-content repeat(3, minmax(0, auto));
+    gap: var(--space-2) var(--space-3);
+    align-items: center;
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    margin-bottom: var(--space-4);
+  }
+
+  .refl-convergence__strand {
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .refl-convergence__line {
+    color: var(--text-faint);
+  }
+
+  .refl-convergence__node {
+    color: var(--terracotta);
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+    padding: var(--space-1) var(--space-3);
+  }
+
+  .refl-convergence__arrow {
+    color: var(--text-faint);
+    grid-column: 1 / -1;
+    text-align: right;
+  }
+
+  .refl-convergence__note {
+    color: var(--text-dim);
+    font-size: var(--fs-body);
+    margin: 0;
+    max-width: var(--measure-wide);
+  }
+
+  .refl-body {
+    max-width: var(--measure-wide);
+  }
+
+  .refl-section {
+    margin-bottom: var(--space-7);
+  }
+
+  .refl-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--fs-section);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+  }
+
+  .refl-section__para {
+    color: var(--text);
+    font-size: var(--fs-body);
+    line-height: 1.75;
+    margin-bottom: var(--space-4);
+  }
+
+  .refl-learnings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .refl-learnings__item {
+    display: grid;
+    grid-template-columns: 3ch minmax(0, 1fr);
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    background: var(--bg-elevated);
+  }
+
+  .refl-learnings__index {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    color: var(--terracotta);
+  }
+
+  .refl-learnings__text {
+    color: var(--text);
+    font-size: var(--fs-body);
+  }
+
+  .refl-cross {
+    color: var(--text-dim);
+    max-width: var(--measure-wide);
+    margin-bottom: var(--space-6);
+  }
+
+  .refl-cross a {
+    color: var(--text);
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+/**
+ * Base.astro — semantic shell shared by every page.
+ * Basis: DESIGN_SPEC §08 (header), PRODUCT_SPEC §36 (SEO/sharing).
+ */
+import Header from '../components/Header.astro';
+import { site } from '../config';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path for the canonical URL, e.g. "/work/ml-09-validation-claim-audit". */
+  canonicalPath?: string;
+  /** Open Graph image (absolute or root-relative). Defaults to none in Phase 1. */
+  ogImage?: string;
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  canonicalPath = '/',
+  ogImage,
+} = Astro.props;
+
+const canonicalUrl = new URL(canonicalPath, site.url).toString();
+const ogTitle = title === site.title ? site.title : `${title} · ${site.name}`;
+const ogImageUrl = new URL(ogImage ?? site.ogImage, site.url).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{ogTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- Open Graph (PRODUCT_SPEC §36). og:image is always set (default in
+         src/config.ts) so share previews render; swap /public/og.png for a
+         branded card. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <p class="meta">
+          <span class="site-footer__brand">FLYRANK / LEARNING ARCHIVE</span>
+        </p>
+        <p class="site-footer__note">
+          A visual archive of work across the AI Fluency and Machine Learning
+          tracks. Built for the next person trying to find their footing.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-footer {
+    border-top: var(--rule);
+    margin-top: var(--space-9);
+    padding: var(--space-7) 0;
+  }
+
+  .site-footer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .site-footer__brand {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .site-footer__note {
+    margin: 0;
+    font-size: var(--fs-metadata);
+    color: var(--text-faint);
+    max-width: var(--measure-narrow);
+  }
+</style>
