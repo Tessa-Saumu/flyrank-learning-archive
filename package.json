@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "prebuild": "npm run validate",
-    "validate": "node scripts/validate-data.mjs",
+    "validate": "node --experimental-strip-types scripts/validate-data.mjs",
     "check": "astro check",
     "preview": "astro preview",
     "astro": "astro",

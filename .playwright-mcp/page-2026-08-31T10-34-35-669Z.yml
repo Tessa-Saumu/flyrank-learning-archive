@@ -1,0 +1,103 @@
+- generic [active] [ref=f5e1]:
+  - link "Skip to content" [ref=f5e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=f5e3]:
+    - generic [ref=f5e4]:
+      - link "FLYRANK LEARNING ARCHIVE" [ref=f5e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f5e6]: FLYRANK
+        - generic [ref=f5e7]: LEARNING ARCHIVE
+      - navigation "Primary" [ref=f5e8]:
+        - link "MAP" [ref=f5e9] [cursor=pointer]:
+          - /url: /#map
+        - link "WORK" [ref=f5e10] [cursor=pointer]:
+          - /url: /work/
+        - link "FRAMEWORK" [ref=f5e11] [cursor=pointer]:
+          - /url: /framework/
+        - link "REFLECTION" [ref=f5e12] [cursor=pointer]:
+          - /url: /reflection/
+      - navigation "Tracks" [ref=f5e13]:
+        - link "AI FLUENCY" [ref=f5e14] [cursor=pointer]:
+          - /url: /track/ai-fluency/
+        - link "MACHINE LEARNING" [ref=f5e15] [cursor=pointer]:
+          - /url: /track/machine-learning/
+  - main [ref=f5e16]:
+    - generic [ref=f5e17]:
+      - navigation "Breadcrumb" [ref=f5e18]:
+        - link "Concepts" [ref=f5e19] [cursor=pointer]:
+          - /url: /work/?view=concepts
+      - generic [ref=f5e20]:
+        - paragraph [ref=f5e21]: Shared concept
+        - heading "Human Judgment" [level=1] [ref=f5e22]
+        - paragraph [ref=f5e23]: The human remains responsible for deciding what to trust, keep, reject, automate, and explain.
+      - paragraph [ref=f5e24]: This concept connects assignments across the archive. Relationships that are explained by a shared concept are shown here rather than drawn as direct assignment links.
+      - region [ref=f5e25]:
+        - heading "AI Fluency" [level=2] [ref=f5e26]
+        - list [ref=f5e27]:
+          - listitem [ref=f5e28]:
+            - link "FL-01 Week 1 · AI Fluency · Supporting AI Workflow Audit and Tool Setup" [ref=f5e29] [cursor=pointer]:
+              - /url: /work/fl-01-workflow-audit/
+              - generic [ref=f5e30]: FL-01
+              - generic [ref=f5e31]: Week 1 · AI Fluency · Supporting
+              - generic [ref=f5e32]: AI Workflow Audit and Tool Setup
+          - listitem [ref=f5e33]:
+            - link "FL-02 Week 2 · AI Fluency · Supporting Prompting Fundamentals on Real Tasks v2" [ref=f5e34] [cursor=pointer]:
+              - /url: /work/fl-02-prompting-fundamentals/
+              - generic [ref=f5e35]: FL-02
+              - generic [ref=f5e36]: Week 2 · AI Fluency · Supporting
+              - generic [ref=f5e37]: Prompting Fundamentals on Real Tasks v2
+          - listitem [ref=f5e38]:
+            - 'link "Kill Your Darlings: Curate Your Images Week 3 · AI Fluency · Reference Kill Your Darlings: Curate Your Images" [ref=f5e39] [cursor=pointer]':
+              - /url: /work/fl-curate-images/
+              - generic [ref=f5e40]: "Kill Your Darlings: Curate Your Images"
+              - generic [ref=f5e41]: Week 3 · AI Fluency · Reference
+              - generic [ref=f5e42]: "Kill Your Darlings: Curate Your Images"
+          - listitem [ref=f5e43]:
+            - link "FL-05 Week 4 · AI Fluency · Core Agent Concepts and MCP Basics" [ref=f5e44] [cursor=pointer]:
+              - /url: /work/fl-05-agent-mcp-basics/
+              - generic [ref=f5e45]: FL-05
+              - generic [ref=f5e46]: Week 4 · AI Fluency · Core
+              - generic [ref=f5e47]: Agent Concepts and MCP Basics
+          - listitem [ref=f5e48]:
+            - link "FL-06 Week 5 · AI Fluency · Core Design Your Personal Agent" [ref=f5e49] [cursor=pointer]:
+              - /url: /work/fl-06-agent-design/
+              - generic [ref=f5e50]: FL-06
+              - generic [ref=f5e51]: Week 5 · AI Fluency · Core
+              - generic [ref=f5e52]: Design Your Personal Agent
+          - listitem [ref=f5e53]:
+            - link "FL-07 Week 5 · AI Fluency · Core Build the Agent" [ref=f5e54] [cursor=pointer]:
+              - /url: /work/fl-07-build-agent/
+              - generic [ref=f5e55]: FL-07
+              - generic [ref=f5e56]: Week 5 · AI Fluency · Core
+              - generic [ref=f5e57]: Build the Agent
+          - listitem [ref=f5e58]:
+            - link "Survive the Crit Week 6 · AI Fluency · Supporting Survive the Crit" [ref=f5e59] [cursor=pointer]:
+              - /url: /work/fl-crit-review/
+              - generic [ref=f5e60]: Survive the Crit
+              - generic [ref=f5e61]: Week 6 · AI Fluency · Supporting
+              - generic [ref=f5e62]: Survive the Crit
+      - region [ref=f5e63]:
+        - heading "Machine Learning" [level=2] [ref=f5e64]
+        - list [ref=f5e65]:
+          - listitem [ref=f5e66]:
+            - link "ML-04 Week 3 · Machine Learning · Core Search Intelligence Data Contract" [ref=f5e67] [cursor=pointer]:
+              - /url: /work/ml-04-data-contract/
+              - generic [ref=f5e68]: ML-04
+              - generic [ref=f5e69]: Week 3 · Machine Learning · Core
+              - generic [ref=f5e70]: Search Intelligence Data Contract
+          - listitem [ref=f5e71]:
+            - link "ML-07 Week 4 · Machine Learning · Core Baseline Action Score and Top-10 Review" [ref=f5e72] [cursor=pointer]:
+              - /url: /work/ml-07-baseline-action-score/
+              - generic [ref=f5e73]: ML-07
+              - generic [ref=f5e74]: Week 4 · Machine Learning · Core
+              - generic [ref=f5e75]: Baseline Action Score and Top-10 Review
+          - listitem [ref=f5e76]:
+            - link "ML-09 Week 6 · Machine Learning · Core Validation and Research Claim Audit" [ref=f5e77] [cursor=pointer]:
+              - /url: /work/ml-09-validation-claim-audit/
+              - generic [ref=f5e78]: ML-09
+              - generic [ref=f5e79]: Week 6 · Machine Learning · Core
+              - generic [ref=f5e80]: Validation and Research Claim Audit
+  - contentinfo [ref=f5e81]:
+    - generic [ref=f5e82]:
+      - paragraph [ref=f5e83]: FLYRANK / LEARNING ARCHIVE
+      - paragraph [ref=f5e84]: A visual archive of work across the AI Fluency and Machine Learning tracks. Built for the next person trying to find their footing.

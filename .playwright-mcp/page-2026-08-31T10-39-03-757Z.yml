@@ -1,0 +1,387 @@
+- generic [active] [ref=f11e1]:
+  - link "Skip to content" [ref=f11e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=f11e3]:
+    - generic [ref=f11e4]:
+      - link "FLYRANK LEARNING ARCHIVE" [ref=f11e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f11e6]: FLYRANK
+        - generic [ref=f11e7]: LEARNING ARCHIVE
+      - navigation "Primary" [ref=f11e8]:
+        - link "MAP" [ref=f11e9] [cursor=pointer]:
+          - /url: /#map
+        - link "WORK" [ref=f11e10] [cursor=pointer]:
+          - /url: /work/
+        - link "FRAMEWORK" [ref=f11e11] [cursor=pointer]:
+          - /url: /framework/
+        - link "REFLECTION" [ref=f11e12] [cursor=pointer]:
+          - /url: /reflection/
+      - navigation "Tracks" [ref=f11e13]:
+        - link "AI FLUENCY" [ref=f11e14] [cursor=pointer]:
+          - /url: /track/ai-fluency/
+        - link "MACHINE LEARNING" [ref=f11e15] [cursor=pointer]:
+          - /url: /track/machine-learning/
+  - main [ref=f11e16]:
+    - region [ref=f11e17]:
+      - generic [ref=f11e19]:
+        - generic [ref=f11e20]:
+          - heading "Learning map" [level=2] [ref=f11e21]
+          - generic [ref=f11e23]:
+            - paragraph [ref=f11e24]:
+              - generic [ref=f11e25]: AI FLUENCY
+              - generic [ref=f11e26]: ×
+              - generic [ref=f11e27]: MACHINE LEARNING
+            - heading "Two tracks. One evolving way of working." [level=1] [ref=f11e28]:
+              - generic [ref=f11e29]: Two tracks.
+              - generic [ref=f11e30]: One evolving way of working.
+            - paragraph [ref=f11e31]: A visual archive of what I built, what the work taught me, and how the pieces connect.
+            - paragraph [ref=f11e32]: Built for the next person trying to find their footing.
+            - generic [ref=f11e33]:
+              - link "Explore the map" [ref=f11e34] [cursor=pointer]:
+                - /url: "#map"
+              - link "Browse the work" [ref=f11e35] [cursor=pointer]:
+                - /url: "#browse"
+        - generic [ref=f11e37]:
+          - generic [ref=f11e38]:
+            - group "Filters" [ref=f11e39]:
+              - button "All" [pressed] [ref=f11e40] [cursor=pointer]
+              - button "AI Fluency" [ref=f11e41] [cursor=pointer]
+              - button "Machine Learning" [ref=f11e42] [cursor=pointer]
+              - button "Concepts" [ref=f11e43] [cursor=pointer]
+              - button "Artifacts" [ref=f11e44] [cursor=pointer]
+              - button "All" [pressed] [ref=f11e46] [cursor=pointer]
+              - button "Core" [ref=f11e47] [cursor=pointer]
+              - button "Supporting" [ref=f11e48] [cursor=pointer]
+              - button "Reference" [ref=f11e49] [cursor=pointer]
+              - button "Browse all" [ref=f11e51] [cursor=pointer]
+            - generic [ref=f11e52]:
+              - generic [ref=f11e53]: Search the map
+              - searchbox "Search the map" [ref=f11e54]
+          - generic [ref=f11e55]:
+            - generic "Learning Map. You can also browse the work without the map." [ref=f11e56]:
+              - list [ref=f11e63]:
+                - listitem [ref=f11e64]:
+                  - button "assignment ML-01" [ref=f11e65] [cursor=pointer]: ML-01
+                - listitem [ref=f11e66]:
+                  - button "assignment ML-02" [ref=f11e67] [cursor=pointer]: ML-02
+                - listitem [ref=f11e68]:
+                  - button "assignment ML-03" [ref=f11e69] [cursor=pointer]: ML-03
+                - listitem [ref=f11e70]:
+                  - button "assignment ML-04" [ref=f11e71] [cursor=pointer]: ML-04
+                - listitem [ref=f11e72]:
+                  - button "assignment ML-07" [ref=f11e73] [cursor=pointer]: ML-07
+                - listitem [ref=f11e74]:
+                  - button "assignment ML-08" [ref=f11e75] [cursor=pointer]: ML-08
+                - listitem [ref=f11e76]:
+                  - button "assignment ML-09" [ref=f11e77] [cursor=pointer]: ML-09
+                - listitem [ref=f11e78]:
+                  - button "assignment ML-10" [ref=f11e79] [cursor=pointer]: ML-10
+                - listitem [ref=f11e80]:
+                  - button "assignment ML-11" [ref=f11e81] [cursor=pointer]: ML-11
+                - listitem [ref=f11e82]:
+                  - button "assignment ML-12" [ref=f11e83] [cursor=pointer]: ML-12
+                - listitem [ref=f11e84]:
+                  - button "assignment FL-04" [ref=f11e85] [cursor=pointer]: FL-04
+                - listitem [ref=f11e86]:
+                  - button "assignment FL-05" [ref=f11e87] [cursor=pointer]: FL-05
+                - listitem [ref=f11e88]:
+                  - button "assignment FL-06" [ref=f11e89] [cursor=pointer]: FL-06
+                - listitem [ref=f11e90]:
+                  - button "assignment FL-07" [ref=f11e91] [cursor=pointer]: FL-07
+                - listitem [ref=f11e92]:
+                  - button "assignment FL-09" [ref=f11e93] [cursor=pointer]: FL-09
+                - listitem [ref=f11e94]:
+                  - button "assignment What Are You Proving?" [ref=f11e95] [cursor=pointer]: What Are You Proving?
+                - listitem [ref=f11e96]:
+                  - 'button "assignment Frame It as Cases: Work That Speaks for Itself" [ref=f11e97] [cursor=pointer]': "Frame It as Cases: Work That Speaks for Itself"
+                - listitem [ref=f11e98]:
+                  - button "assignment PF-04" [ref=f11e99] [cursor=pointer]: PF-04
+                - listitem [ref=f11e100]:
+                  - button "assignment FL-10" [ref=f11e101] [cursor=pointer]: FL-10
+                - listitem [ref=f11e102]:
+                  - button "concept PROBLEM FRAMING" [ref=f11e103] [cursor=pointer]: PROBLEM FRAMING
+                - listitem [ref=f11e104]:
+                  - button "concept DATA & EVIDENCE" [ref=f11e105] [cursor=pointer]: DATA & EVIDENCE
+                - listitem [ref=f11e106]:
+                  - button "concept BASELINE" [ref=f11e107] [cursor=pointer]: BASELINE
+                - listitem [ref=f11e108]:
+                  - button "concept EVALUATION" [ref=f11e109] [cursor=pointer]: EVALUATION
+                - listitem [ref=f11e110]:
+                  - button "concept PROMPTING" [ref=f11e111] [cursor=pointer]: PROMPTING
+                - listitem [ref=f11e112]:
+                  - button "concept WORKFLOW DESIGN" [ref=f11e113] [cursor=pointer]: WORKFLOW DESIGN
+                - listitem [ref=f11e114]:
+                  - button "concept AGENTS & TOOLS" [ref=f11e115] [cursor=pointer]: AGENTS & TOOLS
+                - listitem [ref=f11e116]:
+                  - button "concept HUMAN JUDGMENT" [ref=f11e117] [cursor=pointer]: HUMAN JUDGMENT
+                - listitem [ref=f11e118]:
+                  - button "concept DEPLOYMENT" [ref=f11e119] [cursor=pointer]: DEPLOYMENT
+                - listitem [ref=f11e120]:
+                  - button "concept COMMUNICATION" [ref=f11e121] [cursor=pointer]: COMMUNICATION
+            - complementary "Selected work" [ref=f11e122]
+    - region [ref=f11e123]:
+      - generic [ref=f11e124]:
+        - heading "Orientation" [level=2] [ref=f11e125]
+        - generic [ref=f11e126]:
+          - generic [ref=f11e127]:
+            - heading "What this is" [level=3] [ref=f11e128]
+            - paragraph [ref=f11e129]: "A visual archive of the work completed across the FlyRank AI Fluency and Machine Learning tracks: what each assignment asked for, what it taught, and how the pieces connect."
+          - generic [ref=f11e130]:
+            - heading "Who it is for" [level=3] [ref=f11e131]
+            - paragraph [ref=f11e132]: Future FlyRank students who want to see what the programme actually asks, and reviewers who want to see the work and how it fits together.
+          - generic [ref=f11e133]:
+            - heading "How to use it" [level=3] [ref=f11e134]
+            - paragraph [ref=f11e135]: Explore the map, or browse the work below and filter by track, tier, and concept. Every assignment links to its task, lesson, takeaway, and proof.
+    - region [ref=f11e136]:
+      - generic [ref=f11e137]:
+        - heading "Browse the work" [level=2] [ref=f11e138]
+        - navigation "Filters" [ref=f11e139]:
+          - generic [ref=f11e140]:
+            - link "All" [ref=f11e141] [cursor=pointer]:
+              - /url: /work/
+            - link "AI Fluency" [ref=f11e142] [cursor=pointer]:
+              - /url: /work/?track=ai-fluency
+            - link "Machine Learning" [ref=f11e143] [cursor=pointer]:
+              - /url: /work/?track=machine-learning
+            - link "Concepts" [ref=f11e144] [cursor=pointer]:
+              - /url: /work/?view=concepts
+          - generic "Tier" [ref=f11e145]:
+            - link "Core" [ref=f11e147] [cursor=pointer]:
+              - /url: /work/?tier=core
+            - link "Supporting" [ref=f11e148] [cursor=pointer]:
+              - /url: /work/?tier=supporting
+            - link "Reference" [ref=f11e149] [cursor=pointer]:
+              - /url: /work/?tier=reference
+        - generic [ref=f11e150]:
+          - generic [ref=f11e151]:
+            - generic [ref=f11e152]: Search the archive
+            - searchbox "Search the archive" [ref=f11e153]
+          - generic [ref=f11e154]:
+            - generic [ref=f11e155]:
+              - heading "AI Fluency" [level=2] [ref=f11e156]
+              - generic [ref=f11e157]:
+                - heading "Portfolio / Public Work" [level=3] [ref=f11e158]
+                - list [ref=f11e159]:
+                  - listitem [ref=f11e160]:
+                    - link "What Are You Proving? Week 1 · AI Fluency · Core What Are You Proving?" [ref=f11e161] [cursor=pointer]:
+                      - /url: /work/fl-portfolio-proof/
+                      - generic [ref=f11e162]: What Are You Proving?
+                      - generic [ref=f11e163]: Week 1 · AI Fluency · Core
+                      - generic [ref=f11e164]: What Are You Proving?
+                  - listitem [ref=f11e165]:
+                    - 'link "Draw the Path: Portfolio Sitemap + Toolkit Week 1 · AI Fluency · Supporting Draw the Path: Portfolio Sitemap + Toolkit" [ref=f11e166] [cursor=pointer]':
+                      - /url: /work/fl-portfolio-sitemap/
+                      - generic [ref=f11e167]: "Draw the Path: Portfolio Sitemap + Toolkit"
+                      - generic [ref=f11e168]: Week 1 · AI Fluency · Supporting
+                      - generic [ref=f11e169]: "Draw the Path: Portfolio Sitemap + Toolkit"
+                  - listitem [ref=f11e170]:
+                    - 'link "Frame It as Cases: Work That Speaks for Itself Week 2 · AI Fluency · Core Frame It as Cases: Work That Speaks for Itself" [ref=f11e171] [cursor=pointer]':
+                      - /url: /work/fl-portfolio-cases/
+                      - generic [ref=f11e172]: "Frame It as Cases: Work That Speaks for Itself"
+                      - generic [ref=f11e173]: Week 2 · AI Fluency · Core
+                      - generic [ref=f11e174]: "Frame It as Cases: Work That Speaks for Itself"
+                  - listitem [ref=f11e175]:
+                    - 'link "Decide Once: Build Your Identity Kit Week 3 · AI Fluency · Supporting Decide Once: Build Your Identity Kit" [ref=f11e176] [cursor=pointer]':
+                      - /url: /work/fl-identity-kit/
+                      - generic [ref=f11e177]: "Decide Once: Build Your Identity Kit"
+                      - generic [ref=f11e178]: Week 3 · AI Fluency · Supporting
+                      - generic [ref=f11e179]: "Decide Once: Build Your Identity Kit"
+                  - listitem [ref=f11e180]:
+                    - 'link "Kill Your Darlings: Curate Your Images Week 3 · AI Fluency · Reference Kill Your Darlings: Curate Your Images" [ref=f11e181] [cursor=pointer]':
+                      - /url: /work/fl-curate-images/
+                      - generic [ref=f11e182]: "Kill Your Darlings: Curate Your Images"
+                      - generic [ref=f11e183]: Week 3 · AI Fluency · Reference
+                      - generic [ref=f11e184]: "Kill Your Darlings: Curate Your Images"
+                  - listitem [ref=f11e185]:
+                    - 'link "The Through-Line: Map Content and CTAs Week 3 · AI Fluency · Supporting The Through-Line: Map Content and CTAs" [ref=f11e186] [cursor=pointer]':
+                      - /url: /work/fl-content-ctas/
+                      - generic [ref=f11e187]: "The Through-Line: Map Content and CTAs"
+                      - generic [ref=f11e188]: Week 3 · AI Fluency · Supporting
+                      - generic [ref=f11e189]: "The Through-Line: Map Content and CTAs"
+                  - listitem [ref=f11e190]:
+                    - 'link "Empty but Live: Ship a Blank Page Week 4 · AI Fluency · Supporting Empty but Live: Ship a Blank Page" [ref=f11e191] [cursor=pointer]':
+                      - /url: /work/fl-empty-live-page/
+                      - generic [ref=f11e192]: "Empty but Live: Ship a Blank Page"
+                      - generic [ref=f11e193]: Week 4 · AI Fluency · Supporting
+                      - generic [ref=f11e194]: "Empty but Live: Ship a Blank Page"
+                  - listitem [ref=f11e195]:
+                    - 'link "Three Roads: Choose Your Stack with AI Week 4 · AI Fluency · Supporting Three Roads: Choose Your Stack with AI" [ref=f11e196] [cursor=pointer]':
+                      - /url: /work/fl-stack-choice/
+                      - generic [ref=f11e197]: "Three Roads: Choose Your Stack with AI"
+                      - generic [ref=f11e198]: Week 4 · AI Fluency · Supporting
+                      - generic [ref=f11e199]: "Three Roads: Choose Your Stack with AI"
+                  - listitem [ref=f11e200]:
+                    - link "Explain It Like You Built It Week 5 · AI Fluency · Supporting Explain It Like You Built It" [ref=f11e201] [cursor=pointer]:
+                      - /url: /work/fl-explain-build/
+                      - generic [ref=f11e202]: Explain It Like You Built It
+                      - generic [ref=f11e203]: Week 5 · AI Fluency · Supporting
+                      - generic [ref=f11e204]: Explain It Like You Built It
+                  - listitem [ref=f11e205]:
+                    - link "PF-04 Week 5 · AI Fluency · Core Personal Website Live on the FlyRank Domain" [ref=f11e206] [cursor=pointer]:
+                      - /url: /work/pf-04-personal-website/
+                      - generic [ref=f11e207]: PF-04
+                      - generic [ref=f11e208]: Week 5 · AI Fluency · Core
+                      - generic [ref=f11e209]: Personal Website Live on the FlyRank Domain
+                  - listitem [ref=f11e210]:
+                    - link "Make It Do Something Week 6 · AI Fluency · Supporting Make It Do Something" [ref=f11e211] [cursor=pointer]:
+                      - /url: /work/fl-dynamic-feature/
+                      - generic [ref=f11e212]: Make It Do Something
+                      - generic [ref=f11e213]: Week 6 · AI Fluency · Supporting
+                      - generic [ref=f11e214]: Make It Do Something
+                  - listitem [ref=f11e215]:
+                    - link "Open It on Your Phone Week 6 · AI Fluency · Supporting Open It on Your Phone" [ref=f11e216] [cursor=pointer]:
+                      - /url: /work/fl-mobile-audit/
+                      - generic [ref=f11e217]: Open It on Your Phone
+                      - generic [ref=f11e218]: Week 6 · AI Fluency · Supporting
+                      - generic [ref=f11e219]: Open It on Your Phone
+                  - listitem [ref=f11e220]:
+                    - link "Survive the Crit Week 6 · AI Fluency · Supporting Survive the Crit" [ref=f11e221] [cursor=pointer]:
+                      - /url: /work/fl-crit-review/
+                      - generic [ref=f11e222]: Survive the Crit
+                      - generic [ref=f11e223]: Week 6 · AI Fluency · Supporting
+                      - generic [ref=f11e224]: Survive the Crit
+                  - listitem [ref=f11e225]:
+                    - link "Break Your Own Site Week 7 · AI Fluency · Supporting Break Your Own Site" [ref=f11e226] [cursor=pointer]:
+                      - /url: /work/fl-site-hardening/
+                      - generic [ref=f11e227]: Break Your Own Site
+                      - generic [ref=f11e228]: Week 7 · AI Fluency · Supporting
+                      - generic [ref=f11e229]: Break Your Own Site
+                  - listitem [ref=f11e230]:
+                    - 'link "Plant Your Flag: Domain + Badge Week 7 · AI Fluency · Reference Plant Your Flag: Domain + Badge" [ref=f11e231] [cursor=pointer]':
+                      - /url: /work/fl-domain-badge/
+                      - generic [ref=f11e232]: "Plant Your Flag: Domain + Badge"
+                      - generic [ref=f11e233]: Week 7 · AI Fluency · Reference
+                      - generic [ref=f11e234]: "Plant Your Flag: Domain + Badge"
+                  - listitem [ref=f11e235]:
+                    - link "The Plan to Keep Building Week 8 · AI Fluency · Supporting The Plan to Keep Building" [ref=f11e236] [cursor=pointer]:
+                      - /url: /work/fl-maintenance-plan/
+                      - generic [ref=f11e237]: The Plan to Keep Building
+                      - generic [ref=f11e238]: Week 8 · AI Fluency · Supporting
+                      - generic [ref=f11e239]: The Plan to Keep Building
+              - generic [ref=f11e240]:
+                - heading "AI Systems / Agents" [level=3] [ref=f11e241]
+                - list [ref=f11e242]:
+                  - listitem [ref=f11e243]:
+                    - link "FL-01 Week 1 · AI Fluency · Supporting AI Workflow Audit and Tool Setup" [ref=f11e244] [cursor=pointer]:
+                      - /url: /work/fl-01-workflow-audit/
+                      - generic [ref=f11e245]: FL-01
+                      - generic [ref=f11e246]: Week 1 · AI Fluency · Supporting
+                      - generic [ref=f11e247]: AI Workflow Audit and Tool Setup
+                  - listitem [ref=f11e248]:
+                    - link "The Prompt Ladder Week 2 · AI Fluency · Supporting The Prompt Ladder" [ref=f11e249] [cursor=pointer]:
+                      - /url: /work/fl-prompt-ladder/
+                      - generic [ref=f11e250]: The Prompt Ladder
+                      - generic [ref=f11e251]: Week 2 · AI Fluency · Supporting
+                      - generic [ref=f11e252]: The Prompt Ladder
+                  - listitem [ref=f11e253]:
+                    - link "FL-02 Week 2 · AI Fluency · Supporting Prompting Fundamentals on Real Tasks v2" [ref=f11e254] [cursor=pointer]:
+                      - /url: /work/fl-02-prompting-fundamentals/
+                      - generic [ref=f11e255]: FL-02
+                      - generic [ref=f11e256]: Week 2 · AI Fluency · Supporting
+                      - generic [ref=f11e257]: Prompting Fundamentals on Real Tasks v2
+                  - listitem [ref=f11e258]:
+                    - link "FL-04 Week 4 · AI Fluency · Core Ship an Automation Workflow v2" [ref=f11e259] [cursor=pointer]:
+                      - /url: /work/fl-04-automation-workflow/
+                      - generic [ref=f11e260]: FL-04
+                      - generic [ref=f11e261]: Week 4 · AI Fluency · Core
+                      - generic [ref=f11e262]: Ship an Automation Workflow v2
+                  - listitem [ref=f11e263]:
+                    - link "FL-05 Week 4 · AI Fluency · Core Agent Concepts and MCP Basics" [ref=f11e264] [cursor=pointer]:
+                      - /url: /work/fl-05-agent-mcp-basics/
+                      - generic [ref=f11e265]: FL-05
+                      - generic [ref=f11e266]: Week 4 · AI Fluency · Core
+                      - generic [ref=f11e267]: Agent Concepts and MCP Basics
+                  - listitem [ref=f11e268]:
+                    - link "FL-06 Week 5 · AI Fluency · Core Design Your Personal Agent" [ref=f11e269] [cursor=pointer]:
+                      - /url: /work/fl-06-agent-design/
+                      - generic [ref=f11e270]: FL-06
+                      - generic [ref=f11e271]: Week 5 · AI Fluency · Core
+                      - generic [ref=f11e272]: Design Your Personal Agent
+                  - listitem [ref=f11e273]:
+                    - link "FL-07 Week 5 · AI Fluency · Core Build the Agent" [ref=f11e274] [cursor=pointer]:
+                      - /url: /work/fl-07-build-agent/
+                      - generic [ref=f11e275]: FL-07
+                      - generic [ref=f11e276]: Week 5 · AI Fluency · Core
+                      - generic [ref=f11e277]: Build the Agent
+                  - listitem [ref=f11e278]:
+                    - link "FL-09 Week 8 · AI Fluency · Core Documentation and Demo Video" [ref=f11e279] [cursor=pointer]:
+                      - /url: /work/fl-09-documentation-demo/
+                      - generic [ref=f11e280]: FL-09
+                      - generic [ref=f11e281]: Week 8 · AI Fluency · Core
+                      - generic [ref=f11e282]: Documentation and Demo Video
+              - generic [ref=f11e283]:
+                - heading "Convergence" [level=3] [ref=f11e284]
+                - list [ref=f11e285]:
+                  - listitem [ref=f11e286]:
+                    - link "FL-10 Week 8 · AI Fluency · Core Final Package, Retrospective, and Capstone" [ref=f11e287] [cursor=pointer]:
+                      - /url: /work/fl-10-final-package/
+                      - generic [ref=f11e288]: FL-10
+                      - generic [ref=f11e289]: Week 8 · AI Fluency · Core
+                      - generic [ref=f11e290]: Final Package, Retrospective, and Capstone
+            - generic [ref=f11e291]:
+              - heading "Machine Learning" [level=2] [ref=f11e292]
+              - list [ref=f11e294]:
+                - listitem [ref=f11e295]:
+                  - link "ML-01 Week 1 · Machine Learning · Supporting Run the Starter Notebooks" [ref=f11e296] [cursor=pointer]:
+                    - /url: /work/ml-01-run-starter-notebooks/
+                    - generic [ref=f11e297]: ML-01
+                    - generic [ref=f11e298]: Week 1 · Machine Learning · Supporting
+                    - generic [ref=f11e299]: Run the Starter Notebooks
+                - listitem [ref=f11e300]:
+                  - link "ML-02 Week 1 · Machine Learning · Core Research Question and Provisional Lane" [ref=f11e301] [cursor=pointer]:
+                    - /url: /work/ml-02-research-question-lane/
+                    - generic [ref=f11e302]: ML-02
+                    - generic [ref=f11e303]: Week 1 · Machine Learning · Core
+                    - generic [ref=f11e304]: Research Question and Provisional Lane
+                - listitem [ref=f11e305]:
+                  - link "ML-03 Week 2 · Machine Learning · Core Frame Your Lane as an ML Task" [ref=f11e306] [cursor=pointer]:
+                    - /url: /work/ml-03-ml-task-framing/
+                    - generic [ref=f11e307]: ML-03
+                    - generic [ref=f11e308]: Week 2 · Machine Learning · Core
+                    - generic [ref=f11e309]: Frame Your Lane as an ML Task
+                - listitem [ref=f11e310]:
+                  - link "ML-04 Week 3 · Machine Learning · Core Search Intelligence Data Contract" [ref=f11e311] [cursor=pointer]:
+                    - /url: /work/ml-04-data-contract/
+                    - generic [ref=f11e312]: ML-04
+                    - generic [ref=f11e313]: Week 3 · Machine Learning · Core
+                    - generic [ref=f11e314]: Search Intelligence Data Contract
+                - listitem [ref=f11e315]:
+                  - link "ML-07 Week 4 · Machine Learning · Core Baseline Action Score and Top-10 Review" [ref=f11e316] [cursor=pointer]:
+                    - /url: /work/ml-07-baseline-action-score/
+                    - generic [ref=f11e317]: ML-07
+                    - generic [ref=f11e318]: Week 4 · Machine Learning · Core
+                    - generic [ref=f11e319]: Baseline Action Score and Top-10 Review
+                - listitem [ref=f11e320]:
+                  - link "ML-08 Week 5 · Machine Learning · Core Capstone Modeling Lane" [ref=f11e321] [cursor=pointer]:
+                    - /url: /work/ml-08-capstone-modeling/
+                    - generic [ref=f11e322]: ML-08
+                    - generic [ref=f11e323]: Week 5 · Machine Learning · Core
+                    - generic [ref=f11e324]: Capstone Modeling Lane
+                - listitem [ref=f11e325]:
+                  - link "ML-09 Week 6 · Machine Learning · Core Validation and Research Claim Audit" [ref=f11e326] [cursor=pointer]:
+                    - /url: /work/ml-09-validation-claim-audit/
+                    - generic [ref=f11e327]: ML-09
+                    - generic [ref=f11e328]: Week 6 · Machine Learning · Core
+                    - generic [ref=f11e329]: Validation and Research Claim Audit
+                - listitem [ref=f11e330]:
+                  - link "ML-10 Week 7 · Machine Learning · Core Content Action Playbook" [ref=f11e331] [cursor=pointer]:
+                    - /url: /work/ml-10-content-action-playbook/
+                    - generic [ref=f11e332]: ML-10
+                    - generic [ref=f11e333]: Week 7 · Machine Learning · Core
+                    - generic [ref=f11e334]: Content Action Playbook
+                - listitem [ref=f11e335]:
+                  - link "ML-11 Week 8 · Machine Learning · Core Ship the Paper" [ref=f11e336] [cursor=pointer]:
+                    - /url: /work/ml-11-ship-paper/
+                    - generic [ref=f11e337]: ML-11
+                    - generic [ref=f11e338]: Week 8 · Machine Learning · Core
+                    - generic [ref=f11e339]: Ship the Paper
+                - listitem [ref=f11e340]:
+                  - link "ML-12 Week 8 · Machine Learning · Core Tell the Story" [ref=f11e341] [cursor=pointer]:
+                    - /url: /work/ml-12-tell-story/
+                    - generic [ref=f11e342]: ML-12
+                    - generic [ref=f11e343]: Week 8 · Machine Learning · Core
+                    - generic [ref=f11e344]: Tell the Story
+  - contentinfo [ref=f11e345]:
+    - generic [ref=f11e346]:
+      - paragraph [ref=f11e347]: FLYRANK / LEARNING ARCHIVE
+      - paragraph [ref=f11e348]: A visual archive of work across the AI Fluency and Machine Learning tracks. Built for the next person trying to find their footing.

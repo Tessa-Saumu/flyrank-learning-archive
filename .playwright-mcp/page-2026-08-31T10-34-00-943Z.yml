@@ -1,0 +1,189 @@
+- generic [active] [ref=f4e1]:
+  - link "Skip to content" [ref=f4e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=f4e3]:
+    - generic [ref=f4e4]:
+      - link "FLYRANK LEARNING ARCHIVE" [ref=f4e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f4e6]: FLYRANK
+        - generic [ref=f4e7]: LEARNING ARCHIVE
+      - navigation "Primary" [ref=f4e8]:
+        - link "MAP" [ref=f4e9] [cursor=pointer]:
+          - /url: /#map
+        - link "WORK" [ref=f4e10] [cursor=pointer]:
+          - /url: /work/
+        - link "FRAMEWORK" [ref=f4e11] [cursor=pointer]:
+          - /url: /framework/
+        - link "REFLECTION" [ref=f4e12] [cursor=pointer]:
+          - /url: /reflection/
+      - navigation "Tracks" [ref=f4e13]:
+        - link "AI FLUENCY" [ref=f4e14] [cursor=pointer]:
+          - /url: /track/ai-fluency/
+        - link "MACHINE LEARNING" [ref=f4e15] [cursor=pointer]:
+          - /url: /track/machine-learning/
+  - main [ref=f4e16]:
+    - generic [ref=f4e17]:
+      - generic [ref=f4e18]:
+        - paragraph [ref=f4e19]: AI Fluency
+        - heading "Two strands, one convergence" [level=1] [ref=f4e20]
+        - paragraph [ref=f4e21]: "The track runs as two parallel strands that converge at the final package: the public portfolio work, and the agent and systems work."
+      - region [ref=f4e22]:
+        - heading "Portfolio / Public Work" [level=2] [ref=f4e23]
+        - list [ref=f4e24]:
+          - listitem [ref=f4e25]:
+            - link "01 What Are You Proving? What Are You Proving?" [ref=f4e26] [cursor=pointer]:
+              - /url: /work/fl-portfolio-proof/
+              - generic [ref=f4e27]: "01"
+              - generic [ref=f4e28]: What Are You Proving?
+              - generic [ref=f4e29]: What Are You Proving?
+          - listitem [ref=f4e30]:
+            - 'link "02 Draw the Path: Portfolio Sitemap + Toolkit Draw the Path: Portfolio Sitemap + Toolkit" [ref=f4e31] [cursor=pointer]':
+              - /url: /work/fl-portfolio-sitemap/
+              - generic [ref=f4e32]: "02"
+              - generic [ref=f4e33]: "Draw the Path: Portfolio Sitemap + Toolkit"
+              - generic [ref=f4e34]: "Draw the Path: Portfolio Sitemap + Toolkit"
+          - listitem [ref=f4e35]:
+            - 'link "03 Frame It as Cases: Work That Speaks for Itself Frame It as Cases: Work That Speaks for Itself" [ref=f4e36] [cursor=pointer]':
+              - /url: /work/fl-portfolio-cases/
+              - generic [ref=f4e37]: "03"
+              - generic [ref=f4e38]: "Frame It as Cases: Work That Speaks for Itself"
+              - generic [ref=f4e39]: "Frame It as Cases: Work That Speaks for Itself"
+          - listitem [ref=f4e40]:
+            - 'link "04 Decide Once: Build Your Identity Kit Decide Once: Build Your Identity Kit" [ref=f4e41] [cursor=pointer]':
+              - /url: /work/fl-identity-kit/
+              - generic [ref=f4e42]: "04"
+              - generic [ref=f4e43]: "Decide Once: Build Your Identity Kit"
+              - generic [ref=f4e44]: "Decide Once: Build Your Identity Kit"
+          - listitem [ref=f4e45]:
+            - 'link "05 Kill Your Darlings: Curate Your Images Kill Your Darlings: Curate Your Images" [ref=f4e46] [cursor=pointer]':
+              - /url: /work/fl-curate-images/
+              - generic [ref=f4e47]: "05"
+              - generic [ref=f4e48]: "Kill Your Darlings: Curate Your Images"
+              - generic [ref=f4e49]: "Kill Your Darlings: Curate Your Images"
+          - listitem [ref=f4e50]:
+            - 'link "06 The Through-Line: Map Content and CTAs The Through-Line: Map Content and CTAs" [ref=f4e51] [cursor=pointer]':
+              - /url: /work/fl-content-ctas/
+              - generic [ref=f4e52]: "06"
+              - generic [ref=f4e53]: "The Through-Line: Map Content and CTAs"
+              - generic [ref=f4e54]: "The Through-Line: Map Content and CTAs"
+          - listitem [ref=f4e55]:
+            - 'link "07 Three Roads: Choose Your Stack with AI Three Roads: Choose Your Stack with AI" [ref=f4e56] [cursor=pointer]':
+              - /url: /work/fl-stack-choice/
+              - generic [ref=f4e57]: "07"
+              - generic [ref=f4e58]: "Three Roads: Choose Your Stack with AI"
+              - generic [ref=f4e59]: "Three Roads: Choose Your Stack with AI"
+          - listitem [ref=f4e60]:
+            - 'link "08 Empty but Live: Ship a Blank Page Empty but Live: Ship a Blank Page" [ref=f4e61] [cursor=pointer]':
+              - /url: /work/fl-empty-live-page/
+              - generic [ref=f4e62]: "08"
+              - generic [ref=f4e63]: "Empty but Live: Ship a Blank Page"
+              - generic [ref=f4e64]: "Empty but Live: Ship a Blank Page"
+          - listitem [ref=f4e65]:
+            - link "09 Explain It Like You Built It Explain It Like You Built It" [ref=f4e66] [cursor=pointer]:
+              - /url: /work/fl-explain-build/
+              - generic [ref=f4e67]: "09"
+              - generic [ref=f4e68]: Explain It Like You Built It
+              - generic [ref=f4e69]: Explain It Like You Built It
+          - listitem [ref=f4e70]:
+            - link "10 PF-04 Personal Website Live on the FlyRank Domain" [ref=f4e71] [cursor=pointer]:
+              - /url: /work/pf-04-personal-website/
+              - generic [ref=f4e72]: "10"
+              - generic [ref=f4e73]: PF-04
+              - generic [ref=f4e74]: Personal Website Live on the FlyRank Domain
+          - listitem [ref=f4e75]:
+            - link "11 Make It Do Something Make It Do Something" [ref=f4e76] [cursor=pointer]:
+              - /url: /work/fl-dynamic-feature/
+              - generic [ref=f4e77]: "11"
+              - generic [ref=f4e78]: Make It Do Something
+              - generic [ref=f4e79]: Make It Do Something
+          - listitem [ref=f4e80]:
+            - link "12 Open It on Your Phone Open It on Your Phone" [ref=f4e81] [cursor=pointer]:
+              - /url: /work/fl-mobile-audit/
+              - generic [ref=f4e82]: "12"
+              - generic [ref=f4e83]: Open It on Your Phone
+              - generic [ref=f4e84]: Open It on Your Phone
+          - listitem [ref=f4e85]:
+            - link "13 Survive the Crit Survive the Crit" [ref=f4e86] [cursor=pointer]:
+              - /url: /work/fl-crit-review/
+              - generic [ref=f4e87]: "13"
+              - generic [ref=f4e88]: Survive the Crit
+              - generic [ref=f4e89]: Survive the Crit
+          - listitem [ref=f4e90]:
+            - link "14 Break Your Own Site Break Your Own Site" [ref=f4e91] [cursor=pointer]:
+              - /url: /work/fl-site-hardening/
+              - generic [ref=f4e92]: "14"
+              - generic [ref=f4e93]: Break Your Own Site
+              - generic [ref=f4e94]: Break Your Own Site
+          - listitem [ref=f4e95]:
+            - 'link "15 Plant Your Flag: Domain + Badge Plant Your Flag: Domain + Badge" [ref=f4e96] [cursor=pointer]':
+              - /url: /work/fl-domain-badge/
+              - generic [ref=f4e97]: "15"
+              - generic [ref=f4e98]: "Plant Your Flag: Domain + Badge"
+              - generic [ref=f4e99]: "Plant Your Flag: Domain + Badge"
+          - listitem [ref=f4e100]:
+            - link "16 The Plan to Keep Building The Plan to Keep Building" [ref=f4e101] [cursor=pointer]:
+              - /url: /work/fl-maintenance-plan/
+              - generic [ref=f4e102]: "16"
+              - generic [ref=f4e103]: The Plan to Keep Building
+              - generic [ref=f4e104]: The Plan to Keep Building
+      - region [ref=f4e105]:
+        - heading "AI Systems / Agents" [level=2] [ref=f4e106]
+        - list [ref=f4e107]:
+          - listitem [ref=f4e108]:
+            - link "01 FL-01 AI Workflow Audit and Tool Setup" [ref=f4e109] [cursor=pointer]:
+              - /url: /work/fl-01-workflow-audit/
+              - generic [ref=f4e110]: "01"
+              - generic [ref=f4e111]: FL-01
+              - generic [ref=f4e112]: AI Workflow Audit and Tool Setup
+          - listitem [ref=f4e113]:
+            - link "02 The Prompt Ladder The Prompt Ladder" [ref=f4e114] [cursor=pointer]:
+              - /url: /work/fl-prompt-ladder/
+              - generic [ref=f4e115]: "02"
+              - generic [ref=f4e116]: The Prompt Ladder
+              - generic [ref=f4e117]: The Prompt Ladder
+          - listitem [ref=f4e118]:
+            - link "03 FL-02 Prompting Fundamentals on Real Tasks v2" [ref=f4e119] [cursor=pointer]:
+              - /url: /work/fl-02-prompting-fundamentals/
+              - generic [ref=f4e120]: "03"
+              - generic [ref=f4e121]: FL-02
+              - generic [ref=f4e122]: Prompting Fundamentals on Real Tasks v2
+          - listitem [ref=f4e123]:
+            - link "04 FL-04 Ship an Automation Workflow v2" [ref=f4e124] [cursor=pointer]:
+              - /url: /work/fl-04-automation-workflow/
+              - generic [ref=f4e125]: "04"
+              - generic [ref=f4e126]: FL-04
+              - generic [ref=f4e127]: Ship an Automation Workflow v2
+          - listitem [ref=f4e128]:
+            - link "05 FL-05 Agent Concepts and MCP Basics" [ref=f4e129] [cursor=pointer]:
+              - /url: /work/fl-05-agent-mcp-basics/
+              - generic [ref=f4e130]: "05"
+              - generic [ref=f4e131]: FL-05
+              - generic [ref=f4e132]: Agent Concepts and MCP Basics
+          - listitem [ref=f4e133]:
+            - link "06 FL-06 Design Your Personal Agent" [ref=f4e134] [cursor=pointer]:
+              - /url: /work/fl-06-agent-design/
+              - generic [ref=f4e135]: "06"
+              - generic [ref=f4e136]: FL-06
+              - generic [ref=f4e137]: Design Your Personal Agent
+          - listitem [ref=f4e138]:
+            - link "07 FL-07 Build the Agent" [ref=f4e139] [cursor=pointer]:
+              - /url: /work/fl-07-build-agent/
+              - generic [ref=f4e140]: "07"
+              - generic [ref=f4e141]: FL-07
+              - generic [ref=f4e142]: Build the Agent
+          - listitem [ref=f4e143]:
+            - link "08 FL-09 Documentation and Demo Video" [ref=f4e144] [cursor=pointer]:
+              - /url: /work/fl-09-documentation-demo/
+              - generic [ref=f4e145]: "08"
+              - generic [ref=f4e146]: FL-09
+              - generic [ref=f4e147]: Documentation and Demo Video
+      - region [ref=f4e148]:
+        - heading "Convergence" [level=2] [ref=f4e149]
+        - link "FL-10 Final Package, Retrospective, and Capstone" [ref=f4e150] [cursor=pointer]:
+          - /url: /work/fl-10-final-package/
+          - generic [ref=f4e151]: FL-10
+          - generic [ref=f4e152]: Final Package, Retrospective, and Capstone
+  - contentinfo [ref=f4e153]:
+    - generic [ref=f4e154]:
+      - paragraph [ref=f4e155]: FLYRANK / LEARNING ARCHIVE
+      - paragraph [ref=f4e156]: A visual archive of work across the AI Fluency and Machine Learning tracks. Built for the next person trying to find their footing.
