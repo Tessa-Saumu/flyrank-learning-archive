@@ -1,8 +1,11 @@
 ---
 /**
  * AssignmentCard.astro — tier-weighted archive card (DESIGN_SPEC §12, §47).
- * Core: strongest contrast + largest label. Supporting: medium. Reference: quiet.
- * Track identity is always paired with a text label, never colour alone.
+ *
+ * V2 §2/§5: a card click opens the assignment in an in-context modal while the
+ * `href` remains available for no-JS and direct linking. The card uses the
+ * canonical V2 assignment-card typography tokens; tier weight is expressed with
+ * contrast/opacity/border, never one-off font-size overrides.
  */
 import { displayLabel, metadataLine } from '../lib/archive';
 import type { Assignment } from '../data/types';
@@ -15,7 +18,13 @@ const { assignment: a } = Astro.props;
 const href = `/work/${a.id}/`;
 ---
 
-<a class:list={['acard', `acard--${a.tier}`, `track-${a.track}`]} href={href}>
+<a
+  class:list={['acard', `acard--${a.tier}`, `track-${a.track}`]}
+  href={href}
+  data-assignment-card
+  data-assignment-id={a.id}
+  aria-haspopup="dialog"
+>
   <span class="acard__code">{displayLabel(a)}</span>
   <span class="acard__meta">{metadataLine(a)}</span>
   <span class="acard__title">{a.title}</span>
@@ -41,14 +50,16 @@ const href = `/work/${a.id}/`;
     background: var(--bg-elevated);
   }
 
+  /* Canonical V2 assignment-card typography (V2_IMPROVEMENT_SPEC §5). */
   .acard__code {
     font-family: var(--font-heading);
+    font-size: var(--fs-card-label);
     font-weight: 600;
     letter-spacing: 0.01em;
   }
 
   .acard__meta {
-    font-size: var(--fs-metadata);
+    font-size: var(--fs-card-metadata);
     font-weight: 500;
     letter-spacing: var(--tracking-metadata);
     text-transform: uppercase;
@@ -56,17 +67,16 @@ const href = `/work/${a.id}/`;
   }
 
   .acard__title {
-    font-size: var(--fs-body);
+    font-size: var(--fs-card-title);
     line-height: 1.4;
     color: var(--text-dim);
   }
 
-  /* Tier weighting (DESIGN_SPEC §47) */
+  /* Tier weighting (DESIGN_SPEC §47): contrast/opacity, never font size. */
   .acard--core {
     border-color: var(--rule-active);
   }
   .acard--core .acard__code {
-    font-size: var(--fs-assignment);
     color: var(--text);
   }
   .acard--core .acard__title {
@@ -74,14 +84,14 @@ const href = `/work/${a.id}/`;
   }
 
   .acard--supporting .acard__code {
-    font-size: var(--fs-section);
+    color: var(--text-dim);
   }
 
   .acard--reference {
     opacity: 0.72;
   }
   .acard--reference .acard__code {
-    font-size: var(--fs-body);
+    color: var(--text-dim);
     font-weight: 500;
   }
 

@@ -48,6 +48,16 @@
   --fs-metadata: clamp(9px, 0.6vw, 11px);
   --fs-graph-label: clamp(9px, 0.6vw, 12px);
 
+  /* V2 canonical assignment-card typography tokens (V2_IMPROVEMENT_SPEC §5).
+     Every card uses these tokens for the same semantic role; no component
+     applies a one-off font-size adjustment to fit content. */
+  --fs-card-label: var(--fs-section);
+  --fs-card-title: var(--fs-body);
+  --fs-card-description: var(--fs-body);
+  --fs-card-metadata: var(--fs-metadata);
+  --fs-card-status: var(--fs-metadata);
+  --fs-card-action: var(--fs-metadata);
+
   --tracking-metadata: 0.08em;
 
   /* --- Font stacks --- */

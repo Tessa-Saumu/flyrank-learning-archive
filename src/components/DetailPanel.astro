@@ -1,13 +1,14 @@
 ---
 /**
  * DetailPanel.astro — server-rendered assignment detail (DESIGN_SPEC §17–20).
- * Reusable by the Phase 2 map panel. Renders the header, the three beats
- * (TASK / LESSON / TAKEAWAY), the PROOF block, Connections, and secondary
- * metadata. No graph code; plain server output.
+ *
+ * V2 (V2_IMPROVEMENT_SPEC §1–4): on desktop the assignment content reads in a
+ * left column and the Evidence panel sits beside it in a right column, so proof
+ * is discoverable without scrolling to the bottom. The component remains the
+ * shared detail renderer for static /work/[slug] pages and the assignment modal.
  */
-import ArtifactPreview from './ArtifactPreview.astro';
+import EvidencePanel from './EvidencePanel.astro';
 import {
-  artifactsForAssignment,
   conceptsForAssignment,
   displayLabel,
   edgesForAssignment,
@@ -19,14 +20,13 @@ import type { Assignment } from '../data/types';
 
 interface Props {
   assignment: Assignment;
-  /** When true, render a compact variant suited to a side panel. */
+  /** When true, render a compact single-column variant suited to a side panel. */
   compact?: boolean;
 }
 
 const { assignment: a, compact = false } = Astro.props;
 
 const concepts = conceptsForAssignment(a.id);
-const artifactEntries = artifactsForAssignment(a.id);
 const edges = edgesForAssignment(a.id);
 
 const metaParts: string[] = [];
@@ -42,90 +42,89 @@ const metaLine = metaParts.join(' · ');
     <h1 class="detail__title">{a.title}</h1>
   </header>
 
-  <div class="detail__beats">
-    <section class="beat">
-      <h2 class="beat__label">Task</h2>
-      <p class="beat__body">{a.task}</p>
-    </section>
-    <hr class="rule rule--tight" />
-    <section class="beat">
-      <h2 class="beat__label">Lesson</h2>
-      <p class="beat__body">{a.lesson}</p>
-    </section>
-    <hr class="rule rule--tight" />
-    <section class="beat">
-      <h2 class="beat__label">Takeaway</h2>
-      <p class="beat__body">{a.takeaway}</p>
-    </section>
-  </div>
+  <div class="detail__grid">
+    <div class="detail__main">
+      <div class="detail__beats">
+        <section class="beat">
+          <h2 class="beat__label">Task</h2>
+          <p class="beat__body">{a.task}</p>
+        </section>
+        <hr class="rule rule--tight" />
+        <section class="beat">
+          <h2 class="beat__label">Lesson</h2>
+          <p class="beat__body">{a.lesson}</p>
+        </section>
+        <hr class="rule rule--tight" />
+        <section class="beat">
+          <h2 class="beat__label">Takeaway</h2>
+          <p class="beat__body">{a.takeaway}</p>
+        </section>
+      </div>
 
-  <section class="detail__proof" aria-labelledby="proof-heading">
-    <h2 class="detail__block-heading" id="proof-heading">Proof</h2>
-    <div class="detail__artifacts">
-      {artifactEntries.map(({ artifact, link }) => (
-        <ArtifactPreview artifact={artifact} link={link} evidenceStatus={a.evidenceStatus} assignment={a} />
-      ))}
-    </div>
-  </section>
+      {
+        (concepts.length > 0 || edges.length > 0) && (
+          <section class="detail__connections" aria-labelledby="conn-heading">
+            <h2 class="detail__block-heading" id="conn-heading">Connections</h2>
 
-  {
-    (concepts.length > 0 || edges.length > 0) && (
-      <section class="detail__connections" aria-labelledby="conn-heading">
-        <h2 class="detail__block-heading" id="conn-heading">Connections</h2>
+            {concepts.length > 0 && (
+              <div class="detail__concepts">
+                {concepts.map((c) => (
+                  <a class="chip" href={`/concepts/${c.id}/`}>
+                    {c.name}
+                  </a>
+                ))}
+              </div>
+            )}
 
-        {concepts.length > 0 && (
-          <div class="detail__concepts">
-            {concepts.map((c) => (
-              <a class="chip" href={`/concepts/${c.id}/`}>
-                {c.name}
-              </a>
-            ))}
-          </div>
-        )}
+            {edges.length > 0 && (
+              <ul class="detail__edges">
+                {edges.map(({ edge, other }) => (
+                  <li class="detail__edge">
+                    <span class="detail__edge-rel">{relationshipLabel(edge.relationship)}</span>
+                    <a href={`/work/${other.id}/`}>{other.title}</a>
+                    {edge.relationship === 'cross-track' && (
+                      <span class="detail__edge-track">cross-track</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )
+      }
 
-        {edges.length > 0 && (
-          <ul class="detail__edges">
-            {edges.map(({ edge, other }) => (
-              <li class="detail__edge">
-                <span class="detail__edge-rel">{relationshipLabel(edge.relationship)}</span>
-                <a href={`/work/${other.id}/`}>{other.title}</a>
-                {edge.relationship === 'cross-track' && (
-                  <span class="detail__edge-track">cross-track</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+      <section class="detail__secondary" aria-label="Secondary metadata">
+        <dl class="detail__facts">
+          {a.workloadHours !== undefined && (
+            <>
+              <dt>Workload</dt>
+              <dd>{a.workloadHours}h</dd>
+            </>
+          )}
+          {a.phase && (
+            <>
+              <dt>Phase</dt>
+              <dd>{a.phase}</dd>
+            </>
+          )}
+          <dt>Evidence</dt>
+          <dd>{evidenceStatusLabel(a.evidenceStatus)}</dd>
+          {a.sourceAliases && a.sourceAliases.length > 0 && (
+            <>
+              <dt>Source aliases</dt>
+              <dd>{a.sourceAliases.join(', ')}</dd>
+            </>
+          )}
+          <dt>Canonicalisation</dt>
+          <dd>{a.canonicalisationStatus === 'reviewed' ? 'Reviewed' : 'Unreviewed'}</dd>
+        </dl>
       </section>
-    )
-  }
+    </div>
 
-  <section class="detail__secondary" aria-label="Secondary metadata">
-    <dl class="detail__facts">
-      {a.workloadHours !== undefined && (
-        <>
-          <dt>Workload</dt>
-          <dd>{a.workloadHours}h</dd>
-        </>
-      )}
-      {a.phase && (
-        <>
-          <dt>Phase</dt>
-          <dd>{a.phase}</dd>
-        </>
-      )}
-      <dt>Evidence</dt>
-      <dd>{evidenceStatusLabel(a.evidenceStatus)}</dd>
-      {a.sourceAliases && a.sourceAliases.length > 0 && (
-        <>
-          <dt>Source aliases</dt>
-          <dd>{a.sourceAliases.join(', ')}</dd>
-        </>
-      )}
-      <dt>Canonicalisation</dt>
-      <dd>{a.canonicalisationStatus === 'reviewed' ? 'Reviewed' : 'Unreviewed'}</dd>
-    </dl>
-  </section>
+    <div class="detail__evidence-column">
+      <EvidencePanel assignment={a} />
+    </div>
+  </div>
 </article>
 
 <style>
@@ -153,6 +152,17 @@ const metaLine = metaParts.join(' · ');
     padding-bottom: var(--space-5);
     border-bottom: var(--rule);
     margin-bottom: var(--space-6);
+  }
+
+  .detail__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  .detail--compact .detail__grid {
+    grid-template-columns: 1fr;
   }
 
   .detail__beats {
@@ -190,13 +200,6 @@ const metaLine = metaParts.join(' · ');
     text-transform: uppercase;
     color: var(--text-faint);
     margin-bottom: var(--space-4);
-  }
-
-  .detail__artifacts {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--space-4);
-    margin-bottom: var(--space-7);
   }
 
   .detail__connections {
@@ -280,5 +283,16 @@ const metaLine = metaParts.join(' · ');
   .detail__facts dd {
     margin: 0;
     color: var(--text-dim);
+  }
+
+  @media (max-width: 900px) {
+    .detail__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    .detail__evidence-column {
+      order: 2;
+    }
   }
 </style>
