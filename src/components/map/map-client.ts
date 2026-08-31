@@ -10,7 +10,7 @@
  * `map-failed` class so CSS reveals the static browse fallback (DESIGN_SPEC §58).
  */
 import cytoscape from 'cytoscape';
-import type { Core } from 'cytoscape';
+import type { Core, NodeSingular } from 'cytoscape';
 import { buildGraphElements, primaryAssignmentForArtifact, assignmentById, conceptById } from './adapter';
 import type { ViewState } from './adapter';
 import { renderAssignmentPanel, renderConceptPanel, renderEmptyPanel } from './panel';
@@ -52,6 +52,10 @@ function buildStyle(c: TokenColors): any[] {
     {
       selector: 'node',
       style: {
+        // V2 §7: every node displays its shortest useful descriptor directly
+        // beside the node (assignments use `descriptor`, concepts/artifacts
+        // their names — mapped into `label` by the adapter).
+        label: 'data(label)',
         'background-color': c.bg,
         'border-width': 1,
         'border-color': c.graphGrey,
@@ -175,15 +179,41 @@ function buildStyle(c: TokenColors): any[] {
     },
     {
       selector: "edge[relationship = 'builds-on']",
-      style: { 'line-style': 'solid', 'target-arrow-shape': 'triangle', 'target-arrow-color': c.graphGrey, 'arrow-scale': 0.7 },
+      // V2 §10.1: direction is unmistakable at normal zoom. A clearly visible
+      // triangle arrowhead in a brighter tone than the hairline, without
+      // dominating the line.
+      style: {
+        'line-style': 'solid',
+        'target-arrow-shape': 'triangle',
+        'target-arrow-color': c.textDim,
+        'arrow-scale': 1,
+      },
     },
     {
       selector: "edge[relationship = 'connects-to']",
-      style: { 'line-style': 'dotted', opacity: 0.4 },
+      style: {
+        'line-style': 'dotted',
+        opacity: 0.45,
+        'target-arrow-shape': 'triangle',
+        'target-arrow-color': c.graphGrey,
+        'arrow-scale': 0.8,
+      },
     },
     {
       selector: "edge[relationship = 'cross-track']",
-      style: { 'line-color': c.terracotta, 'line-style': 'dashed', width: 1.5, 'target-arrow-shape': 'triangle', 'target-arrow-color': c.terracotta, opacity: 0.85 },
+      style: { 'line-color': c.terracotta, 'line-style': 'dashed', width: 1.5, 'target-arrow-shape': 'triangle', 'target-arrow-color': c.terracotta, 'arrow-scale': 1 },
+    },
+    {
+      // Connective concept edge (V2 §10.2): assignment → concept. Subordinate
+      // and undirected, echoing the concept's gold accent.
+      selector: "edge[relationship = 'concept']",
+      style: { 'line-color': c.gold, 'line-style': 'solid', width: 1, opacity: 0.32, 'target-arrow-shape': 'none' },
+    },
+    {
+      // Connective artifact edge (V2 §11): assignment → artifact. Subordinate
+      // and undirected.
+      selector: "edge[relationship = 'artifact']",
+      style: { 'line-color': c.graphGrey, 'line-style': 'dotted', width: 1, opacity: 0.4, 'target-arrow-shape': 'none' },
     },
     {
       selector: 'edge.bright',
@@ -220,6 +250,9 @@ export function initLearningMap(root: HTMLElement): void {
   const roster = root.querySelector<HTMLElement>('[data-map-roster]');
   const search = root.querySelector<HTMLInputElement>('[data-map-search]');
   const searchResults = root.querySelector<HTMLElement>('[data-map-search-results]');
+  const tooltip = root.querySelector<HTMLElement>('[data-map-tooltip]');
+  const regionEl = root.querySelector<HTMLElement>('[data-map-region]');
+  const expandBtn = root.querySelector<HTMLElement>('[data-map-expand]');
 
   if (!stage || !panel || !roster) {
     root.classList.add('map-failed');
@@ -267,6 +300,93 @@ export function initLearningMap(root: HTMLElement): void {
     });
   }
 
+  // --- Hover tooltip (V2 §8) ---
+  // A single DOM tooltip positioned beside the hovered node. It reveals the
+  // full canonical title plus the short description, keeping the graph label
+  // itself to the shortest useful descriptor (§7).
+  let hoveredNode: NodeSingular | null = null;
+
+  function positionTooltip(n: NodeSingular): void {
+    if (!tooltip || !regionEl) return;
+    const rp = n.renderedPosition();
+    const regionRect = regionEl.getBoundingClientRect();
+    const stageRect = stageEl.getBoundingClientRect();
+    const x = stageRect.left - regionRect.left + rp.x;
+    const y = stageRect.top - regionRect.top + rp.y;
+    const tw = tooltip.offsetWidth;
+    const th = tooltip.offsetHeight;
+    const GAP = 14;
+    let left = x - tw / 2;
+    let top = y - th - GAP;
+    // Clamp horizontally so the tooltip never leaves the region.
+    left = Math.max(8, Math.min(left, regionRect.width - tw - 8));
+    // Flip below the node when there is no room above (near the top edge).
+    if (top < 8) top = y + GAP;
+    tooltip.style.left = `${Math.round(left)}px`;
+    tooltip.style.top = `${Math.round(top)}px`;
+  }
+
+  function showTooltip(n: NodeSingular): void {
+    if (!tooltip) return;
+    const title = String(n.data('title') || n.data('label') || '');
+    const description = String(n.data('description') || '');
+    tooltip.textContent = '';
+    const strong = document.createElement('strong');
+    strong.textContent = title;
+    tooltip.appendChild(strong);
+    if (description) {
+      const span = document.createElement('span');
+      span.textContent = description;
+      tooltip.appendChild(span);
+    }
+    tooltip.hidden = false;
+    positionTooltip(n);
+  }
+
+  function hideTooltip(): void {
+    if (!tooltip) return;
+    tooltip.hidden = true;
+    tooltip.textContent = '';
+  }
+
+  // --- Homepage map expand/collapse (V2 §13) ---
+  // Toggles the `.map-section` composition so the graph takes the full width
+  // and the adjacent context panel recedes. Layout changes are picked up by
+  // the existing ResizeObserver on the stage.
+  const sectionEl = root.closest<HTMLElement>('.map-section');
+
+  function setExpanded(expanded: boolean): void {
+    if (!sectionEl) return;
+    sectionEl.classList.toggle('is-expanded', expanded);
+    if (expandBtn) {
+      expandBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      expandBtn.textContent = expanded ? 'Collapse map' : 'Expand map';
+    }
+    // Re-fit once the new layout has been applied so the graph actually uses
+    // the space it gains (or returns to the compact composition cleanly).
+    requestAnimationFrame(() => {
+      cy.resize();
+      fit();
+    });
+  }
+
+  if (expandBtn) {
+    expandBtn.addEventListener('click', () => {
+      setExpanded(!(sectionEl?.classList.contains('is-expanded') ?? false));
+    });
+  }
+
+  // V2 §12: the end-of-work-section `Explore the map` CTA. The anchor's
+  // default navigation to #map is kept (it works without JS); with JS the
+  // map additionally expands into the full-width graph experience so the
+  // click lands on the actual full Knowledge Graph, not a cramped preview.
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest?.('a[data-explore-map]')) {
+      setExpanded(true);
+    }
+  });
+
   function applyViewClasses() {
     if (state.kind === 'track') {
       const track: Track = state.track ?? 'ai-fluency';
@@ -276,7 +396,14 @@ export function initLearningMap(root: HTMLElement): void {
       cy.edges().forEach((e) => {
         const srcTrack = cy.getElementById(e.data('source')).data('track');
         const tgtTrack = cy.getElementById(e.data('target')).data('track');
-        e.toggleClass('dimmed', srcTrack !== track && tgtTrack !== track);
+        if (srcTrack === undefined || tgtTrack === undefined) {
+          // Connective edge (concept/artifact): bright while its assignment
+          // endpoint belongs to the chosen track.
+          const assignmentTrack = srcTrack ?? tgtTrack;
+          e.toggleClass('dimmed', assignmentTrack !== track);
+        } else {
+          e.toggleClass('dimmed', srcTrack !== track && tgtTrack !== track);
+        }
       });
     } else if (state.kind === 'assignment') {
       const selectedId = state.node ?? '';
@@ -313,6 +440,8 @@ export function initLearningMap(root: HTMLElement): void {
     const { nodes, edges } = buildGraphElements(state);
     cy.elements().remove();
     cy.add([...nodes, ...edges]);
+    hoveredNode = null;
+    hideTooltip();
     applyViewClasses();
     if (fitNow) fit();
     updateRoster();
@@ -459,11 +588,32 @@ export function initLearningMap(root: HTMLElement): void {
     const n = evt.target;
     n.addClass('hover');
     n.closedNeighborhood().forEach((el: any) => el.addClass('bright'));
+    hoveredNode = n;
+    showTooltip(n);
   });
   cy.on('mouseout', 'node', (evt) => {
     const n = evt.target;
     n.removeClass('hover');
     n.closedNeighborhood().forEach((el: any) => el.removeClass('bright'));
+    hoveredNode = null;
+    hideTooltip();
+  });
+  // Robustness: if the pointer leaves the map stage in a single jump (fast
+  // mouse move, coalesced events), Cytoscape may never emit the node
+  // `mouseout`. Clean up on the DOM `mouseleave` so the tooltip and hover
+  // state never linger once the pointer is outside the graph (V2 §8 —
+  // "hover does not permanently clutter the graph").
+  stageEl.addEventListener('mouseleave', () => {
+    if (hoveredNode) {
+      hoveredNode.removeClass('hover');
+      hoveredNode.closedNeighborhood().forEach((el: any) => el.removeClass('bright'));
+      hoveredNode = null;
+    }
+    hideTooltip();
+  });
+  // Keep the tooltip anchored while the viewport is panned/zoomed.
+  cy.on('pan zoom', () => {
+    if (hoveredNode) positionTooltip(hoveredNode);
   });
 
   function selectByRef(ref: string, type?: string): void {

@@ -124,7 +124,7 @@ import { finalReflection as r } from '../data/reflection';
   }
 
   .refl-convergence__node {
-    color: var(--terracotta);
+    color: var(--terracotta-text);
     border: var(--rule-active);
     border-radius: var(--radius-1);
     padding: var(--space-1) var(--space-3);
@@ -141,6 +141,36 @@ import { finalReflection as r } from '../data/reflection';
     font-size: var(--fs-body);
     margin: 0;
     max-width: var(--measure-wide);
+  }
+
+  /* V2 §16: the five-column, nowrap diagram is the exact element that
+     overflowed a 375px viewport (scrollWidth 400 vs 375). Below 560px it
+     restacks vertically — strands, converging node, then the retrospective
+     arrow — so the structure survives without horizontal page scrolling and
+     without any global overflow-x suppression. */
+  @media (max-width: 560px) {
+    .refl-convergence__diagram {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+      justify-items: start;
+    }
+
+    .refl-convergence__strand {
+      white-space: normal;
+    }
+
+    .refl-convergence__line {
+      display: none;
+    }
+
+    .refl-convergence__node {
+      justify-self: start;
+    }
+
+    .refl-convergence__arrow {
+      grid-column: auto;
+      text-align: left;
+    }
   }
 
   .refl-body {
@@ -186,7 +216,7 @@ import { finalReflection as r } from '../data/reflection';
     font-family: var(--font-heading);
     font-size: var(--fs-metadata);
     font-weight: 600;
-    color: var(--terracotta);
+    color: var(--terracotta-text);
   }
 
   .refl-learnings__text {

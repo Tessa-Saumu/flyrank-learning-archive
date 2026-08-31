@@ -14,7 +14,9 @@
   --bg-elevated: #151817;
   --text: #e9e7df;
   --text-dim: rgba(233, 231, 223, 0.72);
-  --text-faint: rgba(233, 231, 223, 0.5);
+  /* V2 §15: 0.5 composited to exactly ~4.5:1 on --bg and 4.49:1 on
+     --bg-elevated (an axe failure as #7f807b). 0.56 gives ~5.3:1 on both. */
+  --text-faint: rgba(233, 231, 223, 0.56);
   --green: #315d4b;
   --green-bright: #4d8a70;
   --terracotta: #b9664e;
@@ -23,6 +25,13 @@
      gold is reserved for rare accents and passes AA but this gives text a
      safety margin and is used wherever gold is legible copy, never an accent). */
   --gold-bright: #d4bc7e;
+  /* V2 §15: AA-safe text variants of the track accents. `--green-bright`
+     (4.41:1) and `--terracotta` (4.32:1) fail WCAG AA for small text on
+     `--bg-elevated`, so any accent rendered as *text* uses these one-step
+     brightened variants (>=5.0:1 on both surfaces). The base accents remain
+     for borders, fills, and graph strokes (non-text, 3:1). */
+  --green-text: #569478;
+  --terracotta-text: #c47a5e;
   --graph-grey: #5b625d;
 
   /* --- Rules / borders (DESIGN_SPEC §33) --- */
@@ -47,6 +56,26 @@
   --fs-body: clamp(14px, 0.9vw, 17px);
   --fs-metadata: clamp(9px, 0.6vw, 11px);
   --fs-graph-label: clamp(9px, 0.6vw, 12px);
+
+  /* V2 canonical assignment-card typography tokens (V2_IMPROVEMENT_SPEC §5).
+     Every card uses these tokens for the same semantic role; no component
+     applies a one-off font-size adjustment to fit content. */
+  --fs-card-label: var(--fs-section);
+  --fs-card-title: var(--fs-body);
+  --fs-card-description: var(--fs-body);
+  --fs-card-metadata: var(--fs-metadata);
+  --fs-card-status: var(--fs-metadata);
+  --fs-card-action: var(--fs-metadata);
+
+  /* V2 navigation hierarchy tokens (V2_IMPROVEMENT_SPEC §1, §6).
+     Primary structural navigation reads larger and heavier; secondary
+     tabs/controls stay lighter and visually grouped under their section.
+     Hierarchy comes from typography, spacing, grouping, and active state —
+     not from decorative containers. */
+  --fs-nav: clamp(12px, 0.95vw, 14px); /* primary section navigation */
+  --fs-nav-secondary: clamp(10px, 0.75vw, 12px); /* secondary nav (tracks) */
+  --fs-tab: clamp(11px, 0.8vw, 12px); /* primary tabs within a section */
+  /* secondary tabs (tier etc.) keep --fs-metadata */
 
   --tracking-metadata: 0.08em;
 
@@ -116,7 +145,7 @@ a {
 }
 
 a:hover {
-  color: var(--green-bright);
+  color: var(--green-text);
 }
 
 img,
@@ -249,11 +278,13 @@ ol {
 }
 
 .section-label {
-  font-size: var(--fs-metadata);
+  /* V2 §1: primary section labels read as structure, one clear step above
+     the tabs/controls that belong to them (size + colour, no decoration). */
+  font-size: var(--fs-nav);
   font-weight: 600;
   letter-spacing: var(--tracking-metadata);
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--text-dim);
   margin-bottom: var(--space-5);
 }
 

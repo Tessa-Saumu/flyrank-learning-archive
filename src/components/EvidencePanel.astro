@@ -1,0 +1,106 @@
+---
+/**
+ * EvidencePanel.astro — the persistent V2 evidence area for an assignment
+ * (V2_IMPROVEMENT_SPEC §3–4).
+ *
+ * On desktop this sits in the right-hand column beside the main assignment
+ * content. It identifies every proof item, keeps the heavy asset in preview
+ * form, and asks the visitor to explicitly choose `Show evidence` before
+ * anything heavier is created in the DOM.
+ */
+import ArtifactPreview from './ArtifactPreview.astro';
+import { artifactsForAssignment, evidenceStatusLabel } from '../lib/archive';
+import type { Assignment } from '../data/types';
+
+interface Props {
+  assignment: Assignment;
+}
+
+const { assignment: a } = Astro.props;
+const items = artifactsForAssignment(a.id);
+---
+
+<aside class="evidence" aria-label={`Evidence for ${a.title}`} data-evidence-panel>
+  <div class="evidence__head">
+    <h2 class="evidence__label">Evidence</h2>
+    <span class="evidence__status" data-status={a.evidenceStatus}>
+      {evidenceStatusLabel(a.evidenceStatus)}
+    </span>
+  </div>
+
+  <p class="evidence__note">
+    Proof is listed in preview. Heavy assets load only when you choose to show them.
+  </p>
+
+  <div class="evidence__items">
+    {
+      items.length > 0 ? (
+        items.map(({ artifact, link }) => (
+          <ArtifactPreview
+            artifact={artifact}
+            link={link}
+            evidenceStatus={a.evidenceStatus}
+            assignment={a}
+          />
+        ))
+      ) : (
+        <p class="evidence__empty">No proof artifact is listed for this assignment.</p>
+      )
+    }
+  </div>
+</aside>
+
+<style>
+  .evidence {
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    background: var(--bg-elevated);
+    padding: var(--space-5);
+  }
+
+  .evidence__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    border-bottom: var(--rule);
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .evidence__label {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .evidence__status {
+    font-size: var(--fs-card-status);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    text-align: right;
+  }
+
+  .evidence__note {
+    font-size: var(--fs-body);
+    color: var(--text-dim);
+    margin: 0 0 var(--space-4);
+    max-width: var(--measure-narrow);
+  }
+
+  .evidence__items {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .evidence__empty {
+    color: var(--text-faint);
+    margin: 0;
+  }
+</style>

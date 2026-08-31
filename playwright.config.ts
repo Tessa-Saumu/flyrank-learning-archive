@@ -25,6 +25,17 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:4321',
     trace: 'retain-on-failure',
+    // Optional escape hatch for sandboxed/CI environments where the
+    // Playwright browser CDN is unreachable: point PW_CHROMIUM_EXECUTABLE at
+    // any Chromium binary. When unset, behaviour is unchanged.
+    ...(process.env.PW_CHROMIUM_EXECUTABLE
+      ? {
+          launchOptions: {
+            executablePath: process.env.PW_CHROMIUM_EXECUTABLE,
+            args: ['--no-sandbox', '--disable-gpu'],
+          },
+        }
+      : {}),
   },
   projects: [
     {

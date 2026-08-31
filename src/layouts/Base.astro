@@ -4,6 +4,7 @@
  * Basis: DESIGN_SPEC §08 (header), PRODUCT_SPEC §36 (SEO/sharing).
  */
 import Header from '../components/Header.astro';
+import AssignmentModal from '../components/AssignmentModal.astro';
 import { site } from '../config';
 import '../styles/global.css';
 
@@ -74,6 +75,7 @@ const ogImageUrl = new URL(ogImage ?? site.ogImage, site.url).toString();
         </p>
       </div>
     </footer>
+    <AssignmentModal />
   </body>
 </html>
 

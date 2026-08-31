@@ -1,7 +1,9 @@
 ---
 /**
  * Hero.astro — orientation panel per DESIGN_SPEC §09.
- * Both CTAs anchor to the browse index in Phase 1 (the map placeholder).
+ * V2 §12: the `Explore the map` CTA no longer lives beside the map preview —
+ * it now closes the homepage work section (see index.astro), so the journey
+ * is Hero → map preview → assignments → Explore the Map.
  */
 ---
 
@@ -28,8 +30,7 @@
     </p>
 
     <div class="hero__actions">
-      <a class="btn btn--filled" href="#map">Explore the map</a>
-      <a class="btn" href="#browse">Browse the work</a>
+      <a class="btn btn--filled" href="#browse">Browse the work</a>
     </div>
   </div>
 </section>
@@ -55,11 +56,11 @@
   }
 
   .hero__track--ai {
-    color: var(--green-bright);
+    color: var(--green-text);
   }
 
   .hero__track--ml {
-    color: var(--terracotta);
+    color: var(--terracotta-text);
   }
 
   .hero__cross {

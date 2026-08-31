@@ -45,7 +45,7 @@ function isActive(href: string): boolean {
         nav.map((item) => (
           <a
             href={item.href}
-            class:list={['header__link', { 'is-active': isActive(item.href) }]}
+            class:list={['header__link', 'header__link--primary', { 'is-active': isActive(item.href) }]}
             aria-current={isActive(item.href) ? 'page' : undefined}
           >
             {item.label}
@@ -55,11 +55,12 @@ function isActive(href: string): boolean {
     </nav>
 
     <nav class="header__tracks" aria-label="Tracks">
+      <span class="header__tracks-label" aria-hidden="true">Tracks</span>
       {
         tracks.map((item) => (
           <a
             href={item.href}
-            class:list={['header__link', `track-${item.track}`, { 'is-active': isActive(item.href) }]}
+            class:list={['header__link', 'header__link--secondary', `track-${item.track}`, { 'is-active': isActive(item.href) }]}
             aria-current={isActive(item.href) ? 'page' : undefined}
           >
             {item.label}
@@ -113,6 +114,7 @@ function isActive(href: string): boolean {
 
   .header__nav {
     display: flex;
+    align-items: baseline;
     gap: var(--space-5);
     flex: 1;
     justify-content: center;
@@ -120,8 +122,20 @@ function isActive(href: string): boolean {
 
   .header__tracks {
     display: flex;
-    gap: var(--space-5);
+    align-items: baseline;
+    gap: var(--space-3);
     flex-shrink: 0;
+  }
+
+  /* V2 §1: the tracks group is labelled so it reads as a grouped, secondary
+     cluster rather than a continuation of the primary row. */
+  .header__tracks-label {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-right: var(--space-1);
   }
 
   .header__link {
@@ -134,6 +148,19 @@ function isActive(href: string): boolean {
     position: relative;
     padding: var(--space-1) 0;
     transition: color var(--motion-fast) var(--ease);
+  }
+
+  /* V2 §1 + §6: primary section navigation carries more typographic weight
+     and size than the secondary track links; both stay restrained. */
+  .header__link--primary {
+    font-family: var(--font-heading);
+    font-size: var(--fs-nav);
+    font-weight: 600;
+  }
+
+  .header__link--secondary {
+    font-size: var(--fs-nav-secondary);
+    font-weight: 500;
   }
 
   .header__link:hover {
@@ -157,11 +184,11 @@ function isActive(href: string): boolean {
 
   /* Track identity accents are text-only, never colour alone */
   .header__link.track-ai-fluency.is-active {
-    color: var(--green-bright);
+    color: var(--green-text);
   }
 
   .header__link.track-machine-learning.is-active {
-    color: var(--terracotta);
+    color: var(--terracotta-text);
   }
 
   @media (max-width: 900px) {
@@ -181,6 +208,23 @@ function isActive(href: string): boolean {
 
     .header__tracks {
       margin-left: auto;
+    }
+  }
+
+  /* V2 §6: comfortable laptop reading. At laptop/desktop widths the primary
+     items get more air between them; the bar keeps its height, structure,
+     and visual language (no oversized navigation). */
+  @media (min-width: 1024px) {
+    .header__inner {
+      gap: var(--space-7);
+    }
+
+    .header__nav {
+      gap: var(--space-6);
+    }
+
+    .header__tracks {
+      gap: var(--space-4);
     }
   }
 </style>

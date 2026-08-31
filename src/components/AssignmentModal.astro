@@ -1,0 +1,133 @@
+---
+/**
+ * AssignmentModal.astro — the V2 in-context assignment pop-up
+ * (V2_IMPROVEMENT_SPEC §2).
+ *
+ * The shell is a native <dialog> so Escape, focus trapping, and the modal
+ * backdrop come from the platform. Assignment content is fetched from the
+ * existing static /work/[slug] route and injected with its own assets, so the
+ * modal reads as the existing assignment page placed above the current page.
+ *
+ * The actual interaction logic lives in src/scripts/assignment-modal.ts (loaded
+ * once per page; the host is harmless on pages without assignment cards).
+ */
+---
+
+<div class="assignment-modal" data-assignment-modal>
+  <dialog class="assignment-modal__dialog" aria-labelledby="assignment-modal-heading" aria-modal="true">
+    <div class="assignment-modal__top">
+      <span class="assignment-modal__label" data-modal-label>
+        Assignment
+      </span>
+      <h2 class="sr-only" id="assignment-modal-heading">Assignment details</h2>
+      <button
+        class="assignment-modal__close"
+        type="button"
+        data-modal-close
+        aria-label="Close assignment"
+      >
+        Close <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="assignment-modal__body" data-modal-body></div>
+  </dialog>
+</div>
+
+<script>
+  import '../scripts/assignment-modal';
+</script>
+
+<style>
+  .assignment-modal__dialog {
+    width: min(1120px, calc(100vw - var(--space-6)));
+    max-width: 1120px;
+    max-height: min(88vh, 920px);
+    margin: auto;
+    padding: 0;
+    border: var(--rule);
+    border-radius: var(--radius-2);
+    background: var(--bg);
+    color: var(--text);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  .assignment-modal__dialog::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+  }
+
+  .assignment-modal__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    border-bottom: var(--rule);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .assignment-modal__label {
+    font-family: var(--font-heading);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .assignment-modal__close {
+    font-family: var(--font-body);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text);
+    background: transparent;
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .assignment-modal__close:hover {
+    border-color: var(--text);
+    color: var(--text);
+  }
+
+  .assignment-modal__body {
+    overflow-y: auto;
+    max-height: calc(min(88vh, 920px) - 49px);
+    padding: var(--space-6);
+  }
+
+  .assignment-modal__loading,
+  .assignment-modal__error {
+    color: var(--text-faint);
+    margin: 0;
+  }
+</style>
+
+<style is:global>
+  /* Global overrides for the fetched /work/[slug] content inside the modal. */
+  .assignment-modal__body > .container {
+    max-width: none;
+    padding: 0;
+  }
+
+  .assignment-modal__body > .container > .section {
+    padding: 0;
+  }
+
+  .assignment-modal__body .crumbs {
+    display: none;
+  }
+
+  .assignment-modal__body .detail__code {
+    font-size: var(--fs-section);
+  }
+
+  .assignment-modal__body .detail__title {
+    font-size: var(--fs-section);
+  }
+</style>

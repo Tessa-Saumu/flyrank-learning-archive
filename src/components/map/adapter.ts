@@ -20,6 +20,15 @@ import { seedPosition } from './layout';
 
 export type NodeType = 'assignment' | 'concept' | 'artifact';
 
+/**
+ * Edge relationship kinds produced for the renderer. The three canonical
+ * assignment relationships come from the graph data model; `concept` and
+ * `artifact` are connective edges derived from the concept `assignments`
+ * mapping (CONTENT_REGISTRY §4.1) and the `artifactLinks` mapping (§3.2).
+ * These are subordinate to the dependency edges and carry no direction.
+ */
+export type EdgeRelationship = Relationship | 'concept' | 'artifact';
+
 export type ViewKind =
   | 'default'
   | 'track'
@@ -49,7 +58,12 @@ export interface GraphNodeData {
   nodeType: NodeType;
   /** Underlying canonical id (assignment/concept/artifact id). */
   ref: string;
+  /** Short node label (V2 §7 descriptor for assignments; name for concepts/artifacts). */
   label: string;
+  /** Full canonical title/name for the hover tooltip (V2 §8). */
+  title?: string;
+  /** Short canonical description for the hover tooltip (V2 §8). */
+  description?: string;
   track?: Track;
   tier?: Tier;
   strand?: string;
@@ -63,7 +77,7 @@ export interface GraphEdgeData {
   id: string;
   source: string;
   target: string;
-  relationship: Relationship;
+  relationship: EdgeRelationship;
   confidence: string;
   approved: true;
 }
@@ -109,9 +123,14 @@ export function visibleIdsForKind(state: ViewState): {
   concepts: Set<string>;
   artifacts: Set<string>;
 } {
+  let visibleAssignments: Set<string>;
+  let visibleConcepts: Set<string>;
+
   switch (state.kind) {
     case 'default':
-      return { assignments: defaultAnchorIds(), concepts: ids(ALL_CONCEPT_IDS), artifacts: new Set() };
+      visibleAssignments = defaultAnchorIds();
+      visibleConcepts = ids(ALL_CONCEPT_IDS);
+      break;
     case 'track': {
       const track: Track = state.track ?? 'ai-fluency';
       const as = new Set(assignments.filter((a) => a.track === track).map((a) => a.id));
@@ -123,15 +142,15 @@ export function visibleIdsForKind(state: ViewState): {
         if (as.has(e.target)) as.add(e.source);
       }
       const cs = new Set(concepts.filter((c) => c.assignments.some((id) => as.has(id))).map((c) => c.id));
-      return { assignments: as, concepts: cs, artifacts: new Set() };
+      visibleAssignments = as;
+      visibleConcepts = cs;
+      break;
     }
     case 'concept': {
       const c = conceptById.get(state.concept ?? '');
-      return {
-        assignments: ids(c ? c.assignments : []),
-        concepts: c ? new Set([c.id]) : new Set(),
-        artifacts: new Set(),
-      };
+      visibleAssignments = ids(c ? c.assignments : []);
+      visibleConcepts = c ? new Set([c.id]) : new Set();
+      break;
     }
     case 'assignment': {
       const a = assignmentById.get(state.node ?? '');
@@ -143,20 +162,38 @@ export function visibleIdsForKind(state: ViewState): {
           if (e.target === a.id) as.add(e.source);
         }
       }
-      const linked = a ? artifactLinks.filter((l) => l.assignmentId === a.id).map((l) => l.artifactId) : [];
-      return { assignments: as, concepts: ids(a ? a.concepts : []), artifacts: ids(linked) };
+      visibleAssignments = as;
+      visibleConcepts = ids(a ? a.concepts : []);
+      break;
     }
     case 'browse-all':
-      return { assignments: ids(ALL_ASSIGNMENT_IDS), concepts: ids(ALL_CONCEPT_IDS), artifacts: new Set() };
+      visibleAssignments = ids(ALL_ASSIGNMENT_IDS);
+      visibleConcepts = ids(ALL_CONCEPT_IDS);
+      break;
     case 'concepts':
-      return { assignments: new Set(), concepts: ids(ALL_CONCEPT_IDS), artifacts: new Set() };
+      visibleAssignments = new Set();
+      visibleConcepts = ids(ALL_CONCEPT_IDS);
+      break;
     case 'artifacts':
-      return {
-        assignments: ids(ALL_ASSIGNMENT_IDS),
-        concepts: ids(ALL_CONCEPT_IDS),
-        artifacts: ids(ALL_ARTIFACT_IDS),
-      };
+      visibleAssignments = ids(ALL_ASSIGNMENT_IDS);
+      visibleConcepts = ids(ALL_CONCEPT_IDS);
+      break;
   }
+
+  // Artifact visibility (V2 §11). Artifacts are visible by default: any
+  // artifact linked to a visible assignment is shown. The concept-only view
+  // shows no assignments and therefore no artifacts; the dedicated `artifacts`
+  // view exposes the full artifact set.
+  const visibleArtifacts = new Set<string>();
+  if (state.kind === 'artifacts') {
+    for (const id of ALL_ARTIFACT_IDS) visibleArtifacts.add(id);
+  } else if (state.kind !== 'concepts') {
+    for (const l of artifactLinks) {
+      if (visibleAssignments.has(l.assignmentId)) visibleArtifacts.add(l.artifactId);
+    }
+  }
+
+  return { assignments: visibleAssignments, concepts: visibleConcepts, artifacts: visibleArtifacts };
 }
 
 /**
@@ -208,6 +245,44 @@ export function buildGraphElements(state: ViewState): GraphElements {
     });
   }
 
+  // Connective edges — concept mappings (V2 §10.2) and artifact links
+  // (V2 §11). These are derived from the canonical data model (concept
+  // `assignments` and `artifactLinks`) so no concept or artifact floats
+  // without an intentional relationship. They render subordinate to the
+  // dependency edges and carry no arrowhead.
+  for (const cid of visible.concepts) {
+    const c = conceptById.get(cid);
+    if (!c) continue;
+    for (const aid of c.assignments) {
+      if (!visible.assignments.has(aid)) continue;
+      edges.push({
+        group: 'edges',
+        data: {
+          id: `edge-concept-${aid}-${cid}`,
+          source: aid,
+          target: cid,
+          relationship: 'concept',
+          confidence: 'high',
+          approved: true,
+        },
+      });
+    }
+  }
+  for (const l of artifactLinks) {
+    if (!visible.artifacts.has(l.artifactId) || !visible.assignments.has(l.assignmentId)) continue;
+    edges.push({
+      group: 'edges',
+      data: {
+        id: `edge-artifact-${l.assignmentId}-${l.artifactId}`,
+        source: l.assignmentId,
+        target: l.artifactId,
+        relationship: 'artifact',
+        confidence: 'high',
+        approved: true,
+      },
+    });
+  }
+
   // Nodes.
   const nodes: GraphElement[] = [];
   for (const id of visible.assignments) {
@@ -219,7 +294,9 @@ export function buildGraphElements(state: ViewState): GraphElements {
         id,
         nodeType: 'assignment',
         ref: id,
-        label: a.officialCode ?? a.title,
+        label: a.descriptor ?? a.title,
+        title: a.title,
+        description: a.task,
         track: a.track,
         tier: a.tier,
         strand: a.strand,
@@ -239,6 +316,8 @@ export function buildGraphElements(state: ViewState): GraphElements {
         nodeType: 'concept',
         ref: id,
         label: c.name.toUpperCase(),
+        title: c.name,
+        description: c.description,
         size: 1,
       },
       position: seedPosition(id),
@@ -273,6 +352,8 @@ export function buildGraphElements(state: ViewState): GraphElements {
         nodeType: 'artifact',
         ref: id,
         label: art.title,
+        title: art.title,
+        description: art.description,
         artifactType: art.type,
         size: 1,
       },
