@@ -84,7 +84,7 @@ import { assignments } from '../data/assignments';
 
 <style>
   .map-section {
-    padding: var(--space-7) 0 var(--space-6);
+    padding: var(--space-7) 0 var(--space-5);
   }
 
   .map-section__grid {
@@ -122,13 +122,25 @@ import { assignments } from '../data/assignments';
     font-weight: 600;
     letter-spacing: var(--tracking-metadata);
     text-transform: uppercase;
-    color: var(--text-faint);
+    color: var(--green-text);
     margin-bottom: var(--space-2);
   }
 
   .orientation__item p {
     color: var(--text-dim);
     margin: 0;
+    max-width: var(--measure-narrow);
+    width: 100%;
+  }
+
+  /* V2 REVISION Phase 2 §11: remove awkward empty gap between the graph
+     and the explanatory section. The map previously left 32px bottom
+     padding and the orientation added another 48px top padding (80px
+     of accidental air that made the explanatory headings feel detached).
+     Tightening both sides restores intentional rhythm without
+     compressing the graph. */
+  .orientation.section {
+    padding-top: var(--space-5);
   }
 
   /* V2 §12: end-of-work-section transition to the full map experience. */

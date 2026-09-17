@@ -10,7 +10,6 @@
 import EvidencePanel from './EvidencePanel.astro';
 import {
   conceptsForAssignment,
-  displayLabel,
   edgesForAssignment,
   evidenceStatusLabel,
   relationshipLabel,
@@ -38,7 +37,7 @@ const metaLine = metaParts.join(' · ');
 
 <article class:list={['detail', { 'detail--compact': compact }]}>
   <header class="detail__header">
-    <p class="detail__code">{displayLabel(a)}</p>
+    {a.officialCode && <p class="detail__code">{a.officialCode}</p>}
     <p class="detail__meta">{metaLine}</p>
     <h1 class="detail__title">{a.title}</h1>
   </header>
@@ -187,6 +186,17 @@ const metaLine = metaParts.join(' · ');
     margin: 0;
     color: var(--text);
     max-width: var(--measure);
+    width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  /* V2 REVISION Phase 2 §14: text containers must use the available width
+     responsively while preserving readable line lengths. The grid column
+     itself is flexible (minmax) so the measure can be responsive without
+     leaving unexplained empty space at narrower widths. */
+  .detail__main {
+    min-width: 0;
+    width: 100%;
   }
 
   .rule--tight {

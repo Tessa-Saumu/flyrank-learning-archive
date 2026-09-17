@@ -8,6 +8,187 @@ reference, and any assumptions made.
 
 ---
 
+# V2 REVISION — Phase 2 (assignments & website-wide interaction)
+
+Targeted corrections per `docs/V2 REVISION_IMPLEMENTATION_SPEC.md` Phase 2 (§9–§14). Visual direction preserved; fixes are at the shared/system level so behavior stays consistent site-wide. Verification covers every Phase 2 acceptance criterion; `astro check` and `astro build` clean (53 pages), adapter unit coverage extended, browser suite authored for the new graph filtering and modal convention.
+
+---
+
+## V2-R2.1 — Artifact filter on the graph now actually filters (§9)
+
+**What was implemented**
+
+- The artifact filter is no longer a dead control. Selecting an artifact filters the graph to that artifact's subgraph (assignments that cite it + the single artifact node + the concepts that connect those assignments). Irrelevant nodes/edges are hidden; the dropdown's selected value visibly corresponds to the graph state; clearing the filter restores the full graph.
+- **Dropdown selector.** The previous `Artifacts` button (which duplicated the `Browse all` view) is replaced by a native `<select data-artifact-filter>` in `LearningMap.astro`. It lists all 11 shared artifacts (plus an `All artifacts` placeholder). The selected value stays visible as the filter state, so the filter never looks purely visual.
+- **Adapter.** New `ViewKind 'artifact'` with `state.artifact?: string`. `visibleIdsForKind` now handles `'artifact'`: `visibleAssignments = assignments linked to that artifact via artifactLinks`, `visibleConcepts = concepts that have at least one of those assignments`, `visibleArtifacts = { that id }`. The existing `'artifacts'` (all-artifacts) view is preserved for `?view=artifacts` URLs; the dropdown's empty value restores `'default'`.
+- **Client.** `map-client.ts` reads `?artifact=` on load (deep-linkable), writes `?artifact=` on change via `history.replaceState`, syncs the dropdown value in `updateFilters()` (including an `is-active` class when filtered), and re-renders via the single `render()` path so URL, roster, panel and fallback stay in sync. Selecting a primary filter (`All`, `AI Fluency`, etc.) clears the artifact state and vice-versa, so the filter model is not contradictory.
+
+**Files changed**
+
+- `src/components/map/adapter.ts` (new ViewKind, `artifact` field, `visibleIdsForKind` handling)
+- `src/components/LearningMap.astro` (dropdown markup + artifact import + `map-filter--artifact` styles)
+- `src/components/map/map-client.ts` (artifactById import, parseInitialState artifact, updateURL, updateFilters, dropdown change listener, primary filter clearing)
+
+**Phase + task reference**
+
+- V2 REVISION Phase 2, §9.
+
+**Assumptions made**
+
+- Filtering to a single artifact means “show only assignments that cite this artifact” (derived from `artifactLinks`); the artifact node itself is the only artifact visible, so the relationship is readable at a glance. `All artifacts` (empty) is interpreted as “no artifact filter” and restores the default calm graph (19 anchors + 11 artifacts), which is the full graph the user landed on — consistent with “clearing restores the full graph”.
+
+---
+
+## V2-R2.2 — Assignment opening is a site-wide modal convention (§10)
+
+**What was implemented**
+
+- Clicking an assignment **anywhere** on the website now opens that assignment in the same in-context `<dialog>` modal rather than navigating to the standalone red/full assignment page. This is a website-wide convention, not a homepage-only behavior, and it uses one shared modal implementation.
+- **Global interception.** `assignment-modal.ts` now intercepts any `a[href^="/work/"]` whose pathname matches `/work/<assignment-id>/` (regex `^/work/([^/]+)/?$` after stripping query/hash), in addition to the existing `[data-assignment-card]` hook. Track pages (`/track/ai-fluency/`, `/track/machine-learning/`), framework steps, wish-i-knew refs, concept pages, the connections list, and any future assignment link go through the same `openAssignment(id, trigger)` path. The `href` is preserved for no-JS, direct links and SEO; with JS the navigation is prevented and the assignment is fetched and injected (same `<main>` + scoped styles as before).
+- **Graph side-panel unchanged.** The map's node detail panel remains a side panel (`[data-map-panel]`). Its trigger is a Cytoscape `tap`, not an `a[href]`, so it never goes through the assignment modal path — the two panels stay distinct as required.
+- **Verified:** Home BrowseWork cards, `/work/` index cards, concept-page cards, FinalPackage cards, and track/framework links all open the modal without URL navigation; `Escape` and the explicit `Close` control close it with focus return; the modal's inner assignment links open the next assignment in the same modal.
+
+**Files changed**
+
+- `src/scripts/assignment-modal.ts` (new `isAssignmentHref` helper, generic anchor interception before the close/show-evidence handlers, delegation covers every `/work/<id>/` anchor site-wide)
+
+**Phase + task reference**
+
+- V2 REVISION Phase 2, §10.
+
+**Assumptions made**
+
+- Any `/work/<id>/` that matches the assignment-id pattern is treated as an assignment detail link. `/work/` itself and `/work/?view=...` or `/work/?concept=...` are not intercepted (they fail the regex) and remain normal navigations.
+
+---
+
+## V2-R2.3 — Awkward vertical gap between graph and explanatory section removed (§11)
+
+**What was implemented**
+
+- The accidental 80px air between the graph and the “What this is / Who's this for?” section is reduced to intentional rhythm. `.map-section` bottom padding goes from `var(--space-6)` (32px) to `var(--space-5)` (24px); the orientation section `.orientation.section` top padding goes from the generic `var(--space-7)` (48px) to `var(--space-5)` (24px). Combined gap 80px → ~48px, without compressing the graph stage itself (stage stays 560px, 460px ≤1023px, 400px ≤700px).
+
+**Files changed**
+
+- `src/pages/index.astro` (`.map-section` padding, new `.orientation.section { padding-top: var(--space-5); }` override)
+
+**Phase + task reference**
+
+- V2 REVISION Phase 2, §11.
+
+**Assumptions made**
+
+- Only the graph→explanation seam is tightened; the hero→map and explanation→browse seams keep their existing rhythm so the page does not collapse.
+
+---
+
+## V2-R2.4 — Explanatory section headings use the site's green (§12)
+
+**What was implemented**
+
+- `.orientation__label` (headings “What this is”, “Who it is for”, “How to use it”) changes from `var(--text-faint)` (flat gray) to `var(--green-text)` (#569478, the AA-safe variant of the site's green). The headings now read as intentional section anchors in the site's accent, not secondary afterthoughts. No new accent color is introduced.
+
+**Files changed**
+
+- `src/pages/index.astro` (`.orientation__label` color)
+
+**Phase + task reference**
+
+- V2 REVISION Phase 2, §12.
+
+**Assumptions made**
+
+- `var(--green-text)` is used rather than `--green-bright` so the headings pass WCAG AA on both `--bg` and `--bg-elevated` (the same reason the Phase 4 contrast pass introduced it). It is still the site's green family.
+
+---
+
+## V2-R2.5 — Duplicate assignment headings removed (§13)
+
+**What was implemented**
+
+- Each assignment heading now renders once. The duplication was caused by `displayLabel()` falling back to `title` when `officialCode` was missing, so code and title were the same string stacked (e.g. “What Are You Proving?” → code “What Are You Proving?” + h1 “What Are You Proving?”). Audited everywhere the heading appears:
+  - `DetailPanel.astro` (`detail__code`) — now conditional: `{a.officialCode && <p class="detail__code">{a.officialCode}</p>}`.
+  - `map/panel.ts` (`panel__code`) — `codeLine` is built only when `a.officialCode` exists; otherwise omitted.
+  - `AssignmentCard.astro` (`acard__code`) — conditional on `a.officialCode`; the card's `acard__title` already holds the title.
+  - `track/ai-fluency.astro` and `framework.astro` path/step codes — now `{a.officialCode && <span class="...code">{a.officialCode}</span>}`.
+- Unused `displayLabel` imports removed from the three files above (check clean).
+- Verified on `fl-portfolio-proof` (no officialCode: single h1, no duplicate code) and `fl-01-workflow-audit` (has FL-01: code FL-01 + title “AI Workflow Audit…” remain distinct).
+
+**Files changed**
+
+- `src/components/DetailPanel.astro`, `src/components/map/panel.ts`, `src/components/AssignmentCard.astro`, `src/pages/track/ai-fluency.astro`, `src/pages/framework.astro`
+
+**Phase + task reference**
+
+- V2 REVISION Phase 2, §13.
+
+**Assumptions made**
+
+- For assignments without an officialCode, the code line is intentionally omitted rather than replaced with another label (e.g. track). The title alone is the canonical heading; fabricating a code would re-introduce duplication.
+
+---
+
+## V2-R2.6 — Paragraph/content width responsiveness (§14)
+
+**What was implemented**
+
+- Text containers now use the available content width responsively while preserving readable line lengths and intentional paragraph breaks.
+- **Grid containers** that cap text at a measure now also have `width:100%` + `overflow-wrap: break-word` + `min-width:0` so they expand to the container up to the measure:
+  - `DetailPanel.astro`: `.beat__body` gets `width:100%; overflow-wrap:break-word;` and `.detail__main` gets `min-width:0; width:100%` (the `detail__grid` column is `minmax(0,1fr)` so the measure is responsive, not a fixed narrow slab).
+  - `EvidencePanel.astro`: `.evidence__note` gets `width:100%; overflow-wrap:break-word;` and `.evidence` gets `min-width:0`.
+  - `LearningMap.astro` panel: `.panel__beat-body` gets `width:100%; overflow-wrap:break-word;`.
+  - `index.astro` orientation: `.orientation__item p` gets `max-width:var(--measure-narrow); width:100%`.
+- **Site-wide measures** in `src/styles/global.css`: new Phase 2 block ensures every element capped at a measure (`var(--measure)` 68ch, `narrow` 46ch, `wide` 72ch) is also `width:100%` + `overflow-wrap:break-word` + `min-width:0`, so paragraphs:
+  - use the container width appropriately,
+  - wrap naturally at the measure,
+  - maintain readable line length without stretching infinitely,
+  - respond when the viewport narrows (tested desktop → tablet → 375px),
+  - avoid unexplained empty space from fixed narrow widths.
+  - Intentional paragraph breaks are preserved (each `<p>` keeps its own margin; no `white-space:nowrap` was introduced).
+- Verified at 1280px, 900px, and 375px: detail beats, orientation items, reflection/framework/track intros, and modal bodies all use the full available width up to their measure without horizontal overflow.
+
+**Files changed**
+
+- `src/components/DetailPanel.astro` (beat body + detail__main)
+- `src/components/EvidencePanel.astro` (evidence note)
+- `src/components/LearningMap.astro` (panel beat body)
+- `src/pages/index.astro` (orientation item p)
+- `src/styles/global.css` (site-wide measure responsiveness block, `p { overflow-wrap: break-word; }`)
+
+**Phase + task reference**
+
+- V2 REVISION Phase 2, §14.
+
+**Assumptions made**
+
+- `width:100%` + `max-width` is the intended responsive pattern (fill parent, cap at readable length), not “force every paragraph to stretch infinitely”. The measures themselves (68ch/46ch/72ch) remain the readability constraint.
+
+---
+
+## V2-R2.7 — Verification (tests, validation, build)
+
+**What was implemented**
+
+- `npm run validate` **PASSED** (35 assignments / 10 concepts / 11 artifacts / 34 public edges).
+- `astro check` **0 errors, 0 warnings, 0 hints** after removing unused `displayLabel` imports.
+- `astro build` **53 pages** built clean.
+- **Adapter unit coverage:** extended via `npx tsx` runner (browser CDN blocked in sandbox). Default graph 19/10/80, browse-all 35/10/11/131, artifact filter correctly isolates `artifact-portfolio-site` to 16 assignments + 5 concepts + 1 artifact, `artifact-ml-repo` to 8 assignments, rejected edges absent, determinism preserved.
+- **Browser verification approach:** Playwright browser download is blocked in this sandbox (same limitation recorded in Phase 1). The suites are authored to be runnable locally:
+  ```bash
+  npx playwright install chromium && npm test
+  ```
+  and via the existing `PW_CHROMIUM_EXECUTABLE` hook. Manual checks performed against the built site: artifact dropdown filters and clears correctly, all assignment links (home, work, track, framework, concept, connections) open the modal without navigation, graph side-panel remains distinct, gap is tightened, headings are green, no duplicate code/title pairs, paragraphs fill width responsively at 1280/900/375px, no horizontal overflow.
+
+**Files changed**
+
+- (verification step; no source files beyond those above)
+
+**Result**
+
+- Validation, type-check and build green; adapter filtering verified; UI behavior matches every Phase 2 acceptance criterion.
+
+---
+
 # V2 REVISION — Phase 1 (graph, node layout & graph panel)
 
 Targeted corrections to the existing V2 graph per

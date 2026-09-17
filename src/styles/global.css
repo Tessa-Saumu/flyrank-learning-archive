@@ -315,6 +315,70 @@ ol {
   max-width: 72ch;
 }
 
+/* V2 REVISION Phase 2 §14 — paragraph/content width responsiveness.
+   Every text container capped at a readable measure must also be
+   width:100% so it fills its parent up to that measure, wraps
+   naturally, and responds to viewport changes. Without width:100%,
+   a max-width alone leaves the element at its intrinsic width,
+   which can appear compressed left in a wide container or fail to
+   shrink correctly on narrower viewports. Preserve manual paragraph
+   breaks (separate <p> elements keep their own margins). */
+.beat__body,
+.evidence__note,
+.final__intro,
+.fw-head__intro,
+.steps__desc,
+.fw-note__body,
+.wik__text,
+.wik-head__intro,
+.refl-head__intro,
+.refl-convergence__note,
+.refl-section__para,
+.refl-learnings__text,
+.refl-cross,
+.track-head__intro,
+.concept-head__desc,
+.mediation,
+.hero__supporting,
+.hero__subordinate,
+.orientation__item p,
+.detail__main,
+.evidence,
+.wik__body,
+.steps__body,
+.refl-section,
+.panel__beat-body {
+  min-width: 0;
+}
+
+.beat__body,
+.evidence__note,
+.final__intro,
+.fw-head__intro,
+.steps__desc,
+.fw-note__body,
+.wik__text,
+.refl-head__intro,
+.refl-convergence__note,
+.refl-section__para,
+.refl-cross,
+.track-head__intro,
+.concept-head__desc,
+.mediation,
+.hero__supporting,
+.hero__subordinate,
+.orientation__item p,
+.panel__beat-body,
+.detail__facts dd,
+.preview__desc {
+  width: 100%;
+  overflow-wrap: break-word;
+}
+
+p {
+  overflow-wrap: break-word;
+}
+
 /* --- Screen-reader-only --- */
 .sr-only {
   position: absolute;

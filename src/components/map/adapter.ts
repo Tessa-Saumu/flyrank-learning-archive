@@ -37,13 +37,15 @@ export type ViewKind =
   | 'assignment'
   | 'browse-all'
   | 'concepts'
-  | 'artifacts';
+  | 'artifacts'
+  | 'artifact';
 
 export interface ViewState {
   kind: ViewKind;
   track?: Track;
   concept?: string;
   node?: string;
+  artifact?: string;
 }
 
 /**
@@ -183,6 +185,15 @@ export function visibleIdsForKind(state: ViewState): {
       visibleAssignments = ids(ALL_ASSIGNMENT_IDS);
       visibleConcepts = ids(ALL_CONCEPT_IDS);
       break;
+    case 'artifact': {
+      const artId = state.artifact ?? '';
+      const linked = artifactLinks.filter((l) => l.artifactId === artId).map((l) => l.assignmentId);
+      visibleAssignments = ids(linked);
+      visibleConcepts = ids(
+        concepts.filter((c) => c.assignments.some((id) => visibleAssignments.has(id))).map((c) => c.id)
+      );
+      break;
+    }
   }
 
   // Artifact visibility (V2 §11). Artifacts are visible by default: any
@@ -192,6 +203,9 @@ export function visibleIdsForKind(state: ViewState): {
   const visibleArtifacts = new Set<string>();
   if (state.kind === 'artifacts') {
     for (const id of ALL_ARTIFACT_IDS) visibleArtifacts.add(id);
+  } else if (state.kind === 'artifact') {
+    const artId = state.artifact ?? '';
+    if (artId && artifactById.has(artId)) visibleArtifacts.add(artId);
   } else if (state.kind !== 'concepts') {
     for (const l of artifactLinks) {
       if (visibleAssignments.has(l.assignmentId)) visibleArtifacts.add(l.artifactId);

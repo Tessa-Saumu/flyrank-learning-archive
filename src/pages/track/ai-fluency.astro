@@ -4,7 +4,7 @@
  * AI Systems / Agents) converging at FL-10 (PRODUCT_SPEC §11).
  */
 import Base from '../../layouts/Base.astro';
-import { orderedAssignmentsForStrand, displayLabel } from '../../lib/archive';
+import { orderedAssignmentsForStrand } from '../../lib/archive';
 
 const portfolio = orderedAssignmentsForStrand('portfolio-public-work');
 const agents = orderedAssignmentsForStrand('ai-systems-agents');
@@ -33,7 +33,7 @@ const convergence = orderedAssignmentsForStrand('convergence');
           <li class="path__item">
             <a class="path__link" href={`/work/${a.id}/`}>
               <span class="path__index">{String(i + 1).padStart(2, '0')}</span>
-              <span class="path__code">{displayLabel(a)}</span>
+              {a.officialCode && <span class="path__code">{a.officialCode}</span>}
               <span class="path__title">{a.title}</span>
             </a>
           </li>
@@ -48,7 +48,7 @@ const convergence = orderedAssignmentsForStrand('convergence');
           <li class="path__item">
             <a class="path__link" href={`/work/${a.id}/`}>
               <span class="path__index">{String(i + 1).padStart(2, '0')}</span>
-              <span class="path__code">{displayLabel(a)}</span>
+              {a.officialCode && <span class="path__code">{a.officialCode}</span>}
               <span class="path__title">{a.title}</span>
             </a>
           </li>
@@ -60,7 +60,7 @@ const convergence = orderedAssignmentsForStrand('convergence');
       <h2 class="strand__heading" id="convergence-heading">Convergence</h2>
       {convergence.map((a) => (
         <a class="convergence__link" href={`/work/${a.id}/`}>
-          <span class="convergence__code">{displayLabel(a)}</span>
+          {a.officialCode && <span class="convergence__code">{a.officialCode}</span>}
           <span class="convergence__title">{a.title}</span>
         </a>
       ))}

@@ -11,7 +11,7 @@
  */
 import cytoscape from 'cytoscape';
 import type { Core, NodeSingular } from 'cytoscape';
-import { buildGraphElements, primaryAssignmentForArtifact, assignmentById, conceptById } from './adapter';
+import { buildGraphElements, primaryAssignmentForArtifact, assignmentById, conceptById, artifactById } from './adapter';
 import type { ViewState } from './adapter';
 import { renderAssignmentPanel, renderConceptPanel, renderEmptyPanel } from './panel';
 import type { Track } from '../../data/types';
@@ -389,6 +389,10 @@ function parseInitialState(): ViewState {
 
   // The `tier` query parameter is intentionally no longer read: the Tier
   // filter has been removed from the interface (V2 REVISION Phase 1 §6).
+  if (sp.has('artifact')) {
+    const art = sp.get('artifact') ?? '';
+    if (artifactById.has(art)) return { kind: 'artifact', artifact: art };
+  }
   if (sp.has('node')) return { kind: 'assignment', node: sp.get('node')! };
   if (sp.has('concept')) return { kind: 'concept', concept: sp.get('concept')! };
   if (sp.get('view') === 'browse-all') return { kind: 'browse-all' };
@@ -412,6 +416,7 @@ export function initLearningMap(root: HTMLElement): void {
   const tooltip = root.querySelector<HTMLElement>('[data-map-tooltip]');
   const regionEl = root.querySelector<HTMLElement>('[data-map-region]');
   const expandBtn = root.querySelector<HTMLElement>('[data-map-expand]');
+  const artifactSelect = root.querySelector<HTMLSelectElement>('[data-artifact-filter]');
 
   if (!stage || !panel || !roster) {
     root.classList.add('map-failed');
@@ -678,6 +683,9 @@ export function initLearningMap(root: HTMLElement): void {
       case 'artifacts':
         p.set('view', 'artifacts');
         break;
+      case 'artifact':
+        p.set('artifact', state.artifact ?? '');
+        break;
     }
     const qs = p.toString();
     const next = qs ? `${location.pathname}?${qs}` : location.pathname;
@@ -695,6 +703,12 @@ export function initLearningMap(root: HTMLElement): void {
     });
     const browseAll = root.querySelector<HTMLElement>('[data-filter-browseall]');
     if (browseAll) browseAll.classList.toggle('is-active', state.kind === 'browse-all');
+    if (artifactSelect) {
+      artifactSelect.value = state.kind === 'artifact' ? state.artifact ?? '' : '';
+      // Visibly correspond: when an artifact is selected, the dropdown itself
+      // reads as active via its value; we also mark is-active for test parity.
+      artifactSelect.classList.toggle('is-active', state.kind === 'artifact');
+    }
   }
 
   function primaryActive(v: FilterKind): boolean {
@@ -873,19 +887,19 @@ export function initLearningMap(root: HTMLElement): void {
       const v = btn.dataset.filterPrimary as FilterKind;
       switch (v) {
         case 'all':
-          state = { ...state, kind: 'default', track: undefined, concept: undefined, node: undefined };
+          state = { ...state, kind: 'default', track: undefined, concept: undefined, node: undefined, artifact: undefined };
           break;
         case 'ai-fluency':
-          state = { ...state, kind: 'track', track: 'ai-fluency', concept: undefined, node: undefined };
+          state = { ...state, kind: 'track', track: 'ai-fluency', concept: undefined, node: undefined, artifact: undefined };
           break;
         case 'machine-learning':
-          state = { ...state, kind: 'track', track: 'machine-learning', concept: undefined, node: undefined };
+          state = { ...state, kind: 'track', track: 'machine-learning', concept: undefined, node: undefined, artifact: undefined };
           break;
         case 'concepts':
-          state = { ...state, kind: 'concepts', concept: undefined, node: undefined };
+          state = { ...state, kind: 'concepts', concept: undefined, node: undefined, artifact: undefined };
           break;
         case 'artifacts':
-          state = { ...state, kind: 'artifacts', node: undefined };
+          state = { ...state, kind: 'artifacts', node: undefined, artifact: undefined };
           break;
       }
       render();
@@ -894,7 +908,24 @@ export function initLearningMap(root: HTMLElement): void {
   const browseAll = root.querySelector<HTMLElement>('[data-filter-browseall]');
   if (browseAll) {
     browseAll.addEventListener('click', () => {
-      state = { ...state, kind: 'browse-all', track: undefined, concept: undefined, node: undefined };
+      state = { ...state, kind: 'browse-all', track: undefined, concept: undefined, node: undefined, artifact: undefined };
+      render();
+    });
+  }
+
+  // V2 REVISION Phase 2 §9: artifact dropdown filtering. Selecting an
+  // artifact filters the graph to assignments linked to that artifact and
+  // shows only that artifact node; clearing the dropdown restores the
+  // full graph. The graph update is immediate and the selected value
+  // remains visible as the filter state.
+  if (artifactSelect) {
+    artifactSelect.addEventListener('change', () => {
+      const val = artifactSelect.value;
+      if (val && artifactById.has(val)) {
+        state = { kind: 'artifact', artifact: val, track: undefined, concept: undefined, node: undefined };
+      } else {
+        state = { kind: 'default', track: undefined, concept: undefined, node: undefined, artifact: undefined };
+      }
       render();
     });
   }
