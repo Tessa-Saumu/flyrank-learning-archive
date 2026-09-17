@@ -5,8 +5,8 @@
  *
  * Makes it obvious that this archive IS the FL-10 completion package: master
  * index of all 35 assignments grouped by track/strand, the live site, the hours
- * log reference, the build-in-public post, the final reflection, and the final
- * review/sign-off reference. Administrative/source items are links only (never
+ * log, the build-in-public post, the final reflection, and the final
+ * review/sign-off record. Administrative/source items are links only (never
  * a big visual treatment — PRODUCT_SPEC §33, DESIGN_SPEC §21).
  *
  * All URLs below are PLACEHOLDER until the author supplies the real values;
@@ -25,7 +25,7 @@ const artifactUrl = (id: string) => completionEntries.find((e) => e.artifact.id 
 const completionLinks: { id: string; label: string; url?: string }[] = [
   { id: 'artifact-final-retrospective', label: 'Final reflection', url: '/reflection/' },
   { id: 'artifact-build-in-public-post', label: 'Build-in-public post', url: artifactUrl('artifact-build-in-public-post') },
-  { id: 'artifact-hours-log', label: 'Hours log reference', url: artifactUrl('artifact-hours-log') },
+  { id: 'artifact-hours-log', label: 'Hours log', url: artifactUrl('artifact-hours-log') },
   { id: 'artifact-learning-archive', label: 'This archive (the index above)', url: artifactUrl('artifact-learning-archive') },
 ];
 
@@ -69,7 +69,7 @@ const strandOrder: Strand[] = ['portfolio-public-work', 'ai-systems-agents', 'co
     }
   </div>
 
-  <ul class="final__links" aria-label="Completion references">
+  <ul class="final__links" aria-label="Completion links">
     <li class="final__link">
       <span class="final__link-label">Live site</span>
       <a href={site.url} rel="noopener noreferrer">{site.url.replace(/^https?:\/\//, '')}</a>
@@ -81,7 +81,7 @@ const strandOrder: Strand[] = ['portfolio-public-work', 'ai-systems-agents', 'co
           {url ? (
             <a href={url} rel="noopener noreferrer">{url.replace(/^https?:\/\//, '')}</a>
           ) : (
-            <span class="final__link-pending" title="Reference not supplied yet">Link pending</span>
+            <span class="final__link-pending" title="Link not supplied yet">Link pending</span>
           )}
         </li>
       ))

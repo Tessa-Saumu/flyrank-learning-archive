@@ -3,13 +3,13 @@
  * FilterBar.astro — restrained filters (DESIGN_SPEC §40).
  * Categories: ALL · AI FLUENCY · MACHINE LEARNING · CONCEPTS.
  *
- * Phase 1: server-rendered via query params (shareable URLs), so filtering
- * works without JavaScript and every filter state is shareable.
+ * V2 REVISION Phase 3 §15: Unified filtering across Home and Work.
+ * Works with client-side interactive filtering without navigating away,
+ * while preserving shareable URLs and no-JS server fallback.
  *
- * V2 REVISION Phase 1 §6: the Tier filter (CORE / SUPPORTING / REFERENCE) has
- * been removed from the interface entirely. Work is filtered by its actual
- * categories only; no replacement tier control is offered, and no inactive
- * remnant of the old system is left in the DOM.
+ * V2 REVISION Phase 1 §6 & Phase 3 §16: The Tier filter (CORE / SUPPORTING / REFERENCE)
+ * and its terminology have been removed completely from the interface.
+ * Work is filtered by actual categories only.
  */
 interface Props {
   track?: string;
@@ -27,20 +27,23 @@ function q(params: Record<string, string | undefined>): string {
 }
 
 const primary = [
-  { label: 'All', href: q({}), active: view === 'work' && !track },
-  { label: 'AI Fluency', href: q({ track: 'ai-fluency' }), active: view === 'work' && track === 'ai-fluency' },
-  { label: 'Machine Learning', href: q({ track: 'machine-learning' }), active: view === 'work' && track === 'machine-learning' },
-  { label: 'Concepts', href: q({ view: 'concepts' }), active: view === 'concepts' },
+  { label: 'All', href: q({}), track: 'all', active: view === 'work' && !track },
+  { label: 'AI Fluency', href: q({ track: 'ai-fluency' }), track: 'ai-fluency', active: view === 'work' && track === 'ai-fluency' },
+  { label: 'Machine Learning', href: q({ track: 'machine-learning' }), track: 'machine-learning', active: view === 'work' && track === 'machine-learning' },
+  { label: 'Concepts', href: q({ view: 'concepts' }), view: 'concepts', active: view === 'concepts' },
 ];
 ---
 
-<nav class="filterbar" aria-label="Filters">
+<nav class="filterbar" data-filter-bar aria-label="Filters">
   <div class="filterbar__group filterbar__group--primary">
     {
       primary.map((item) => (
         <a
           href={item.href}
           class:list={['filterbar__item', 'filterbar__item--primary', { 'is-active': item.active }]}
+          data-filter-item
+          data-filter-track={item.track}
+          data-filter-view={item.view}
           aria-current={item.active ? 'page' : undefined}
         >
           {item.label}
@@ -48,7 +51,6 @@ const primary = [
       ))
     }
   </div>
-
 </nav>
 
 <style>

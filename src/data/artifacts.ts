@@ -105,7 +105,7 @@ export const artifacts: Artifact[] = [
   },
   {
     id: 'artifact-hours-log',
-    title: 'Hours Log Reference',
+    title: 'Hours Log',
     type: 'document',
     description: 'Completion evidence for tracked programme hours.',
     // PLACEHOLDER: likely private or partial; url undefined for now.
