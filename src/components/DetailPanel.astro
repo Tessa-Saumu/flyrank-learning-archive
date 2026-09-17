@@ -29,9 +29,10 @@ const { assignment: a, compact = false } = Astro.props;
 const concepts = conceptsForAssignment(a.id);
 const edges = edgesForAssignment(a.id);
 
+// V2 REVISION Phase 1 §6: no tier terminology in the visible metadata line.
 const metaParts: string[] = [];
 if (a.week !== undefined) metaParts.push(`Week ${a.week}`);
-metaParts.push(trackLabel(a.track), a.tier.toUpperCase());
+metaParts.push(trackLabel(a.track));
 const metaLine = metaParts.join(' · ');
 ---
 

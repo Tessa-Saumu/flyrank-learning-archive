@@ -9,10 +9,14 @@
  *  - no `approved: false` edges ever reach the renderer
  *  - rejected-edge pairs are absent as direct edges
  *  - every concept's members match the locked registry
- *  - tier→size mapping is monotonic (core > supporting > reference)
+ *  - the internal tier→size weighting stays monotonic (core > supporting >
+ *    reference) even though no tier control is exposed any more
+ *    (V2 REVISION Phase 1 §6)
+ *  - artifact nodes never share a position (V2 REVISION Phase 1 §2)
  */
 import { test, expect } from '@playwright/test';
 import { buildGraphElements, TIER_SIZE, defaultAnchorIds } from '../src/components/map/adapter';
+import { ARTIFACT_CLEARANCE } from '../src/components/map/layout';
 import { concepts } from '../src/data/concepts';
 import { rejectedEdges } from '../src/data/graph';
 import { assignments } from '../src/data/assignments';
@@ -26,7 +30,7 @@ function refOf(n: { data: { ref: string } }): string {
 }
 
 test('default view: calm anchor state', () => {
-  const { nodes, edges } = buildGraphElements({ kind: 'default', tier: 'all' });
+  const { nodes, edges } = buildGraphElements({ kind: 'default' });
   const assignments = nodes.filter((n) => typeOf(n) === 'assignment');
   const conceptsEls = nodes.filter((n) => typeOf(n) === 'concept');
 
@@ -53,7 +57,7 @@ test('default view: calm anchor state', () => {
 });
 
 test('browse-all view: full archive', () => {
-  const { nodes, edges } = buildGraphElements({ kind: 'browse-all', tier: 'all' });
+  const { nodes, edges } = buildGraphElements({ kind: 'browse-all' });
   expect(nodes.filter((n) => typeOf(n) === 'assignment').length).toBe(35);
   expect(nodes.filter((n) => typeOf(n) === 'concept').length).toBe(10);
   expect(nodes.filter((n) => typeOf(n) === 'artifact').length).toBe(11);
@@ -64,7 +68,7 @@ test('browse-all view: full archive', () => {
 
 test('never emits an unapproved edge', () => {
   for (const kind of ['default', 'track', 'browse-all'] as const) {
-    const { edges } = buildGraphElements({ kind, tier: 'all' } as { kind: 'default' | 'track' | 'browse-all' });
+    const { edges } = buildGraphElements({ kind } as { kind: 'default' | 'track' | 'browse-all' });
     expect(edges.length).toBeGreaterThan(0);
     for (const e of edges) expect(e.data.approved).toBe(true);
   }
@@ -77,7 +81,7 @@ test('rejected-edge pairs never appear as direct edges', () => {
     pairs.add(`${r.target}::${r.source}`);
   }
   // browse-all is the superset view; if they are absent here they are absent everywhere.
-  const { edges } = buildGraphElements({ kind: 'browse-all', tier: 'all' });
+  const { edges } = buildGraphElements({ kind: 'browse-all' });
   for (const e of edges) {
     const d = e.data as { source: string; target: string };
     expect(pairs.has(`${d.source}::${d.target}`)).toBe(false);
@@ -87,7 +91,7 @@ test('rejected-edge pairs never appear as direct edges', () => {
 
 test('every concept view exposes exactly its locked members', () => {
   for (const c of concepts) {
-    const { nodes } = buildGraphElements({ kind: 'concept', concept: c.id, tier: 'all' });
+    const { nodes } = buildGraphElements({ kind: 'concept', concept: c.id });
     const members = nodes.filter((n) => typeOf(n) === 'assignment').map((n) => refOf(n)).sort();
     expect(members).toEqual([...c.assignments].sort());
   }
@@ -96,7 +100,7 @@ test('every concept view exposes exactly its locked members', () => {
 test('concept selection promotes reference-tier assignments', () => {
   // Human Judgment maps fl-curate-images (reference tier); selecting the
   // concept must make it visible (tier promotion per DESIGN_SPEC §16/§49).
-  const { nodes } = buildGraphElements({ kind: 'concept', concept: 'concept-human-judgment', tier: 'all' });
+  const { nodes } = buildGraphElements({ kind: 'concept', concept: 'concept-human-judgment' });
   const refs = nodes.filter((n) => typeOf(n) === 'assignment').map((n) => refOf(n));
   expect(refs).toContain('fl-curate-images');
 });
@@ -107,7 +111,7 @@ test('tier size mapping is monotonic (core > supporting > reference)', () => {
 });
 
 test('track view keeps cross-track bridges from the other track', () => {
-  const { nodes } = buildGraphElements({ kind: 'track', track: 'ai-fluency', tier: 'all' });
+  const { nodes } = buildGraphElements({ kind: 'track', track: 'ai-fluency' });
   const assignmentRefs = nodes.filter((n) => typeOf(n) === 'assignment').map((n) => refOf(n));
   const inTrack = assignmentRefs.filter((id) => {
     const a = assignments.find((x) => x.id === id);
@@ -121,7 +125,7 @@ test('track view keeps cross-track bridges from the other track', () => {
 });
 
 test('assignment view: node plus immediate neighbourhood plus artifacts', () => {
-  const { nodes } = buildGraphElements({ kind: 'assignment', node: 'ml-09-validation-claim-audit', tier: 'all' });
+  const { nodes } = buildGraphElements({ kind: 'assignment', node: 'ml-09-validation-claim-audit' });
   const assignments = nodes.filter((n) => typeOf(n) === 'assignment').map((n) => refOf(n));
   expect(assignments).toContain('ml-09-validation-claim-audit');
   // Direct-edge neighbours (ml-08 builds on → ml-09; ml-09 → ml-10).
@@ -136,6 +140,42 @@ test('assignment view: node plus immediate neighbourhood plus artifacts', () => 
 });
 
 test('artifacts view exposes all 11 shared artifacts', () => {
-  const { nodes } = buildGraphElements({ kind: 'artifacts', tier: 'all' });
+  const { nodes } = buildGraphElements({ kind: 'artifacts' });
   expect(nodes.filter((n) => typeOf(n) === 'artifact').length).toBe(11);
+});
+
+test('artifact nodes never share a position and stay clear of each other', () => {
+  // V2 REVISION Phase 1 §2: artifacts attached to the same work used to be
+  // emitted at identical coordinates, so they stacked into one unreadable node.
+  const { nodes } = buildGraphElements({ kind: 'browse-all' });
+  const artifactEls = nodes.filter((n) => typeOf(n) === 'artifact');
+  expect(artifactEls.length).toBe(11);
+
+  const seen = new Set<string>();
+  for (const a of artifactEls) {
+    const key = `${a.position!.x},${a.position!.y}`;
+    expect(seen.has(key), `duplicate artifact position ${key}`).toBe(false);
+    seen.add(key);
+  }
+
+  let minDistance = Infinity;
+  for (let i = 0; i < artifactEls.length; i++) {
+    for (let j = i + 1; j < artifactEls.length; j++) {
+      const a = artifactEls[i].position!;
+      const b = artifactEls[j].position!;
+      minDistance = Math.min(minDistance, Math.hypot(a.x - b.x, a.y - b.y));
+    }
+  }
+  expect(minDistance).toBeGreaterThanOrEqual(ARTIFACT_CLEARANCE * 0.9);
+});
+
+test('artifact layout is deterministic between runs', () => {
+  // The map must never jitter between renders or reloads.
+  const a = buildGraphElements({ kind: 'artifacts' }).nodes
+    .filter((n) => typeOf(n) === 'artifact')
+    .map((n) => `${n.data.ref}:${n.position!.x},${n.position!.y}`);
+  const b = buildGraphElements({ kind: 'artifacts' }).nodes
+    .filter((n) => typeOf(n) === 'artifact')
+    .map((n) => `${n.data.ref}:${n.position!.x},${n.position!.y}`);
+  expect(a).toEqual(b);
 });

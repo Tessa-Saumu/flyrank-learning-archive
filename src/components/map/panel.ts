@@ -68,9 +68,10 @@ function renderArtifactPanel(assignmentId: string, art: Artifact, link: Artifact
 }
 
 export function renderAssignmentPanel(container: HTMLElement, a: Assignment): void {
+  // V2 REVISION Phase 1 §6: no tier terminology in the panel metadata.
   const metaParts: string[] = [];
   if (a.week !== undefined) metaParts.push(`Week ${a.week}`);
-  metaParts.push(trackLabel(a.track), a.tier.toUpperCase());
+  metaParts.push(trackLabel(a.track));
   const metaLine = metaParts.join(' · ');
 
   const concepts = a.concepts.map((id) => conceptById.get(id)).filter(Boolean);

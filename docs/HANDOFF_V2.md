@@ -1,9 +1,65 @@
 # V2 Handoff
 
-This handoff records the state of the **V2 improvement work** after completing
-**all four phases** of `docs/V2_IMPROVEMENT_SPEC.md`: Phase 1 — Structural
-interaction, Phase 2 — Knowledge Graph, Phase 3 — Navigation, and
-Phase 4 — QA.
+This handoff records the **V2 improvement work** (all four phases of
+`docs/V2_IMPROVEMENT_SPEC.md`, below) **and the newer `docs/V2
+REVISION_IMPLEMENTATION_SPEC.md`**. The revision work is summarised first
+(newest-first); the original four-phase handoff follows unchanged.
+
+---
+
+# V2 REVISION — Phase 1 (current work)
+
+Scope: `docs/V2 REVISION_IMPLEMENTATION_SPEC.md` Phase 1 (§1–§8) — graph, node
+layout & graph panel. Phases 2 and 3 of the revision are intentionally not done
+yet (they are follow-on work). Session branch:
+`arena/01a0afe0-flyrank-learning-archive`.
+
+## 1. Summary of work completed (Phase 1, §1–§8)
+
+| § | Work completed |
+| :-- | :-- |
+| §1 | Concept nodes are sized by their own measured label (mirrors Cytoscape's text recipe; wrap at 84px; asymmetric padding; grows with content; re-measured after fonts load). No text can spill; longer names wrap. |
+| §2 | New deterministic `artifactLayout()` spreads artifacts around their anchor; artifacts sharing an anchor orbit it and are relaxed apart, clear of other nodes, tethered to the anchor. FL-10's four artifacts no longer stack. |
+| §3 | Artifact nodes are triangles in terracotta-orange; concepts keep gold rectangles; assignments keep circles with tinted fill + heavier ring. |
+| §4 | Filled, brighter node palette (`--graph-*` tokens) for real contrast; fixed pre-existing NaN assignment sizes and invalid minified `rgba()`→hex8 colours (incl. the arrowhead colour). |
+| §5 | Detail panel is a narrow secondary column (`clamp(240px,25%,340px)`), graph-first, not a 50/50 split. |
+| §6 | Tier filter + all tier terminology removed from the public interface (map controls, /work/ FilterBar, query params, metadata lines, orientation copy). `tier` stays an internal data field only. |
+| §7 | Shell-owned panel close control (`Close ×` + "Esc closes") that survives renders; same path as Escape; returns to the full graph. |
+| §8 | Explicit labelled zoom/pan buttons (additive to gestures), centre-anchored zoom, usable at 375px. |
+
+## 2. How correctness was verified
+
+- **Tests:** new `tests/v2-revision-phase1.spec.ts` (16) asserting every
+  acceptance criterion, + 2 adapter unit tests (artifact non-overlap, layout
+  determinism). Updated `v2-phase3`/`adapter` specs. Full suite **73 passed**.
+- **Static checks:** `npm run validate` PASSED · `astro check` 0 errors ·
+  `astro build` 53 pages.
+- **Browser/console:** no Cytoscape invalid-style warnings remain; node sizes
+  and colours read back as designed; concept label metrics fit their boxes.
+- **Visual:** screenshots reviewed at 1366×900 and 375px (default graph, panel
+  open, FL-10 artifact spread, work filters).
+
+## 3. What is fully complete
+
+- All of revision Phase 1 (§1–§8) and its acceptance criteria; the original V2
+  remains intact (its full suite still passes).
+
+## 4. What is intentionally incomplete / needs real artifacts
+
+- Revision **Phase 2** (artifact filtering §9, site-wide assignment modal §10,
+  graph-explanation gap §11, green headings §12, duplicate heading §13,
+  paragraph responsiveness §14) and **Phase 3** (work filters §15, tier term
+  final sweep §16) are not started — they are the next increments.
+- Artifact/assignment *evidence* remains placeholder until real URLs/files are
+  supplied (see §5). The graph is unaffected by this.
+
+## 5. Placeholders that need the owner
+
+- All 11 shared artifact `url`/`embedUrl` values in `src/data/artifacts.ts` are
+  `undefined` (Link pending) until real repository / deployed-site / paper /
+  video links are supplied.
+- `artifactLinks` per-assignment mappings flagged `PLACEHOLDER` in
+  `src/data/artifacts.ts` (closest shared artifact) should be confirmed.
 
 ---
 

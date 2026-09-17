@@ -5,8 +5,14 @@
  *
  * The heavy Cytoscape client code lives in src/components/map/ and is bundled
  * by Astro only when this component is used (the homepage). The shell renders
- * the controls, the map stage, the detail panel, a keyboard roster, and a
+ * the controls (category filters + explicit zoom/pan navigation), the map
+ * stage, the detail panel with its close control, a keyboard roster, and a
  * static browse fallback.
+ *
+ * V2 REVISION Phase 1: the Tier filter is gone (§6) — filtering is by the real
+ * categories only; the detail panel is a narrow secondary column beside a
+ * graph-first layout (§5) and carries a visible close control (§7); the graph
+ * exposes labelled zoom/pan buttons alongside the existing gestures (§8).
  *
  * Failure-safe (DESIGN_SPEC §58): with JavaScript disabled or Cytoscape failing,
  * the `.learning-map__fallback` (the static BrowseWork list) is shown and the
@@ -24,11 +30,6 @@ import { assignments } from '../data/assignments';
       <button type="button" class="map-filter map-filter--primary" data-filter-primary="machine-learning">Machine Learning</button>
       <button type="button" class="map-filter map-filter--primary" data-filter-primary="concepts">Concepts</button>
       <button type="button" class="map-filter map-filter--primary" data-filter-primary="artifacts">Artifacts</button>
-      <span class="learning-map__kicker" aria-hidden="true">Tier</span>
-      <button type="button" class="map-filter map-filter--secondary" data-filter-tier="all">All</button>
-      <button type="button" class="map-filter map-filter--secondary" data-filter-tier="core">Core</button>
-      <button type="button" class="map-filter map-filter--secondary" data-filter-tier="supporting">Supporting</button>
-      <button type="button" class="map-filter map-filter--secondary" data-filter-tier="reference">Reference</button>
       <span class="learning-map__sep" aria-hidden="true"></span>
       <button type="button" class="map-filter map-filter--primary" data-filter-browseall>Browse all</button>
     </div>
@@ -51,17 +52,46 @@ import { assignments } from '../data/assignments';
 
   <p class="learning-map__legend" data-map-legend>
     <span class="learning-map__legend-label">Explore the map</span>
-    Scroll/pinch to zoom · Drag to pan · Click a node to open · Esc to close
+    Scroll/pinch to zoom · Drag to pan · or use the map controls · Click a node
+    to open · Esc to close
   </p>
 
   <div class="learning-map__region-row">
     <div class="learning-map__region" data-map-region>
       <div class="learning-map__stage" data-map-stage></div>
+
+      <!-- V2 REVISION Phase 1 §8: explicit, labelled graph navigation. These
+           are additive — scroll/pinch/drag keep working. -->
+      <div class="learning-map__nav" role="group" aria-label="Map navigation">
+        <button type="button" class="learning-map__nav-btn" data-map-nav="zoom-in" aria-label="Zoom in" title="Zoom in">
+          <span aria-hidden="true">+</span>
+        </button>
+        <button type="button" class="learning-map__nav-btn" data-map-nav="zoom-out" aria-label="Zoom out" title="Zoom out">
+          <span aria-hidden="true">&minus;</span>
+        </button>
+        <button type="button" class="learning-map__nav-btn" data-map-nav="pan-left" aria-label="Pan left" title="Pan left">
+          <span aria-hidden="true">&larr;</span>
+        </button>
+        <button type="button" class="learning-map__nav-btn" data-map-nav="pan-right" aria-label="Pan right" title="Pan right">
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+
       <div class="learning-map__tooltip" data-map-tooltip hidden></div>
       <div class="learning-map__roster sr-only" data-map-roster></div>
     </div>
 
-    <aside class="learning-map__panel" data-map-panel aria-label="Selected work" tabindex="-1"></aside>
+    <!-- V2 REVISION Phase 1 §5/§7: the detail panel is a narrow secondary
+         column, and it always shows how to close it. -->
+    <aside class="learning-map__panel" data-map-panel aria-label="Selected work" tabindex="-1">
+      <div class="learning-map__panel-bar">
+        <span class="learning-map__panel-hint">Esc closes</span>
+        <button type="button" class="learning-map__close" data-map-close aria-label="Close detail panel">
+          Close <span class="learning-map__close-x" aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="learning-map__panel-body" data-map-panel-body></div>
+    </aside>
   </div>
 
   <div class="learning-map__fallback" data-map-fallback>
@@ -111,17 +141,6 @@ import { assignments } from '../data/assignments';
     margin: 0 var(--space-2);
   }
 
-  /* V2 §1: the tier cluster is labelled and lighter so it reads as
-     secondary controls grouped under the map section's primary tabs. */
-  .learning-map__kicker {
-    font-size: var(--fs-metadata);
-    font-weight: 500;
-    letter-spacing: var(--tracking-metadata);
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin: 0 var(--space-1) 0 var(--space-3);
-  }
-
   .map-filter {
     background: transparent;
     border: 1px solid transparent;
@@ -141,11 +160,6 @@ import { assignments } from '../data/assignments';
     font-weight: 600;
   }
 
-  /* Secondary (tier) tabs: lighter weight, underline active state. */
-  .map-filter--secondary {
-    font-weight: 400;
-  }
-
   .map-filter:hover {
     color: var(--text);
   }
@@ -153,13 +167,6 @@ import { assignments } from '../data/assignments';
   .map-filter--primary.is-active {
     color: var(--text);
     border-color: var(--rule-active);
-  }
-
-  .map-filter--secondary.is-active {
-    color: var(--text);
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-thickness: 1px;
   }
 
   .map-expand {
@@ -201,6 +208,42 @@ import { assignments } from '../data/assignments';
 
   .learning-map__region {
     position: relative;
+  }
+
+  /* Explicit graph navigation (V2 REVISION Phase 1 §8): a compact, always
+     visible cluster pinned inside the stage. Hidden until the map is live,
+     because the buttons only mean something once Cytoscape is running. */
+  .learning-map__nav {
+    display: none;
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 40;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .learning-map.js-map-ready .learning-map__nav {
+    display: flex;
+  }
+
+  .learning-map__nav-btn {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    background: var(--bg-elevated);
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1;
+    transition: border-color var(--motion-fast) var(--ease), background var(--motion-fast) var(--ease);
+  }
+
+  .learning-map__nav-btn:hover {
+    border-color: var(--text);
+    background: var(--bg);
   }
 
   .learning-map__tooltip {
@@ -344,8 +387,13 @@ import { assignments } from '../data/assignments';
     align-items: start;
   }
 
+  /* V2 REVISION Phase 1 §5: graph-first. The panel was ~53% of the row (a
+     50/50 split that competed with the graph); it is now a narrow secondary
+     column — roughly a quarter of the width on desktop — so the graph stays
+     the dominant visual area while the panel keeps enough room for its
+     content. */
   .learning-map.is-open .learning-map__region-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(0, 1fr) clamp(240px, 25%, 340px);
   }
 
   .learning-map__panel {
@@ -357,6 +405,60 @@ import { assignments } from '../data/assignments';
   .learning-map.is-open .learning-map__panel {
     max-height: 620px;
     overflow: auto;
+  }
+
+  /* Panel chrome (V2 REVISION Phase 1 §7): the close control is part of the
+     shell, so it survives every client-side render of the panel body. */
+  .learning-map__panel-bar {
+    display: none;
+  }
+
+  .learning-map.is-open .learning-map__panel-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
+    border-bottom: var(--rule);
+  }
+
+  .learning-map__panel-hint {
+    font-size: var(--fs-metadata);
+    font-weight: 500;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .learning-map__close {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: transparent;
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+    color: var(--text);
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    padding: var(--space-1) var(--space-3);
+    transition: border-color var(--motion-fast) var(--ease), background var(--motion-fast) var(--ease);
+  }
+
+  .learning-map__close:hover {
+    border-color: var(--text);
+    background: var(--bg-elevated);
+  }
+
+  .learning-map__close-x {
+    font-size: 14px;
+    line-height: 1;
   }
 
   @media (max-width: 1023px) {

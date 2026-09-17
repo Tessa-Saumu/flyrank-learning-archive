@@ -14,7 +14,7 @@ import type { Core, NodeSingular } from 'cytoscape';
 import { buildGraphElements, primaryAssignmentForArtifact, assignmentById, conceptById } from './adapter';
 import type { ViewState } from './adapter';
 import { renderAssignmentPanel, renderConceptPanel, renderEmptyPanel } from './panel';
-import type { Track, Tier } from '../../data/types';
+import type { Track } from '../../data/types';
 
 type FilterKind = 'all' | 'ai-fluency' | 'machine-learning' | 'concepts' | 'artifacts';
 
@@ -22,26 +22,161 @@ interface TokenColors {
   bg: string;
   text: string;
   textDim: string;
-  textFaint: string;
   greenBright: string;
   terracotta: string;
   gold: string;
   graphGrey: string;
+  /** Knowledge-graph node palette (V2 REVISION Phase 1 §3, §4). */
+  concept: string;
+  conceptInk: string;
+  artifact: string;
+  assignmentAi: string;
+  assignmentMl: string;
+  assignmentFillAi: string;
+  assignmentFillMl: string;
+}
+
+/**
+ * Cytoscape's colour parser does not understand 8-digit hex, and the CSS
+ * minifier rewrites `rgba()` custom-property values into exactly that
+ * (`rgba(77,138,112,0.18)` → `#4d8a702e`), which Cytoscape silently rejects —
+ * the property is dropped and the node falls back to black/default. Every
+ * colour read from the design tokens is therefore normalised to a form
+ * Cytoscape accepts. (This also repairs the pre-existing `--text-dim`
+ * arrowhead colour, which had been silently invalid.)
+ */
+function cyColor(value: string, fallback: string): string {
+  const v = (value || '').trim() || fallback;
+  const hex8 = /^#([0-9a-f]{8})$/i.exec(v);
+  if (!hex8) return v;
+  const n = hex8[1];
+  const r = parseInt(n.slice(0, 2), 16);
+  const g = parseInt(n.slice(2, 4), 16);
+  const b = parseInt(n.slice(4, 6), 16);
+  const a = Math.round((parseInt(n.slice(6, 8), 16) / 255) * 1000) / 1000;
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
 function readTokens(): TokenColors {
   const s = getComputedStyle(document.documentElement);
-  const get = (name: string, fallback: string) => (s.getPropertyValue(name).trim() || fallback);
+  const get = (name: string, fallback: string) => cyColor(s.getPropertyValue(name), fallback);
   return {
     bg: get('--bg', '#101312'),
     text: get('--text', '#e9e7df'),
     textDim: get('--text-dim', 'rgba(233,231,223,0.72)'),
-    textFaint: get('--text-faint', 'rgba(233,231,223,0.5)'),
     greenBright: get('--green-bright', '#4d8a70'),
     terracotta: get('--terracotta', '#b9664e'),
     gold: get('--gold', '#b9a36a'),
     graphGrey: get('--graph-grey', '#5b625d'),
+    concept: get('--graph-concept', '#d4bc7e'),
+    conceptInk: get('--graph-concept-ink', '#101312'),
+    artifact: get('--graph-artifact', '#d07b52'),
+    assignmentAi: get('--graph-assignment-ai', '#4d8a70'),
+    assignmentMl: get('--graph-assignment-ml', '#b9664e'),
+    assignmentFillAi: get('--graph-assignment-fill-ai', 'rgba(77,138,112,0.18)'),
+    assignmentFillMl: get('--graph-assignment-fill-ml', 'rgba(185,102,78,0.2)'),
   };
+}
+
+/* ------------------------------------------------------------------ *
+ * Content-sized node labels (V2 REVISION Phase 1 §1)
+ * ------------------------------------------------------------------ */
+
+const GRAPH_FONT_FAMILY = 'Inter Variable, Inter, system-ui, sans-serif';
+
+/** Concept label typography — must match the concept style block exactly. */
+const CONCEPT_FONT_SIZE = 10;
+const CONCEPT_FONT_WEIGHT = '700';
+/**
+ * Concept labels wrap at this width. It is deliberately tighter than the
+ * longest single-word concept name so multi-word names take a second line —
+ * the box grows vertically instead of stretching into a wide slab (§1:
+ * "longer concept names wrap naturally", sizing stays compact).
+ */
+const CONCEPT_LABEL_MAX_WIDTH = 84;
+const CONCEPT_PAD_X = 14;
+const CONCEPT_PAD_Y = 9;
+
+interface LabelBox {
+  width: number;
+  height: number;
+  lines: number;
+}
+
+let labelCtx: CanvasRenderingContext2D | null = null;
+const labelBoxCache = new Map<string, LabelBox>();
+
+/**
+ * Wraps a label exactly the way Cytoscape's renderer does (same greedy
+ * word-wrap over `[\s\u200b]+` at `text-max-width`), so the box computed here
+ * always matches the text the renderer draws inside it.
+ */
+function wrapLabel(text: string, measure: (s: string) => number, maxWidth: number): string[] {
+  const out: string[] = [];
+  for (const raw of text.split('\n')) {
+    if (measure(raw) <= maxWidth) {
+      out.push(raw);
+      continue;
+    }
+    let subline = '';
+    let previousIndex = 0;
+    for (const match of raw.matchAll(/[\s\u200b]+|$/g)) {
+      const separator = match[0];
+      const word = raw.substring(previousIndex, match.index);
+      previousIndex = (match.index ?? 0) + separator.length;
+      const testLine = subline.length === 0 ? word : subline + word + separator;
+      if (measure(testLine) <= maxWidth) {
+        subline += word + separator;
+      } else {
+        if (subline) out.push(subline);
+        subline = word + separator;
+      }
+    }
+    if (subline.trim() !== '') out.push(subline);
+  }
+  return out.length > 0 ? out : [text];
+}
+
+/**
+ * Measures a concept label with the renderer's own recipe (canvas font string,
+ * `ceil()` per line, `font-size` per line of height) and returns the node box
+ * that fits it: wrapped text + padding on every side.
+ *
+ * Cytoscape's own `width: 'label'` / `height: 'label'` values would do the
+ * fitting, but they are deprecated (they log a console warning on every load)
+ * and they ignore padding, which leaves the text touching the box edge.
+ */
+function conceptLabelBox(label: string): LabelBox {
+  const key = `${label}|${CONCEPT_FONT_SIZE}|${CONCEPT_FONT_WEIGHT}|${CONCEPT_LABEL_MAX_WIDTH}`;
+  const cached = labelBoxCache.get(key);
+  if (cached) return cached;
+
+  if (!labelCtx) {
+    labelCtx = document.createElement('canvas').getContext('2d');
+  }
+  let box: LabelBox;
+  if (!labelCtx) {
+    // No canvas available: fall back to a generous fixed box rather than
+    // clipping (the text still fits, the box is just roomier).
+    box = { width: CONCEPT_LABEL_MAX_WIDTH + CONCEPT_PAD_X * 2, height: CONCEPT_FONT_SIZE * 2 + CONCEPT_PAD_Y * 2, lines: 2 };
+  } else {
+    labelCtx.font = `normal ${CONCEPT_FONT_WEIGHT} ${CONCEPT_FONT_SIZE}px ${GRAPH_FONT_FAMILY}`;
+    const measure = (s: string) => Math.ceil(labelCtx!.measureText(s).width);
+    const lines = wrapLabel(label, measure, CONCEPT_LABEL_MAX_WIDTH);
+    box = {
+      width: Math.max(...lines.map(measure)) + CONCEPT_PAD_X * 2,
+      height: lines.length * CONCEPT_FONT_SIZE + CONCEPT_PAD_Y * 2,
+      lines: lines.length,
+    };
+  }
+  labelBoxCache.set(key, box);
+  return box;
+}
+
+/** Internal narrative weighting → node diameter multiplier (never a label). */
+function assignmentScale(n: NodeSingular): number {
+  const size = Number(n.data('size'));
+  return Number.isFinite(size) && size > 0 ? size : 1;
 }
 
 // The style objects are loose (Cytoscape's style map accepts varied property
@@ -60,7 +195,7 @@ function buildStyle(c: TokenColors): any[] {
         'border-width': 1,
         'border-color': c.graphGrey,
         color: c.text,
-        'font-family': 'Inter Variable, Inter, system-ui, sans-serif',
+        'font-family': GRAPH_FONT_FAMILY,
         'font-size': 10,
         'font-weight': 500,
         'text-valign': 'bottom',
@@ -74,73 +209,96 @@ function buildStyle(c: TokenColors): any[] {
       },
     },
     {
+      // Assignments stay circles (the shape visitors already read as "a piece
+      // of work"), now with a tinted fill and a heavier track-coloured ring so
+      // they read as solid objects rather than hairline outlines (§4).
       selector: "node[nodeType = 'assignment']",
       style: {
         shape: 'ellipse',
-        width: (n: unknown) => 40 * ((n as { data: { size: number } }).data.size),
-        height: (n: unknown) => 40 * ((n as { data: { size: number } }).data.size),
+        // Cytoscape passes the *element* to a function mapper, so the size has
+        // to be read with `data('size')` — reading `.data.size` yields
+        // `undefined`, which made every width/height resolve to NaN and be
+        // dropped (all assignment nodes silently rendered at the 30px default
+        // and the tier weighting never applied).
+        width: (n: NodeSingular) => 40 * assignmentScale(n),
+        height: (n: NodeSingular) => 40 * assignmentScale(n),
         'background-color': c.bg,
+        'border-width': 2.5,
       },
     },
     {
       selector: "node[nodeType = 'assignment'][track = 'ai-fluency']",
-      style: { 'border-color': c.greenBright },
+      style: { 'border-color': c.assignmentAi, 'background-color': c.assignmentFillAi },
     },
     {
       selector: "node[nodeType = 'assignment'][track = 'machine-learning']",
-      style: { 'border-color': c.terracotta },
+      style: { 'border-color': c.assignmentMl, 'background-color': c.assignmentFillMl },
     },
     {
+      // Internal narrative weighting only — expressed as size/ring weight.
+      // No tier terminology is ever rendered (V2 REVISION Phase 1 §6), and
+      // every label stays at full text contrast (§4).
       selector: "node[nodeType = 'assignment'][tier = 'core']",
-      style: { 'font-size': 11, 'border-width': 2, color: c.text, 'text-max-width': 110 },
+      style: { 'font-size': 11, 'border-width': 3, color: c.text, 'text-max-width': 110 },
     },
     {
       selector: "node[nodeType = 'assignment'][tier = 'supporting']",
-      style: { color: c.textDim, 'border-width': 1, 'text-max-width': 84 },
+      style: { color: c.text, 'border-width': 2.5, 'text-max-width': 84 },
     },
     {
       selector: "node[nodeType = 'assignment'][tier = 'reference']",
-      style: { color: c.textFaint, 'border-width': 1, opacity: 0.8 },
+      style: { color: c.text, 'border-width': 2, 'border-opacity': 0.8 },
     },
     {
       selector: "node[nodeType = 'concept']",
       style: {
         shape: 'rectangle',
-        'background-color': c.bg,
-        'border-width': 1,
-        'border-color': c.gold,
-        color: c.gold,
-        'font-size': 9,
-        'font-weight': 600,
-        'padding': '8px 12px',
+        // V2 REVISION Phase 1 §1: the concept box is sized by its own content.
+        // Width/height come from the measured, wrapped label plus padding, so
+        // the text can never spill outside the container: longer names wrap
+        // onto a second line and the box grows with them instead of clipping.
+        // Sizing stays compact and content-driven — no blanket oversized box.
+        width: (n: NodeSingular) => conceptLabelBox(String(n.data('label'))).width,
+        height: (n: NodeSingular) => conceptLabelBox(String(n.data('label'))).height,
+        'background-color': c.concept,
+        'border-width': 0,
+        'border-color': c.concept,
+        color: c.conceptInk,
+        'font-size': 10,
+        'font-weight': 700,
         'text-valign': 'center',
         'text-halign': 'center',
         'text-margin-y': 0,
+        'text-max-width': CONCEPT_LABEL_MAX_WIDTH,
+        'text-wrap': 'wrap',
         'text-transform': 'uppercase',
-        'letter-spacing': '0.08em',
       },
     },
     {
+      // V2 REVISION Phase 1 §3: artifacts are triangles in a distinct
+      // terracotta-orange, so concept and artifact nodes are separable by
+      // shape *and* colour without reading a label.
       selector: "node[nodeType = 'artifact']",
       style: {
-        shape: 'rectangle',
-        'background-color': c.bg,
-        'border-width': 1,
-        'border-color': c.gold,
-        color: c.textFaint,
-        'font-size': 8,
-        'width': 16,
-        'height': 20,
+        shape: 'triangle',
+        'background-color': c.artifact,
+        'border-width': 0,
+        'border-color': c.artifact,
+        color: c.text,
+        'font-size': 9,
+        'font-weight': 600,
+        width: 24,
+        height: 22,
         'text-valign': 'bottom',
-        'text-margin-y': 4,
-        'text-max-width': 70,
+        'text-halign': 'center',
+        'text-margin-y': 6,
+        'text-max-width': 78,
       },
     },
     {
-      selector: 'node:hover',
-      style: { 'border-width': 3 },
-    },
-    {
+      // Cytoscape has no `:hover` pseudo-class (an invalid selector logs a
+      // warning and never matches); the map applies the `.hover` class from
+      // its own mouseover handler instead.
       selector: 'node.hover',
       style: { 'border-width': 3, 'font-size': 12, color: c.text },
     },
@@ -207,13 +365,13 @@ function buildStyle(c: TokenColors): any[] {
       // Connective concept edge (V2 §10.2): assignment → concept. Subordinate
       // and undirected, echoing the concept's gold accent.
       selector: "edge[relationship = 'concept']",
-      style: { 'line-color': c.gold, 'line-style': 'solid', width: 1, opacity: 0.32, 'target-arrow-shape': 'none' },
+      style: { 'line-color': c.concept, 'line-style': 'solid', width: 1.25, opacity: 0.42, 'target-arrow-shape': 'none' },
     },
     {
       // Connective artifact edge (V2 §11): assignment → artifact. Subordinate
       // and undirected.
       selector: "edge[relationship = 'artifact']",
-      style: { 'line-color': c.graphGrey, 'line-style': 'dotted', width: 1, opacity: 0.4, 'target-arrow-shape': 'none' },
+      style: { 'line-color': c.artifact, 'line-style': 'dotted', width: 1.25, opacity: 0.5, 'target-arrow-shape': 'none' },
     },
     {
       selector: 'edge.bright',
@@ -228,25 +386,26 @@ function buildStyle(c: TokenColors): any[] {
 
 function parseInitialState(): ViewState {
   const sp = new URLSearchParams(location.search);
-  const tier = sp.get('tier');
-  const validTier: Tier | 'all' | undefined =
-    tier === 'core' || tier === 'supporting' || tier === 'reference' ? tier : undefined;
 
-  if (sp.has('node')) return { kind: 'assignment', node: sp.get('node')!, tier: validTier ?? 'all' };
-  if (sp.has('concept')) return { kind: 'concept', concept: sp.get('concept')!, tier: validTier ?? 'all' };
-  if (sp.get('view') === 'browse-all') return { kind: 'browse-all', tier: validTier ?? 'all' };
-  if (sp.get('view') === 'concepts') return { kind: 'concepts', tier: validTier ?? 'all' };
-  if (sp.get('view') === 'artifacts') return { kind: 'artifacts', tier: validTier ?? 'all' };
+  // The `tier` query parameter is intentionally no longer read: the Tier
+  // filter has been removed from the interface (V2 REVISION Phase 1 §6).
+  if (sp.has('node')) return { kind: 'assignment', node: sp.get('node')! };
+  if (sp.has('concept')) return { kind: 'concept', concept: sp.get('concept')! };
+  if (sp.get('view') === 'browse-all') return { kind: 'browse-all' };
+  if (sp.get('view') === 'concepts') return { kind: 'concepts' };
+  if (sp.get('view') === 'artifacts') return { kind: 'artifacts' };
   const track = sp.get('track');
   if (track === 'ai-fluency' || track === 'machine-learning') {
-    return { kind: 'track', track, tier: validTier ?? 'all' };
+    return { kind: 'track', track };
   }
-  return { kind: 'default', tier: validTier ?? 'all' };
+  return { kind: 'default' };
 }
 
 export function initLearningMap(root: HTMLElement): void {
   const stage = root.querySelector<HTMLElement>('[data-map-stage]');
   const panel = root.querySelector<HTMLElement>('[data-map-panel]');
+  const panelBody = root.querySelector<HTMLElement>('[data-map-panel-body]');
+  const closeBtn = root.querySelector<HTMLElement>('[data-map-close]');
   const roster = root.querySelector<HTMLElement>('[data-map-roster]');
   const search = root.querySelector<HTMLInputElement>('[data-map-search]');
   const searchResults = root.querySelector<HTMLElement>('[data-map-search-results]');
@@ -262,6 +421,10 @@ export function initLearningMap(root: HTMLElement): void {
   // Non-null aliases so closures are not subject to null-narrowing.
   const stageEl = stage;
   const panelEl = panel;
+  // The client renderers write into the panel body; the panel chrome (the
+  // close control, V2 REVISION Phase 1 §7) belongs to the shell and survives
+  // every render.
+  const panelBodyEl = panelBody ?? panel;
   const rosterEl = roster;
 
   const tokens = readTokens();
@@ -455,17 +618,17 @@ export function initLearningMap(root: HTMLElement): void {
     if (state.kind === 'assignment' && state.node) {
       const a = assignmentById.get(state.node);
       if (a) {
-        renderAssignmentPanel(panelEl, a);
+        renderAssignmentPanel(panelBodyEl, a);
         root.classList.add('is-open');
         return;
       }
     }
     if (state.kind === 'concept' && state.concept) {
-      renderConceptPanel(panelEl, state.concept);
+      renderConceptPanel(panelBodyEl, state.concept);
       root.classList.add('is-open');
       return;
     }
-    renderEmptyPanel(panelEl);
+    renderEmptyPanel(panelBodyEl);
     root.classList.remove('is-open');
   }
 
@@ -494,7 +657,6 @@ export function initLearningMap(root: HTMLElement): void {
 
   function updateURL() {
     const p = new URLSearchParams();
-    if (state.tier && state.tier !== 'all') p.set('tier', state.tier);
     switch (state.kind) {
       case 'default':
         break;
@@ -527,14 +689,6 @@ export function initLearningMap(root: HTMLElement): void {
     primary.forEach((btn) => {
       const v = btn.dataset.filterPrimary as FilterKind;
       const active = primaryActive(v);
-      btn.classList.toggle('is-active', active);
-      if (active) btn.setAttribute('aria-pressed', 'true');
-      else btn.removeAttribute('aria-pressed');
-    });
-    const tierBtns = root.querySelectorAll<HTMLElement>('[data-filter-tier]');
-    tierBtns.forEach((btn) => {
-      const v = btn.dataset.filterTier as Tier | 'all';
-      const active = state.tier === v;
       btn.classList.toggle('is-active', active);
       if (active) btn.setAttribute('aria-pressed', 'true');
       else btn.removeAttribute('aria-pressed');
@@ -666,11 +820,57 @@ export function initLearningMap(root: HTMLElement): void {
     }
   });
 
+  // V2 REVISION Phase 1 §7: the panel carries its own visible close control,
+  // wired to the exact same path as the Escape key, so closing never has to be
+  // discovered.
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => closeSelection());
+  }
+
+  // --- explicit graph navigation (V2 REVISION Phase 1 §8) ---
+  // Additive to the existing gestures: zoom/pan are reachable from labelled
+  // buttons so navigation never depends on discovering a gesture. Zooming is
+  // computed about the centre of the viewport (and the pan compensated) so the
+  // graph stays put under the user's eye instead of sliding to a corner.
+  const PAN_STEP = 140;
+
+  function zoomBy(factor: number): void {
+    const from = cy.zoom();
+    const to = Math.min(Math.max(from * factor, cy.minZoom()), cy.maxZoom());
+    if (to === from) return;
+    const centre = { x: cy.width() / 2, y: cy.height() / 2 };
+    const pan = cy.pan();
+    const scale = to / from;
+    cy.animate({
+      zoom: to,
+      pan: { x: centre.x - (centre.x - pan.x) * scale, y: centre.y - (centre.y - pan.y) * scale },
+      duration: DURATION,
+    });
+  }
+
+  function panBy(dx: number, dy: number): void {
+    const pan = cy.pan();
+    cy.animate({ pan: { x: pan.x + dx, y: pan.y + dy }, duration: DURATION });
+  }
+
+  const navActions: Record<string, () => void> = {
+    'zoom-in': () => zoomBy(1.3),
+    'zoom-out': () => zoomBy(1 / 1.3),
+    // Pan left/right move the *viewport*, i.e. they reveal graph that is
+    // currently off-screen in that direction (content shifts the other way).
+    'pan-left': () => panBy(PAN_STEP, 0),
+    'pan-right': () => panBy(-PAN_STEP, 0),
+  };
+  root.querySelectorAll<HTMLElement>('[data-map-nav]').forEach((btn) => {
+    const action = navActions[btn.dataset.mapNav ?? ''];
+    if (!action) return;
+    btn.addEventListener('click', action);
+  });
+
   // --- filter controls ---
   root.querySelectorAll<HTMLElement>('[data-filter-primary]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const v = btn.dataset.filterPrimary as FilterKind;
-      state = { ...state, tier: state.tier };
       switch (v) {
         case 'all':
           state = { ...state, kind: 'default', track: undefined, concept: undefined, node: undefined };
@@ -688,13 +888,6 @@ export function initLearningMap(root: HTMLElement): void {
           state = { ...state, kind: 'artifacts', node: undefined };
           break;
       }
-      render();
-    });
-  });
-  root.querySelectorAll<HTMLElement>('[data-filter-tier]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const v = btn.dataset.filterTier as Tier | 'all';
-      state = { ...state, tier: state.tier === v ? 'all' : v };
       render();
     });
   });
@@ -766,6 +959,22 @@ export function initLearningMap(root: HTMLElement): void {
     });
   }
 
+  // Concept boxes are measured from real font metrics, so re-evaluate the
+  // stylesheet once the self-hosted variable fonts have loaded — otherwise a
+  // first paint before the font arrives would size the boxes from the
+  // fallback font's metrics (V2 REVISION Phase 1 §1).
+  if (typeof document !== 'undefined' && 'fonts' in document) {
+    document.fonts.ready
+      .then(() => {
+        labelBoxCache.clear();
+        cy.style().update();
+        cy.resize();
+      })
+      .catch(() => {
+        /* non-fatal: the boxes keep their fallback-metric size */
+      });
+  }
+
   // --- sizing ---
   if (typeof ResizeObserver !== 'undefined') {
     const ro = new ResizeObserver(() => cy.resize());
@@ -792,6 +1001,8 @@ export function initLearningMap(root: HTMLElement): void {
     cy,
     getState: () => state,
     select: (ref: string, type?: string) => selectByRef(ref, type),
+    close: () => closeSelection(),
+    nav: navActions,
   };
 
   // Announce map region for assistive tech (the browse route is the primary

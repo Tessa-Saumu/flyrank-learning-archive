@@ -16,7 +16,8 @@ import { concepts } from '../../data/concepts';
 import { artifacts, artifactLinks } from '../../data/artifacts';
 import { publicEdges, rejectedEdges } from '../../data/graph';
 import type { Relationship, Tier, Track } from '../../data/types';
-import { seedPosition } from './layout';
+import { artifactLayout, seedPosition } from './layout';
+import type { ArtifactAnchor } from './layout';
 
 export type NodeType = 'assignment' | 'concept' | 'artifact';
 
@@ -43,10 +44,14 @@ export interface ViewState {
   track?: Track;
   concept?: string;
   node?: string;
-  tier?: Tier | 'all';
 }
 
-/** Narrative weight, not importance (DESIGN_SPEC §12). Monotonic: core > supporting > reference. */
+/**
+ * Internal narrative weighting for node size only (DESIGN_SPEC §12) — the
+ * public interface no longer exposes any tier terminology or filter
+ * (V2 REVISION Phase 1 §6); this never renders as a label.
+ * Monotonic: core > supporting > reference.
+ */
 export const TIER_SIZE: Record<Tier, number> = {
   core: 1,
   supporting: 0.82,
@@ -116,7 +121,7 @@ function ids(list: string[]): Set<string> {
 }
 
 /**
- * Computes which node ids are visible for a view state (before the tier filter).
+ * Computes which node ids are visible for a view state.
  */
 export function visibleIdsForKind(state: ViewState): {
   assignments: Set<string>;
@@ -204,14 +209,6 @@ export function visibleIdsForKind(state: ViewState): {
  */
 export function buildGraphElements(state: ViewState): GraphElements {
   const visible = visibleIdsForKind(state);
-
-  // Apply the tier filter to the assignment set.
-  if (state.tier && state.tier !== 'all') {
-    for (const id of [...visible.assignments]) {
-      const a = assignmentById.get(id);
-      if (!a || a.tier !== state.tier) visible.assignments.delete(id);
-    }
-  }
 
   // Edges: only approved public edges whose both endpoints are visible.
   const edges: GraphElement[] = [];
@@ -323,12 +320,21 @@ export function buildGraphElements(state: ViewState): GraphElements {
       position: seedPosition(id),
     });
   }
-  for (const id of visible.artifacts) {
-    const art = artifactById.get(id);
-    if (!art) continue;
-    // An artifact is drawn at the centroid of the assignments that link to it,
-    // offset slightly so it reads as a marker attached to the work.
-    const linked = artifactLinks.filter((l) => l.artifactId === id).map((l) => l.assignmentId);
+  // Artifact placement (V2 REVISION Phase 1 §2). Every artifact orbits the
+  // centroid of the work that cites it; artifacts that share a centroid are
+  // spread around it (they used to be drawn on top of one another) and a
+  // deterministic relaxation pass keeps them clear of each other and of the
+  // assignment/concept nodes. Registry order keeps the input deterministic.
+  const anchors: ArtifactAnchor[] = [];
+  for (const id of ALL_ARTIFACT_IDS) {
+    if (!visible.artifacts.has(id)) continue;
+    const linkedHere = artifactLinks
+      .filter((l) => l.artifactId === id && visible.assignments.has(l.assignmentId))
+      .map((l) => l.assignmentId);
+    const linked =
+      linkedHere.length > 0
+        ? linkedHere
+        : artifactLinks.filter((l) => l.artifactId === id).map((l) => l.assignmentId);
     let x = 0;
     let y = 0;
     let count = 0;
@@ -338,13 +344,18 @@ export function buildGraphElements(state: ViewState): GraphElements {
       y += pos.y;
       count++;
     }
-    if (count > 0) {
-      x = x / count + 34;
-      y = y / count + 34;
-    } else {
-      x = 840;
-      y = 470;
-    }
+    anchors.push({
+      id,
+      anchor: count > 0 ? { x: x / count, y: y / count } : { x: 840, y: 470 },
+    });
+  }
+  const obstacles = [...visible.assignments, ...visible.concepts].map((id) => seedPosition(id));
+  const artifactPositions = artifactLayout(anchors, obstacles);
+
+  for (const id of ALL_ARTIFACT_IDS) {
+    if (!visible.artifacts.has(id)) continue;
+    const art = artifactById.get(id);
+    if (!art) continue;
     nodes.push({
       group: 'nodes',
       data: {
@@ -357,7 +368,7 @@ export function buildGraphElements(state: ViewState): GraphElements {
         artifactType: art.type,
         size: 1,
       },
-      position: { x, y },
+      position: artifactPositions.get(id) ?? { x: 840, y: 470 },
     });
   }
 

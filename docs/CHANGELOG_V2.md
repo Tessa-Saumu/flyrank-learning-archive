@@ -1,9 +1,235 @@
 # V2 Changelog
 
 All V2 implementation work in one place, tracked against
-`docs/V2_IMPROVEMENT_SPEC.md`. Entries are ordered newest-first. Each entry
-records what was implemented, files changed, the Phase + task reference, and any
-assumptions made.
+`docs/V2_IMPROVEMENT_SPEC.md` and (for the newest entries)
+`docs/V2 REVISION_IMPLEMENTATION_SPEC.md`. Entries are ordered newest-first.
+Each entry records what was implemented, files changed, the Phase + task
+reference, and any assumptions made.
+
+---
+
+# V2 REVISION — Phase 1 (graph, node layout & graph panel)
+
+Targeted corrections to the existing V2 graph per
+`docs/V2 REVISION_IMPLEMENTATION_SPEC.md` Phase 1 (§1–§8). The existing visual
+direction, typography and structure are preserved; these are corrections, not a
+redesign. A new verification suite, `tests/v2-revision-phase1.spec.ts` (16
+tests), covers every Phase 1 acceptance criterion, plus two new adapter unit
+tests. Full suite: **73 passed** (55 pre-existing + 18 new), with
+`astro check` and `astro build` clean.
+
+---
+
+## V2-R1.1 — Concept containers fit their content (§1)
+
+**What was implemented**
+
+- Concept nodes are now sized by their own measured label. A new renderer
+  (map-client.ts `conceptLabelBox` + `wrapLabel`) mirrors Cytoscape's exact
+  text recipe (same canvas font string, per-line `ceil()` width, `font-size`
+  per line of height, same greedy word-wrap at `text-max-width`) and returns a
+  box = wrapped label + asymmetric padding (14px sides / 9px top-bottom).
+- Multi-word names wrap onto a second line and the box grows vertically; an
+  unbreakable single word grows the box horizontally. Sizing stays compact and
+  content-driven (no blanket oversized box).
+- `document.fonts.ready` re-evaluates the stylesheet once the self-hosted
+  variable fonts load, so boxes are measured with the final font, not the
+  fallback.
+
+**Why not `width/height: 'label'`** — those values are deprecated in Cytoscape
+3.34 (they log a console warning on every load) and they ignore padding, which
+left text touching the box edge. The measured-box approach is the library's
+sanctioned replacement.
+
+**Files changed**
+
+- `src/components/map/map-client.ts`
+
+**Phase + task reference**
+
+- V2 REVISION Phase 1, §1.
+
+**Assumptions made**
+
+- Concept labels wrap at `CONCEPT_LABEL_MAX_WIDTH = 84px`, deliberately tighter
+  than the longest multi-word name so they wrap; single words never clip.
+
+---
+
+## V2-R1.2 — Multiple artifacts spread around the work instead of stacking (§2)
+
+**What was implemented**
+
+- New pure, deterministic `artifactLayout()` in layout.ts. Artifacts sharing an
+  anchor (centroid of the work that cites them) are spread evenly on a circle
+  around it (first due north, then clockwise; orbit grows with count), then a
+  fixed-order relaxation pass separates any pair closer than
+  `ARTIFACT_CLEARANCE` (88u), pushes artifacts clear of assignment/concept
+  nodes (`ARTIFACT_NODE_CLEARANCE`, 54u), and tethers each artifact within
+  `ARTIFACT_MAX_DRIFT` (160u) of its anchor.
+- adapter.ts now emits artifact positions from `artifactLayout()`. Previously
+  every artifact linked to the same assignment was drawn at the identical
+  coordinate (e.g. FL-10's four artifacts were fully stacked).
+
+**Files changed**
+
+- `src/components/map/layout.ts`, `src/components/map/adapter.ts`
+
+**Phase + task reference**
+
+- V2 REVISION Phase 1, §2.
+
+**Assumptions made**
+
+- The same anchors always produce the same positions (pure function) so the
+  graph never jitters between renders/reloads (asserted by a determinism unit
+  test).
+
+---
+
+## V2-R1.3 — Artifact nodes are triangles in a distinct colour (§3) + stronger graph contrast (§4)
+
+**What was implemented**
+
+- Artifact nodes use `shape: 'triangle'` filled with a terracotta-orange
+  (`--graph-artifact: #d07b52`, 5.9:1 vs bg). Concept nodes keep their
+  rectangle, now filled gold (`--graph-concept: #d4bc7e`, 10.1:1) with dark ink.
+  Assignments stay circles but gain a tinted fill + heavier track-coloured ring
+  (AI `#4d8a70`, ML `#b9664e`, both >3:1).
+- New graph palette tokens added to global.css (`--graph-*`), one step brighter
+  than the UI accents — more energy, no neon. Connective concept/artifact edges
+  now echo the gold/orange fills.
+- Fixed two pre-existing silent rendering bugs that undercut contrast: (a) the
+  assignment size mapper read `.data.size` (undefined — Cytoscape passes the
+  *element*), producing NaN width/height that were dropped, so every assignment
+  rendered at the 30px default and the tier weighting never applied; now read
+  via `data('size')`. (b) `rgba()` custom-property values were rewritten to
+  8-digit hex by the CSS minifier, which Cytoscape rejects; added a `cyColor()`
+  normaliser in readTokens (also repairs the previously-invalid `--text-dim`
+  arrowhead colour). Removed the invalid `node:hover` selector (Cytoscape has no
+  `:hover`; the map applies a `.hover` class instead).
+
+**Files changed**
+
+- `src/styles/global.css`, `src/components/map/map-client.ts`
+
+**Phase + task reference**
+
+- V2 REVISION Phase 1, §3 and §4.
+
+---
+
+## V2-R1.4 — Graph-first layout: narrow secondary detail panel (§5)
+
+**What was implemented**
+
+- The open panel was a ~53% column (a 50/50 split competing with the graph). It
+  is now `minmax(0, 1fr) clamp(240px, 25%, 340px)`, so the graph stays dominant
+  (test asserts panel < 35% of the row and stage > 1.8× panel) while the panel
+  keeps >= 240px for its content.
+
+**Files changed**
+
+- `src/components/LearningMap.astro`
+
+**Phase + task reference**
+
+- V2 REVISION Phase 1, §5.
+
+---
+
+## V2-R1.5 — Tier filter and terminology removed from the interface (§6)
+
+**What was implemented**
+
+- Removed the Tier tab cluster from the map controls and the /work/ FilterBar;
+  removed the `tier` query-param read/filter on the map and on /work/; removed
+  tier from the visible metadata lines (cards, static DetailPanel, map panel);
+  updated orientation copy ("filter by track and concept"). `tier` remains an
+  *internal* data field (node size weighting, default anchors) — it is never
+  rendered and no inactive control remains.
+
+**Files changed**
+
+- `src/components/LearningMap.astro`, `src/components/FilterBar.astro`,
+  `src/components/DetailPanel.astro`, `src/components/map/map-client.ts`,
+  `src/components/map/adapter.ts`, `src/components/map/panel.ts`,
+  `src/lib/archive.ts` (removed unused `tierLabel`/`assignmentsByTier`),
+  `src/pages/work/index.astro`, `src/pages/index.astro`
+
+**Phase + task reference**
+
+- V2 REVISION Phase 1, §6.
+
+**Assumptions made**
+
+- The word "tier" in assignment *task* copy (e.g. "a free tier" = hosting plan)
+  is legitimate English, not the Tier system, so it was left untouched.
+
+---
+
+## V2-R1.6 — Visible close control + Escape on the detail panel (§7)
+
+**What was implemented**
+
+- The panel is now shell-owned chrome (`panel-bar` with a labelled `Close ×`
+  button and an "Esc closes" hint) that survives every client render, wrapping a
+  `panel-body` that the renderers write into. The close button runs the same
+  path as Escape; closing returns the user to the full graph.
+
+**Files changed**
+
+- `src/components/LearningMap.astro`, `src/components/map/map-client.ts`
+
+**Phase + task reference**
+
+- V2 REVISION Phase 1, §7.
+
+---
+
+## V2-R1.7 — Explicit, labelled zoom/pan navigation controls (§8)
+
+**What was implemented**
+
+- A compact always-visible cluster pinned inside the stage with four labelled
+  buttons: Zoom in / Zoom out / Pan left / Pan right (`aria-label` + `title` +
+  visible glyph). Zoom is computed about the viewport centre with compensated
+  pan so the graph stays under the user's eye; pan reveals off-screen graph.
+  The controls are additive — scroll/pinch/drag and tap still work. Usable and
+  in-bounds at 375px.
+
+**Files changed**
+
+- `src/components/LearningMap.astro`, `src/components/map/map-client.ts`
+
+**Phase + task reference**
+
+- V2 REVISION Phase 1, §8.
+
+---
+
+## V2-R1.8 — Verification (tests, validation, build)
+
+**What was implemented**
+
+- New `tests/v2-revision-phase1.spec.ts` (16 browser tests) asserting every
+  acceptance criterion: concept containment/wrap, artifact non-overlap + spread,
+  triangle shape + colour contrast, panel ratio, tier removal (controls, copy,
+  cards, panel, legacy `?tier=` URL), close + Escape, labelled zoom/pan, small
+  screen usability, gesture preservation, and a default-state regression check.
+- New adapter unit tests: artifact non-overlap + determinism.
+- Updated `tests/v2-phase3.spec.ts` (tier cluster assertions) and
+  `tests/adapter.spec.ts` (ViewState no longer carries `tier`).
+
+**Files changed**
+
+- `tests/v2-revision-phase1.spec.ts` (new), `tests/v2-phase3.spec.ts`,
+  `tests/adapter.spec.ts`
+
+**Result**
+
+- `npm run validate` PASSED · `astro check` 0 errors · `astro build` 53 pages ·
+  Playwright **73 passed**.
 
 ---
 
