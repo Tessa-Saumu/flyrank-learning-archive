@@ -7,7 +7,7 @@
  * canonical V2 assignment-card typography tokens; tier weight is expressed with
  * contrast/opacity/border, never one-off font-size overrides.
  */
-import { displayLabel, metadataLine } from '../lib/archive';
+import { metadataLine } from '../lib/archive';
 import type { Assignment } from '../data/types';
 
 interface Props {
@@ -25,7 +25,7 @@ const href = `/work/${a.id}/`;
   data-assignment-id={a.id}
   aria-haspopup="dialog"
 >
-  <span class="acard__code">{displayLabel(a)}</span>
+  {a.officialCode && <span class="acard__code">{a.officialCode}</span>}
   <span class="acard__meta">{metadataLine(a)}</span>
   <span class="acard__title">{a.title}</span>
 </a>

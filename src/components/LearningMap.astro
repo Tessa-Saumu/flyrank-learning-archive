@@ -20,6 +20,7 @@
  */
 import BrowseWork from './BrowseWork.astro';
 import { assignments } from '../data/assignments';
+import { artifacts } from '../data/artifacts';
 ---
 
 <div class="learning-map" data-learning-map>
@@ -29,7 +30,18 @@ import { assignments } from '../data/assignments';
       <button type="button" class="map-filter map-filter--primary" data-filter-primary="ai-fluency">AI Fluency</button>
       <button type="button" class="map-filter map-filter--primary" data-filter-primary="machine-learning">Machine Learning</button>
       <button type="button" class="map-filter map-filter--primary" data-filter-primary="concepts">Concepts</button>
-      <button type="button" class="map-filter map-filter--primary" data-filter-primary="artifacts">Artifacts</button>
+      <!-- V2 REVISION Phase 2 §9: artifact filtering uses a dropdown. Selecting
+           an artifact filters the graph to its assignments (and its single
+           artifact node); clearing the selection restores the full graph.
+           The dropdown is the visible filter state, so the selected value
+           always corresponds to the graph. -->
+      <label class="sr-only" for="artifact-filter">Filter by artifact</label>
+      <select class="map-filter map-filter--artifact" id="artifact-filter" data-artifact-filter aria-label="Filter by artifact">
+        <option value="">All artifacts</option>
+        {artifacts.map((art) => (
+          <option value={art.id}>{art.title}</option>
+        ))}
+      </select>
       <span class="learning-map__sep" aria-hidden="true"></span>
       <button type="button" class="map-filter map-filter--primary" data-filter-browseall>Browse all</button>
     </div>
@@ -167,6 +179,24 @@ import { assignments } from '../data/assignments';
   .map-filter--primary.is-active {
     color: var(--text);
     border-color: var(--rule-active);
+  }
+
+  /* V2 REVISION Phase 2 §9: artifact dropdown — looks like the other
+     filter controls but is a native select so the active artifact is
+     visible at a glance. */
+  .map-filter--artifact {
+    background: var(--bg-elevated);
+    border: var(--rule);
+    color: var(--text-dim);
+    font-size: var(--fs-tab);
+    font-weight: 600;
+    min-width: 160px;
+    max-width: 220px;
+  }
+
+  .map-filter--artifact:focus {
+    outline: 2px solid var(--green-bright);
+    outline-offset: 2px;
   }
 
   .map-expand {
@@ -535,6 +565,8 @@ import { assignments } from '../data/assignments';
     margin: 0;
     color: var(--text);
     max-width: var(--measure);
+    width: 100%;
+    overflow-wrap: break-word;
   }
   .panel__section {
     border-top: var(--rule);

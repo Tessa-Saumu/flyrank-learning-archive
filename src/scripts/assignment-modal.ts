@@ -124,6 +124,15 @@ function revealEvidence(button: HTMLElement): void {
   if (fallback && src) fallback.hidden = true;
 }
 
+function isAssignmentHref(href: string): string | null {
+  // Matches /work/<assignment-id>/ with optional trailing slash and
+  // ignores query/hash (e.g. /work/fl-01-workflow-audit/ -> fl-01-workflow-audit)
+  // Does NOT match /work/ index or /work/?view=... or /work/?concept=...
+  const path = href.split('?')[0].split('#')[0];
+  const m = path.match(/^\/work\/([^/]+)\/?$/);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
 function handleClick(event: MouseEvent): void {
   const target = event.target as HTMLElement | null;
   if (!target) return;
@@ -133,6 +142,25 @@ function handleClick(event: MouseEvent): void {
     event.preventDefault();
     openAssignment(card.getAttribute('data-assignment-id') || '', card);
     return;
+  }
+
+  // V2 REVISION Phase 2 §10 — site-wide assignment modal convention.
+  // Any anchor that points at an assignment detail page (/work/<id>/) opens
+  // that assignment in the same modal, regardless of where the link appears:
+  // home, work index, track pages, framework pages, concept pages, or the
+  // connections list inside a detail page. This keeps one consistent modal
+  // implementation rather than per-page logic, and preserves the href for
+  // no-JS/direct linking. The graph's side panel remains separate — it is
+  // not an assignment link and does not go through this path.
+  const anchor = target.closest<HTMLAnchorElement>('a[href^="/work/"]');
+  if (anchor) {
+    const href = anchor.getAttribute('href') || '';
+    const assignmentId = isAssignmentHref(href);
+    if (assignmentId) {
+      event.preventDefault();
+      openAssignment(assignmentId, anchor);
+      return;
+    }
   }
 
   const close = target.closest<HTMLElement>('[data-modal-close]');
@@ -146,17 +174,6 @@ function handleClick(event: MouseEvent): void {
   if (show && show instanceof HTMLButtonElement) {
     revealEvidence(show);
     return;
-  }
-
-  // Inside the modal, assignment links open the next assignment in the same
-  // modal rather than navigating away from the underlying page.
-  if (dialog?.open && modalBody?.contains(target)) {
-    const nextWork = target.closest<HTMLAnchorElement>('a[href^="/work/"]');
-    if (nextWork) {
-      event.preventDefault();
-      const id = decodeURIComponent(nextWork.getAttribute('href') || '').replace(/^\/work\//, '').replace(/\/$/, '');
-      openAssignment(id, nextWork);
-    }
   }
 }
 

@@ -78,7 +78,7 @@ export function renderAssignmentPanel(container: HTMLElement, a: Assignment): vo
   const links = artifactLinks.filter((l) => l.assignmentId === a.id);
   const edges = publicEdges.filter((e) => e.source === a.id || e.target === a.id);
 
-  const code = a.officialCode ?? a.title;
+  const codeLine = a.officialCode ? `<p class="panel__code">${escapeHtml(a.officialCode)}</p>` : '';
 
   const conceptChips = concepts
     .map((c) => `<a class="panel__chip" href="/concepts/${c!.id}/">${escapeHtml(c!.name)}</a>`)
@@ -109,7 +109,7 @@ export function renderAssignmentPanel(container: HTMLElement, a: Assignment): vo
   container.innerHTML = `
     <article class="panel__detail">
       <header class="panel__header">
-        <p class="panel__code">${escapeHtml(code)}</p>
+        ${codeLine}
         <p class="panel__meta">${escapeHtml(metaLine)}</p>
         <h2 class="panel__title">${escapeHtml(a.title)}</h2>
       </header>
