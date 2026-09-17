@@ -1,8 +1,11 @@
 ---
 /**
  * /work/ — the full Work Index. Server-rendered filtering via query params
- * (?track=, ?tier=, ?concept=, ?view=concepts), preserving shareable URLs.
+ * (?track=, ?concept=, ?view=concepts), preserving shareable URLs.
  * No JavaScript is required to browse.
+ *
+ * V2 REVISION Phase 1 §6: the `tier` param is no longer read or filtered on —
+ * the Tier system is gone from the public interface.
  */
 import Base from '../../layouts/Base.astro';
 import FilterBar from '../../components/FilterBar.astro';
@@ -14,13 +17,10 @@ import { assignmentsForConcept, getConcept } from '../../lib/archive';
 
 const url = Astro.url;
 const track = url.searchParams.get('track') ?? undefined;
-const tier = url.searchParams.get('tier') ?? undefined;
 const view = url.searchParams.get('view') ?? undefined;
 const conceptId = url.searchParams.get('concept') ?? undefined;
 
 const validTrack = track === 'ai-fluency' || track === 'machine-learning' ? track : undefined;
-const validTier =
-  tier === 'core' || tier === 'supporting' || tier === 'reference' ? tier : undefined;
 
 let filtered = assignments;
 
@@ -28,10 +28,6 @@ if (conceptId) {
   filtered = assignmentsForConcept(conceptId);
 } else if (validTrack) {
   filtered = filtered.filter((a) => a.track === validTrack);
-}
-
-if (validTier) {
-  filtered = filtered.filter((a) => a.tier === validTier);
 }
 
 const concept = conceptId ? getConcept(conceptId) : undefined;
@@ -42,7 +38,7 @@ const title = concept
   : 'All Work';
 const description = concept
   ? `Assignments connected to the ${concept.name} concept in the FlyRank Learning Archive.`
-  : 'Browse every assignment in the FlyRank Learning Archive, filterable by track, tier, and concept.';
+  : 'Browse every assignment in the FlyRank Learning Archive, filterable by track and concept.';
 ---
 
 <Base title={title} description={description} canonicalPath={concept ? `/work/?concept=${concept.id}` : '/work/'}>
@@ -53,7 +49,7 @@ const description = concept
       {concept && <p class="work-head__desc">{concept.description}</p>}
     </header>
 
-    <FilterBar track={validTrack} tier={validTier} view={isConceptsView ? 'concepts' : 'work'} />
+    <FilterBar track={validTrack} view={isConceptsView ? 'concepts' : 'work'} />
 
     {
       isConceptsView ? (

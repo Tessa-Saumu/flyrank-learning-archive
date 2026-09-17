@@ -34,6 +34,28 @@
   --terracotta-text: #c47a5e;
   --graph-grey: #5b625d;
 
+  /* --- Knowledge Graph node palette (V2 REVISION Phase 1 §3, §4) ---
+     The graph previously drew every node as a hairline outline on the page
+     background, so concept / assignment / artifact nodes were all the same
+     near-invisible dark box. Each node type now gets a *filled* treatment
+     from the existing Systems Atlas hue family — one step brighter than the
+     UI accents for energy, but never neon:
+       concept  → gold rectangle   (--graph-concept, dark ink inside)
+       artifact → terracotta-orange triangle (--graph-artifact)
+       assignment → tinted ring circle in its track accent
+     Contrast measured against --bg (#101312): concept 10.1:1, artifact
+     5.9:1, AI ring 4.6:1, ML ring 4.5:1 — all above the 3:1 required for
+     non-text graphical objects, and the in-node concept label (dark ink on
+     the gold fill) is 10.1:1. */
+  --graph-concept: #d4bc7e;
+  --graph-concept-ink: #101312;
+  --graph-artifact: #d07b52;
+  --graph-artifact-ink: #101312;
+  --graph-assignment-ai: #4d8a70;
+  --graph-assignment-ml: #b9664e;
+  --graph-assignment-fill-ai: rgba(77, 138, 112, 0.18);
+  --graph-assignment-fill-ml: rgba(185, 102, 78, 0.2);
+
   /* --- Rules / borders (DESIGN_SPEC §33) --- */
   --rule: 1px solid rgba(233, 231, 223, 0.16);
   --rule-active: 1px solid rgba(233, 231, 223, 0.3);

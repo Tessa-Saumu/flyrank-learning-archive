@@ -13,7 +13,6 @@ import type {
   Concept,
   GraphEdge,
   Strand,
-  Tier,
   Track,
 } from '../data/types';
 
@@ -143,11 +142,6 @@ export function assignmentsByTrack(track: Track): Assignment[] {
     .sort((a, b) => (a.week ?? 0) - (b.week ?? 0) || a.title.localeCompare(b.title));
 }
 
-/** Assignments in a given tier. */
-export function assignmentsByTier(tier: Tier): Assignment[] {
-  return assignments.filter((a) => a.tier === tier);
-}
-
 /* -------- Display labels (never hard-coded counts; only labels) -------- */
 
 export function trackLabel(track: Track): string {
@@ -164,17 +158,6 @@ export function strandLabel(strand: Strand): string {
       return 'ML spine';
     case 'convergence':
       return 'Convergence';
-  }
-}
-
-export function tierLabel(tier: Tier): string {
-  switch (tier) {
-    case 'core':
-      return 'Core';
-    case 'supporting':
-      return 'Supporting';
-    case 'reference':
-      return 'Reference';
   }
 }
 
@@ -209,11 +192,16 @@ export function displayLabel(a: Assignment): string {
   return a.officialCode ?? a.title;
 }
 
-/** The single visible metadata line, e.g. "WEEK 6 · MACHINE LEARNING · CORE". */
+/**
+ * The single visible metadata line, e.g. "WEEK 6 · MACHINE LEARNING".
+ *
+ * V2 REVISION Phase 1 §6: the tier label is no longer part of the visible
+ * metadata line — the Tier system is gone from the public interface. `tier`
+ * remains an internal data field (node weighting, default anchors).
+ */
 export function metadataLine(a: Assignment): string {
   const parts: string[] = [];
   if (a.week !== undefined) parts.push(`Week ${a.week}`);
   parts.push(trackLabel(a.track));
-  parts.push(tierLabel(a.tier));
   return parts.join(' · ');
 }

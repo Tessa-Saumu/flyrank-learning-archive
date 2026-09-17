@@ -46,7 +46,7 @@ test('header: primary sections read above the secondary track links (§1)', asyn
   await expect(page.locator('.header__link--secondary')).toHaveCount(2);
 });
 
-test('filter bars: secondary tier tabs are grouped and lighter than primary tabs (§1)', async ({
+test('filter bars expose the real categories only — the tier cluster is gone (V2 REVISION §6)', async ({
   page,
 }) => {
   await page.setViewportSize(LAPTOP);
@@ -54,24 +54,27 @@ test('filter bars: secondary tier tabs are grouped and lighter than primary tabs
   for (const path of ['/', '/work/']) {
     await page.goto(path);
 
-    // Primary tabs are heavier and larger than the tier tabs.
-    const primaryWeight = await fontWeight(page, '.filterbar__item--primary');
-    const secondaryWeight = await fontWeight(page, '.filterbar__item--secondary');
-    expect(primaryWeight).toBeGreaterThan(secondaryWeight);
-    const primarySize = await fontSizePx(page, '.filterbar__item--primary');
-    const secondarySize = await fontSizePx(page, '.filterbar__item--secondary');
-    expect(primarySize).toBeGreaterThan(secondarySize);
+    // The work filter bar is now a single level: the actual categories.
+    await expect(page.locator('.filterbar__item--primary')).toHaveCount(4);
+    for (const label of ['All', 'AI Fluency', 'Machine Learning', 'Concepts']) {
+      await expect(
+        page.locator('.filterbar__item--primary').filter({ hasText: label }).first()
+      ).toBeVisible();
+    }
 
-    // The tier cluster clearly belongs to its parent group (labelled).
-    await expect(page.locator('.filterbar__kicker')).toHaveText(/tier/i);
+    // No tier tab, kicker, or secondary tab cluster survives anywhere.
+    await expect(page.locator('.filterbar__kicker')).toHaveCount(0);
+    await expect(page.locator('.filterbar__item--secondary')).toHaveCount(0);
+    await expect(page.locator('.filterbar__group--tier')).toHaveCount(0);
   }
 
-  // The map controls carry the same two-level treatment.
+  // The map controls dropped their tier cluster too; the category tabs keep
+  // the heavier §1 treatment.
   await page.goto('/');
   const mapPrimaryWeight = await fontWeight(page, '.map-filter--primary');
-  const mapSecondaryWeight = await fontWeight(page, '.map-filter--secondary');
-  expect(mapPrimaryWeight).toBeGreaterThan(mapSecondaryWeight);
-  await expect(page.locator('.learning-map__kicker')).toHaveText(/tier/i);
+  expect(mapPrimaryWeight).toBeGreaterThanOrEqual(600);
+  await expect(page.locator('.map-filter--secondary')).toHaveCount(0);
+  await expect(page.locator('.learning-map__kicker')).toHaveCount(0);
 });
 
 test('no decorative containers were introduced for hierarchy (§1)', async ({ page }) => {
@@ -80,7 +83,7 @@ test('no decorative containers were introduced for hierarchy (§1)', async ({ pa
 
   // Hierarchy comes from typography/spacing/grouping: nav links and kickers
   // stay free of backgrounds, shadows, and gradients.
-  for (const selector of ['.header__link--primary', '.header__tracks-label', '.filterbar__kicker']) {
+  for (const selector of ['.header__link--primary', '.header__tracks-label', '.filterbar__item--primary']) {
     const style = await page.locator(selector).first().evaluate((el) => {
       const s = getComputedStyle(el);
       return { background: s.backgroundImage, shadow: s.boxShadow, bg: s.backgroundColor };
