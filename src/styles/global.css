@@ -97,7 +97,7 @@
   --fs-nav: clamp(12px, 0.95vw, 14px); /* primary section navigation */
   --fs-nav-secondary: clamp(10px, 0.75vw, 12px); /* secondary nav (tracks) */
   --fs-tab: clamp(11px, 0.8vw, 12px); /* primary tabs within a section */
-  /* secondary tabs (tier etc.) keep --fs-metadata */
+  /* secondary tabs keep --fs-metadata */
 
   --tracking-metadata: 0.08em;
 
@@ -339,7 +339,7 @@ ol {
 .track-head__intro,
 .concept-head__desc,
 .mediation,
-.hero__supporting,
+.hero__lead,
 .hero__subordinate,
 .orientation__item p,
 .detail__main,
@@ -365,7 +365,7 @@ ol {
 .track-head__intro,
 .concept-head__desc,
 .mediation,
-.hero__supporting,
+.hero__lead,
 .hero__subordinate,
 .orientation__item p,
 .panel__beat-body,

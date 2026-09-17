@@ -1,11 +1,11 @@
 ---
 /**
  * BrowseWork.astro — the non-graph browse index: assignment cards grouped by
- * track and strand, with a client-side search input.
+ * track and strand, with integrated client-side category filtering and search.
  *
- * Search (Phase 1 scope): a simple <input> filtering over title, code/ID,
- * concept name, and artifact name. The full list is rendered server-side, so
- * with JavaScript disabled the archive degrades to the static list.
+ * V2 REVISION Phase 3 §15: Unified filtering across Home and Work.
+ * Works seamlessly with client-side category filtering (All · AI Fluency · Machine Learning)
+ * and live search. Degrades cleanly to the full static list with JS off.
  */
 import AssignmentCard from './AssignmentCard.astro';
 import { artifactsForAssignment, conceptsForAssignment, strandLabel, trackLabel } from '../lib/archive';
@@ -13,7 +13,7 @@ import type { Assignment, Strand, Track } from '../data/types';
 
 interface Props {
   assignments: Assignment[];
-  /** Unique id for the search input (used by the inline script). */
+  /** Unique id for the search input. */
   searchId?: string;
   /** Show the search box (default true). */
   showSearch?: boolean;
@@ -46,7 +46,7 @@ const groups = trackOrder
 const multiStrand = (g: NonNullable<(typeof groups)[number]>) => g.strands.length > 1;
 ---
 
-<div class="browse">
+<div class="browse" data-browse-work>
   {
     showSearch && (
       <div class="browse__search">
@@ -64,17 +64,19 @@ const multiStrand = (g: NonNullable<(typeof groups)[number]>) => g.strands.lengt
     )
   }
 
-  <div class="browse__list" id="browse-list">
+  <p class="browse__empty" data-browse-empty hidden>No assignments match these filters.</p>
+
+  <div class="browse__list" id="browse-list" data-browse-list>
     {
       groups.map((g) => (
-        <section class="browse__track" data-track-group>
+        <section class="browse__track" data-track-group data-track={g.track}>
           <h2 class="browse__track-heading">{trackLabel(g.track)}</h2>
           {g.strands.map((s) => (
-            <section class="browse__strand" data-strand-group>
+            <section class="browse__strand" data-strand-group data-strand={s.strand}>
               {multiStrand(g) && <h3 class="browse__strand-heading">{strandLabel(s.strand)}</h3>}
               <ul class="browse__grid">
                 {s.items.map((a) => (
-                  <li data-search-item data-search-text={searchText(a)}>
+                  <li data-search-item data-search-text={searchText(a)} data-track={a.track}>
                     <AssignmentCard assignment={a} />
                   </li>
                 ))}
@@ -87,45 +89,19 @@ const multiStrand = (g: NonNullable<(typeof groups)[number]>) => g.strands.lengt
   </div>
 </div>
 
-{
-  showSearch && (
-    <script>
-      {
-        // Client-side search: filters the server-rendered list. Degrades to the
-        // full static list with JS off.
-      }
-      (function () {
-        const input = document.querySelector('[data-search-input]') as HTMLInputElement | null;
-        if (!input) return;
-        const listId = input.getAttribute('data-search-list');
-        if (!listId) return;
-        const list = document.getElementById(listId);
-        if (!list) return;
-        input.addEventListener('input', function () {
-          const q = input.value.trim().toLowerCase();
-          const items = list.querySelectorAll<HTMLElement>('[data-search-item]');
-          items.forEach(function (item) {
-            const text = (item.getAttribute('data-search-text') || '').toLowerCase();
-            item.hidden = q !== '' && text.indexOf(q) === -1;
-          });
-          // Hide empty strand/track groups.
-          list.querySelectorAll<HTMLElement>('[data-strand-group]').forEach(function (strand) {
-            const visible = strand.querySelectorAll('[data-search-item]:not([hidden])').length;
-            strand.hidden = visible === 0;
-          });
-          list.querySelectorAll<HTMLElement>('[data-track-group]').forEach(function (track) {
-            const visible = track.querySelectorAll('[data-search-item]:not([hidden])').length;
-            track.hidden = visible === 0;
-          });
-        });
-      })();
-    </script>
-  )
-}
+<script>
+  import '../scripts/work-filter';
+</script>
 
 <style>
   .browse__search {
     margin-bottom: var(--space-6);
+  }
+
+  .browse__empty {
+    color: var(--text-faint);
+    padding: var(--space-4) 0;
+    margin: 0;
   }
 
   .browse__input {

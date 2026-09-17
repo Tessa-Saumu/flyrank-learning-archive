@@ -1,11 +1,14 @@
 ---
 /**
- * /work/ — the full Work Index. Server-rendered filtering via query params
- * (?track=, ?concept=, ?view=concepts), preserving shareable URLs.
- * No JavaScript is required to browse.
+ * /work/ — the full Work Index.
  *
- * V2 REVISION Phase 1 §6: the `tier` param is no longer read or filtered on —
- * the Tier system is gone from the public interface.
+ * V2 REVISION Phase 3 §15: Unified Work filtering across Home and Work.
+ * Seamless client-side interactive filtering (All · AI Fluency · Machine Learning · Concepts)
+ * without navigating away, while preserving shareable URLs (?track=, ?view=concepts)
+ * and full no-JS static fallback.
+ *
+ * V2 REVISION Phase 1 §6 & Phase 3 §16: Tier terminology and tier filtering
+ * are completely removed.
  */
 import Base from '../../layouts/Base.astro';
 import FilterBar from '../../components/FilterBar.astro';
@@ -49,23 +52,21 @@ const description = concept
       {concept && <p class="work-head__desc">{concept.description}</p>}
     </header>
 
-    <FilterBar track={validTrack} view={isConceptsView ? 'concepts' : 'work'} />
+    <FilterBar track={validTrack} view={isConceptsView ? 'concepts' : 'work'} basePath="/work/" />
 
-    {
-      isConceptsView ? (
-        <ul class="concepts-grid">
-          {concepts.map((c) => (
-            <li>
-              <ConceptCard concept={c} />
-            </li>
-          ))}
-        </ul>
-      ) : filtered.length > 0 ? (
-        <BrowseWork assignments={filtered} searchId="work-search" />
-      ) : (
-        <p class="empty">No assignments match these filters.</p>
-      )
-    }
+    <div data-work-view="assignments" class:list={{ hidden: isConceptsView }}>
+      <BrowseWork assignments={conceptId ? filtered : assignments} searchId="work-search" />
+    </div>
+
+    <div data-work-view="concepts" class:list={{ hidden: !isConceptsView }}>
+      <ul class="concepts-grid">
+        {concepts.map((c) => (
+          <li>
+            <ConceptCard concept={c} />
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 </Base>
 
@@ -92,7 +93,7 @@ const description = concept
     gap: var(--space-4);
   }
 
-  .empty {
-    color: var(--text-faint);
+  .hidden {
+    display: none;
   }
 </style>

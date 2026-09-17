@@ -17,6 +17,7 @@
     "test:adapter": "playwright test tests/adapter.spec.ts",
     "test:map": "playwright test tests/map.spec.ts",
     "test:phase3": "playwright test tests/phase3.spec.ts",
+    "test:revision3": "node --experimental-strip-types scripts/verify-phase3.mjs",
     "test:axe": "playwright test tests/axe.spec.ts",
     "test:install": "playwright install chromium",
     "lighthouse": "lighthouse http://127.0.0.1:4321 --config-path=./lighthouse.config.mjs --output-dir=./lighthouse-reports --output=html"
