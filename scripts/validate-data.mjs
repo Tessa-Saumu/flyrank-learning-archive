@@ -513,9 +513,61 @@ for (const a of assignments) {
   }
 }
 
-/* ---- 5. Artifacts count + unique IDs ---- */
-if (artifacts.length !== 11) fail(`Expected exactly 11 shared artifacts, got ${artifacts.length}`);
+/* ============================================================================
+ * AUDIT SET — artifact records (CONTENT_REGISTRY §3.3 + §3.4).
+ * 11 shared major artifact nodes + 22 per-assignment deliverable documents
+ * (the assignment-artifacts/ submissions resolved on 2026-09-18).
+ * ========================================================================== */
+const EXPECTED_ARTIFACT_IDS = [
+  // 11 shared major artifact nodes (§3.3)
+  'artifact-ml-repo',
+  'artifact-ml-paper',
+  'artifact-portfolio-site',
+  'artifact-personal-agent',
+  'artifact-agent-readme',
+  'artifact-agent-demo-video',
+  'artifact-automation-workflow',
+  'artifact-learning-archive',
+  'artifact-build-in-public-post',
+  'artifact-hours-log',
+  'artifact-final-retrospective',
+  // Per-assignment deliverables: AI Systems / Agents (§3.4)
+  'artifact-fl-01-workflow-audit',
+  'artifact-fl-prompt-ladder',
+  'artifact-fl-02-prompting-fundamentals',
+  'artifact-fl-05-agent-mcp-basics',
+  'artifact-fl-06-agent-design',
+  'artifact-fl-07-build-agent',
+  // Per-assignment deliverables: Portfolio / Public Work (§3.4)
+  'artifact-fl-portfolio-proof',
+  'artifact-fl-portfolio-sitemap',
+  'artifact-fl-portfolio-cases',
+  'artifact-fl-identity-kit',
+  'artifact-fl-curate-images',
+  'artifact-fl-content-ctas',
+  'artifact-fl-empty-live-page',
+  'artifact-fl-stack-choice',
+  'artifact-fl-explain-build',
+  'artifact-pf-04-personal-website',
+  'artifact-fl-dynamic-feature',
+  'artifact-fl-mobile-audit',
+  'artifact-fl-crit-review',
+  'artifact-fl-site-hardening',
+  'artifact-fl-domain-badge',
+  'artifact-fl-maintenance-plan',
+];
+
+/* ---- 5. Artifacts count + unique IDs + registry match ---- */
+if (artifacts.length !== 33) fail(`Expected exactly 33 artifact records, got ${artifacts.length}`);
 if (new Set(artifacts.map((a) => a.id)).size !== artifacts.length) fail('Duplicate artifact IDs found');
+
+const actualArtifactIds = artifacts.map((a) => a.id).sort();
+const expectedArtifactIds = [...EXPECTED_ARTIFACT_IDS].sort();
+if (JSON.stringify(actualArtifactIds) !== JSON.stringify(expectedArtifactIds)) {
+  const missing = expectedArtifactIds.filter((id) => !actualArtifactIds.includes(id));
+  const extra = actualArtifactIds.filter((id) => !expectedArtifactIds.includes(id));
+  fail(`Artifact IDs do not match the registry. Missing: [${missing}] Extra: [${extra}]`);
+}
 
 /* ---- 6. Referential integrity (edges, artifact links, concepts) ---- */
 for (const e of publicEdges) {
@@ -612,6 +664,29 @@ for (const a of assignments) {
   }
 }
 
+/* ---- 9b. Artifact URL hygiene (§3.4): every supplied URL must be a real,
+       public https location (or a root-relative internal route). No
+       placeholders, no undefined values leaking into the UI. ---- */
+for (const a of artifacts) {
+  for (const field of ['url', 'embedUrl']) {
+    const value = a[field];
+    if (value === undefined) continue;
+    const ok =
+      value.startsWith('https://') || (value.startsWith('/') && !value.startsWith('//'));
+    if (!ok) {
+      fail(`Artifact ${a.id}: ${field} is not an https URL or internal route: ${JSON.stringify(value)}`);
+    }
+  }
+}
+// The two deliberately-open artifacts are the only records allowed to have
+// no URL (honest `partial` state, PRODUCT_SPEC §3.4).
+const OPEN_ARTIFACTS = new Set(['artifact-ml-paper', 'artifact-build-in-public-post']);
+for (const a of artifacts) {
+  if (a.url === undefined && !OPEN_ARTIFACTS.has(a.id)) {
+    fail(`Artifact ${a.id}: url is undefined but it is not one of the documented open artifacts`);
+  }
+}
+
 /* ---- 10. workloadHours omitted where registry is blank ---- */
 for (const id of ['fl-explain-build', 'fl-crit-review', 'fl-10-final-package']) {
   const a = assignmentById.get(id);
@@ -681,7 +756,7 @@ console.log(`  ai-fluency:       ${byTrack['ai-fluency'] ?? 0}`);
 console.log(`  core: ${byTier.core ?? 0} / supporting: ${byTier.supporting ?? 0} / reference: ${byTier.reference ?? 0}`);
 console.log(`Concepts:         ${concepts.length}`);
 console.log(`Concept mappings: ${mappingInstances}`);
-console.log(`Shared artifacts: ${artifacts.length}`);
+console.log(`Artifact records: ${artifacts.length} (11 shared nodes + 22 per-assignment deliverables)`);
 console.log(`Artifact links:   ${artifactLinks.length}`);
 console.log(`Public edges:     ${publicEdges.length}`);
 console.log(`Rejected edges:   ${rejectedEdges.length}`);

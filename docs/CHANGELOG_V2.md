@@ -8,6 +8,144 @@ reference, and any assumptions made.
 
 ---
 
+# V2 — Artifact Evidence Resolution (2026-09-18, V1.0.0 content completion)
+
+The placeholder artifact system is now backed by the real, public
+deliverables: all 26 AI Fluency submissions in `assignment-artifacts/`, the
+ML repository with its 12 executed notebooks and committed output metrics,
+the live portfolio site, and the public final index. Evidence statuses flip
+from `partial` to `available` everywhere a real URL now exists; the three
+genuinely-open items (deployed ML paper, build-in-public post, final
+sign-off) stay honestly `partial`.
+
+---
+
+## V2-E1 — Artifact records resolved to real public URLs
+
+**What was implemented**
+
+- `src/data/artifacts.ts`: the 11 shared major artifact nodes now carry real
+  URLs (ML repository, live portfolio site, README, demo video, FL-04
+  workflow PDF, public index, hours log, internal reflection route). Two
+  records stay deliberately URL-less with honest pending states:
+  `artifact-ml-paper` (the repo's `submission/paper_url.txt` still holds
+  placeholder text) and `artifact-build-in-public-post` (unpublished).
+- 22 new per-assignment deliverable records (`artifact-<assignment-id>`)
+  cover every AI Fluency assignment whose primary proof is its own
+  submission (PDFs in `assignment-artifacts/`, plus the
+  `fl-empty-live-page` screenshot). Each carries the GitHub blob URL
+  (human-facing) and the raw URL for the lazy in-page viewer
+  (`embedUrl` for PDFs, raw MP4 for the demo video, raw PNG preview image
+  for the screenshot).
+- `artifactLinks` re-pointed from the placeholder shared-node mappings to
+  the per-assignment deliverables (43 links total). FL-04 keeps the shared
+  automation-workflow node (its own PDF IS the stream deliverable), FL-09
+  keeps README + demo video, FL-10 keeps its four final-package links,
+  FL-07 additionally documents the personal agent node (the working
+  deliverable, reproducible through its README), and the three
+  ship/launch checkpoints additionally link the live portfolio site.
+- `src/data/assignments.ts`: evidence status is `available` for all 33
+  assignments whose linked artifacts now have real URLs; `ml-11-ship-paper`
+  and `ml-12-tell-story` stay `partial` (paper undeployed).
+
+**Files changed**
+
+- `src/data/artifacts.ts`, `src/data/assignments.ts`,
+  `docs/CONTENT_REGISTRY.md` (§3.2 status column + new §3.4 resolution
+  table), `INDEX.md` (fixed three dead Week-3 submission links to the real
+  `w03-consistency-not-talent.pdf` filename; added ML repository pointer;
+  updated FL-10 status note).
+
+**Phase + task reference**
+
+- CONTENT_REGISTRY §3.2/§3.3/§3.4; FL-10 completion package.
+
+---
+
+## V2-E2 — Notebook viewport wired to the real ML notebooks
+
+**What was implemented**
+
+- `src/data/notebooks.ts` rebuilt: one record per ML assignment with every
+  executed notebook (12 total: starter `01`–`03`, capstone `w01`–`w07`),
+  each with its real public GitHub link and a one-sentence outcome. The
+  metric tables on ML-01/07/08/09/10 are the author's committed output
+  files copied verbatim (`outputs/model_report.md`,
+  `work/outputs/baseline_metrics.json`, `work/outputs/model_metrics.json`,
+  `work/outputs/validation_audit_metrics.json`,
+  `work/outputs/action_playbook_summary.json`). Chart images and code
+  excerpts remain in the honest "evidence attaches here" state.
+- `src/components/NotebookPreview.astro`: the viewport now renders one row
+  per notebook (filename, outcome, Open link) plus the metric table and a
+  GitHub repository action; it renders for ML-spine assignments in every
+  display mode (the earlier `embed`-only gate meant the component never
+  rendered at all).
+- `src/components/ArtifactPreview.astro`: notebook viewport branch no
+  longer gated on `embed` mode.
+- `src/components/map/panel.ts`: the map detail panel mirrors the same
+  notebook viewport (per-notebook Open links, committed metric list,
+  repository action) and now shows the assignment's real evidence status
+  instead of a hard-coded `partial`.
+
+**Files changed**
+
+- `src/data/notebooks.ts`, `src/components/NotebookPreview.astro`,
+  `src/components/ArtifactPreview.astro`, `src/components/map/panel.ts`,
+  `src/components/LearningMap.astro` (new panel classes).
+
+**Phase + task reference**
+
+- DESIGN_SPEC §22–23 (notebook viewport), CONTENT_REGISTRY §3.4.
+
+---
+
+## V2-E3 — Map graph, validator and test suite follow the new registry
+
+**What was implemented**
+
+- The knowledge graph now carries 33 artifact nodes (17 linked to the
+  default anchor set; 82 edges in the default view, 135 in browse-all).
+  The artifact filter dropdown lists all 33 records.
+- `scripts/validate-data.mjs`: audit set extended to the 33 artifact IDs;
+  new URL hygiene rule (every supplied URL must be a real https location
+  or an internal route) and an explicit allow-list for the two documented
+  open artifacts.
+- Browser tests updated to the resolved state: default view 17 artifacts /
+  82 edges; browse-all 33 artifacts / 135 edges; the full non-overlap and
+  shape checks now run in the `?view=artifacts` view; ML-09's modal test
+  now asserts the real notebook viewport; the lazy-evidence test now
+  asserts the PDF viewer is created on demand with the real raw URL
+  (FL-01); the phase3 keyboard journey expects `Evidence: available` on
+  ML-09.
+- Fix: the client-side detail panel styles in `LearningMap.astro` were
+  scoped, so they never reached the markup that `panel.ts` injects. The
+  panel-only style block is now `is:global` (its BEM-namespaced
+  `panel__*` classes are used nowhere else), which also styles the new
+  notebook content as designed.
+- Fix: the assignment modal only copied inline `<style>` tags from the
+  fetched assignment page, but production builds ship component styles in
+  external stylesheets, so the modal content rendered without its real
+  page styles. `appendMissingStyles` now also copies (deduped)
+  `<link rel="stylesheet">` tags, so the modal renders the full
+  assignment page as designed.
+
+**Files changed**
+
+- `scripts/validate-data.mjs`, `tests/adapter.spec.ts`,
+  `tests/map.spec.ts`, `tests/v2-phase2.spec.ts`,
+  `tests/v2-revision-phase1.spec.ts`, `tests/v2-phase1.spec.ts`,
+  `tests/phase3.spec.ts`, `src/components/LearningMap.astro`,
+  `src/scripts/assignment-modal.ts`.
+
+**Result**
+
+- `npm run validate` PASSED (33 artifact records, 43 links) · `astro check`
+  0 errors · `astro build` 53 pages · adapter unit tests 12/12 passed.
+  Browser suites (map, phase3, v2-*, axe) must be re-run on a machine with
+  a Playwright browser before the V1.0.0 tag.
+
+---
+
 # V2 REVISION — Phase 3 (work filters, terminology & final cleanup)
 
 Targeted corrections per `docs/V2 REVISION_IMPLEMENTATION_SPEC.md` Phase 3 (§15–§16) and the Final System-Wide Consistency Check. Work filtering is now fully functional and unified across both the dedicated Work page and the Home page without navigating away; all old tier concepts and supporting/reference terminology are completely removed from public UI copy, metadata, and controls; full validation and test suites pass cleanly.

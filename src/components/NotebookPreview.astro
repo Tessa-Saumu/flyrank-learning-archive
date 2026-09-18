@@ -3,13 +3,14 @@
  * NotebookPreview.astro — a contained, integrated ML notebook viewport
  * (DESIGN_SPEC §22–23). NOT an iframe.
  *
- * Dark technical frame: compact title bar, notebook heading, a results region
- * (chart / metric table / code excerpt) and action buttons. The card
- * communicates WHAT the artifact proves before inviting deeper inspection.
+ * Dark technical frame: compact title bar, one row per executed notebook
+ * (filename + one-sentence outcome + OPEN NOTEBOOK action), a results region
+ * (metric table when the committed output files carry one; charts and code
+ * excerpts attach per notebook when exported) and a GitHub repository action.
  *
- * PLACEHOLDER: charts/metrics/code come from `src/data/notebooks.ts` and are
- * empty until the author supplies real evidence; an honest "evidence attaches
- * here" region is shown instead of a fake embed.
+ * All links are the real, public notebooks in the FlyRank ML internship
+ * repository (CONTENT_REGISTRY §3.4); the metric rows are the author's
+ * committed output files, copied verbatim (see src/data/notebooks.ts).
  */
 import { evidenceStatusLabel } from '../lib/archive';
 import type { NotebookPreview } from '../data/notebooks';
@@ -18,27 +19,44 @@ import type { EvidenceStatus } from '../data/types';
 interface Props {
   notebook: NotebookPreview;
   evidenceStatus?: EvidenceStatus;
-  /** External "OPEN NOTEBOOK" URL (undefined until supplied; PLACEHOLDER). */
-  openUrl?: string;
-  /** GitHub repo URL (undefined until supplied; PLACEHOLDER). */
-  githubUrl?: string;
 }
 
-const { notebook, evidenceStatus = 'partial', openUrl, githubUrl } = Astro.props;
-const hasUrl = Boolean(openUrl || githubUrl);
+const { notebook, evidenceStatus = 'partial' } = Astro.props;
+const count = notebook.notebooks.length;
+const plural = count === 1 ? 'notebook' : 'notebooks';
 ---
 
-<article class="nb" aria-label={notebook.filename}>
+<article class="nb" aria-label={`${count} ${plural} for this assignment`}>
   <header class="nb__bar">
     <span class="nb__dot" aria-hidden="true"></span>
-    <span class="nb__file">{notebook.filename}</span>
+    <span class="nb__file">Notebooks · {count}</span>
     <span class="nb__status" data-status={evidenceStatus}>
       {evidenceStatusLabel(evidenceStatus)}
     </span>
   </header>
 
   <div class="nb__body">
-    <p class="nb__outcome">{notebook.outcome}</p>
+    <div class="nb__list">
+      {
+        notebook.notebooks.map((nb) => (
+          <div class="nb__row">
+            <div class="nb__row-head">
+              <code class="nb__name">{nb.filename}</code>
+              <a
+                class="nb__open"
+                href={nb.openUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open ${nb.filename} on GitHub`}
+              >
+                Open <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+            <p class="nb__row-outcome">{nb.outcome}</p>
+          </div>
+        ))
+      }
+    </div>
 
     <div class="nb__results">
       {
@@ -48,13 +66,14 @@ const hasUrl = Boolean(openUrl || githubUrl);
               <div class="nb__charts">
                 {notebook.charts.map((src) => (
                   <figure class="nb__chart">
-                    <img src={src} alt={`${notebook.filename} chart`} loading="lazy" />
+                    <img src={src} alt={`${notebook.notebooks[0].filename} chart`} loading="lazy" />
                   </figure>
                 ))}
               </div>
             )}
             {notebook.metrics.length > 0 && (
               <table class="nb__table">
+                <caption class="nb__table-caption">Committed output metrics</caption>
                 <thead>
                   <tr>
                     <th>Metric</th>
@@ -75,9 +94,9 @@ const hasUrl = Boolean(openUrl || githubUrl);
           </>
         ) : (
           <p class="nb__pending">
-            Charts, a metric/result table, and the code excerpt attach here when
-            the notebook evidence is supplied. Until then this card records what
-            the notebook is for.
+            The chart images and the code excerpt attach here when the notebook
+            evidence is exported. The executed notebooks themselves are linked
+            above.
           </p>
         )
       }
@@ -85,22 +104,9 @@ const hasUrl = Boolean(openUrl || githubUrl);
   </div>
 
   <footer class="nb__actions">
-    {
-      hasUrl ? (
-        <>
-          <a class="nb__action nb__action--primary" href={openUrl} rel="noopener noreferrer">
-            Open notebook <span aria-hidden="true">↗</span>
-          </a>
-          <a class="nb__action" href={githubUrl} rel="noopener noreferrer">
-            GitHub
-          </a>
-        </>
-      ) : (
-        <span class="nb__action nb__action--pending" title="Notebook URL not supplied yet">
-          OPEN NOTEBOOK · GITHUB <span class="nb__pending-label">(pending)</span>
-        </span>
-      )
-    }
+    <a class="nb__action nb__action--primary" href={notebook.githubUrl} target="_blank" rel="noopener noreferrer">
+      GitHub repository <span aria-hidden="true">↗</span>
+    </a>
   </footer>
 </article>
 
@@ -147,13 +153,59 @@ const hasUrl = Boolean(openUrl || githubUrl);
     color: var(--gold);
   }
 
+  .nb__status[data-status='available'] {
+    color: var(--green-text);
+  }
+
   .nb__body {
     padding: var(--space-5);
   }
 
-  .nb__outcome {
+  .nb__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .nb__row-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-1);
+  }
+
+  .nb__name {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
     color: var(--text);
-    margin: 0 0 var(--space-4);
+    word-break: break-all;
+  }
+
+  .nb__open {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: var(--space-1) var(--space-2);
+    border: var(--rule-active);
+    border-radius: var(--radius-1);
+  }
+
+  .nb__open:hover {
+    background: var(--green-bright);
+    border-color: var(--green-text);
+    color: var(--bg);
+  }
+
+  .nb__row-outcome {
+    color: var(--text-dim);
+    font-size: var(--fs-card-description);
+    margin: 0;
     max-width: var(--measure);
   }
 
@@ -191,6 +243,17 @@ const hasUrl = Boolean(openUrl || githubUrl);
     margin-bottom: var(--space-4);
   }
 
+  .nb__table-caption {
+    caption-side: top;
+    text-align: left;
+    font-size: var(--fs-card-status);
+    font-weight: 600;
+    letter-spacing: var(--tracking-metadata);
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding-bottom: var(--space-2);
+  }
+
   .nb__table th,
   .nb__table td {
     text-align: left;
@@ -203,6 +266,11 @@ const hasUrl = Boolean(openUrl || githubUrl);
     text-transform: uppercase;
     color: var(--text-faint);
     font-weight: 600;
+  }
+
+  .nb__table td:last-child {
+    font-weight: 600;
+    text-align: right;
   }
 
   .nb__code {
@@ -253,17 +321,5 @@ const hasUrl = Boolean(openUrl || githubUrl);
     background: var(--green-bright);
     border-color: var(--green-bright);
     color: var(--bg);
-  }
-
-  .nb__action--pending {
-    color: var(--text-faint);
-    border-color: transparent;
-    cursor: default;
-  }
-
-  .nb__pending-label {
-    font-weight: 400;
-    text-transform: none;
-    letter-spacing: normal;
   }
 </style>

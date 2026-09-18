@@ -49,12 +49,12 @@ test('default state is calm and correct', async ({ page }) => {
   const g = await graph(page);
   expect(g.concepts).toBe(10);
   expect(g.assignments).toBe(19); // 18 core + ML-01
-  // 18 high-confidence assignment edges + 39 concept connective edges + 23
-  // artifact connective edges (V2 §10.2, §11).
-  expect(g.edges).toBe(80);
-  // Artifacts are now visible by default (V2 §11): all 11 are linked to an
-  // anchor assignment.
-  expect(g.artifacts).toBe(11);
+  // 18 high-confidence assignment edges + 39 concept connective edges + 25
+  // artifact connective edges (V2 §10.2, §11; §3.4 per-assignment deliverables).
+  expect(g.edges).toBe(82);
+  // Artifacts are visible by default (V2 §11): the 17 records linked to an
+  // anchor assignment are shown on first load.
+  expect(g.artifacts).toBe(17);
   expect(g.referenceVisible).toBe(0);
   // ML-01 sits at the ML entrance
   expect((await page.evaluate(() => (window as any).__learningMap.cy.getElementById('ml-01-run-starter-notebooks').length))).toBe(1);

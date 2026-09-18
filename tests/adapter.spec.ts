@@ -4,8 +4,8 @@
  * These run under the Playwright node runner (esbuild TS transform, no browser
  * required) and assert the pure data-to-renderer contract:
  *  - node count by type per view
- *  - edge count = 131 in browse-all (34 assignment + 58 concept + 39 artifact);
- *    80 in the default (18 assignment + 39 concept + 23 artifact)
+ *  - edge count = 135 in browse-all (34 assignment + 58 concept + 43 artifact);
+ *    82 in the default (18 assignment + 39 concept + 25 artifact)
  *  - no `approved: false` edges ever reach the renderer
  *  - rejected-edge pairs are absent as direct edges
  *  - every concept's members match the locked registry
@@ -46,10 +46,10 @@ test('default view: calm anchor state', () => {
   const refTier = assignments.filter((n) => (n.data as { tier?: string }).tier === 'reference');
   expect(refTier.length).toBe(0);
 
-  // 18 high-confidence assignment edges + 39 concept + 23 artifact connective
-  // edges (V2 §10.2, §11). Every edge is approved; assignment edges are all
-  // high-confidence in the calm default.
-  expect(edges.length).toBe(80);
+  // 18 high-confidence assignment edges + 39 concept + 25 artifact connective
+  // edges (V2 §10.2, §11; §3.4 per-assignment deliverables). Every edge is
+  // approved; assignment edges are all high-confidence in the calm default.
+  expect(edges.length).toBe(82);
   for (const e of edges) {
     expect(e.data.approved).toBe(true);
     expect((e.data as { confidence: string }).confidence).toBe('high');
@@ -60,9 +60,10 @@ test('browse-all view: full archive', () => {
   const { nodes, edges } = buildGraphElements({ kind: 'browse-all' });
   expect(nodes.filter((n) => typeOf(n) === 'assignment').length).toBe(35);
   expect(nodes.filter((n) => typeOf(n) === 'concept').length).toBe(10);
-  expect(nodes.filter((n) => typeOf(n) === 'artifact').length).toBe(11);
-  // 34 approved assignment edges + 58 concept + 39 artifact connective edges.
-  expect(edges.length).toBe(131);
+  // 11 shared major nodes + 22 per-assignment deliverables (§3.4).
+  expect(nodes.filter((n) => typeOf(n) === 'artifact').length).toBe(33);
+  // 34 approved assignment edges + 58 concept + 43 artifact connective edges.
+  expect(edges.length).toBe(135);
   for (const e of edges) expect(e.data.approved).toBe(true);
 });
 
@@ -139,9 +140,9 @@ test('assignment view: node plus immediate neighbourhood plus artifacts', () => 
   expect(artifactsEls.length).toBeGreaterThan(0);
 });
 
-test('artifacts view exposes all 11 shared artifacts', () => {
+test('artifacts view exposes all 33 artifact records', () => {
   const { nodes } = buildGraphElements({ kind: 'artifacts' });
-  expect(nodes.filter((n) => typeOf(n) === 'artifact').length).toBe(11);
+  expect(nodes.filter((n) => typeOf(n) === 'artifact').length).toBe(33);
 });
 
 test('artifact nodes never share a position and stay clear of each other', () => {
@@ -149,7 +150,7 @@ test('artifact nodes never share a position and stay clear of each other', () =>
   // emitted at identical coordinates, so they stacked into one unreadable node.
   const { nodes } = buildGraphElements({ kind: 'browse-all' });
   const artifactEls = nodes.filter((n) => typeOf(n) === 'artifact');
-  expect(artifactEls.length).toBe(11);
+  expect(artifactEls.length).toBe(33);
 
   const seen = new Set<string>();
   for (const a of artifactEls) {

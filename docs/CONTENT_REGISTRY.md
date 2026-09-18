@@ -160,43 +160,43 @@ Recommended implementation rule:
 
 ## 3.2 Assignment-level artifact decisions
 
-| Assignment ID | Primary proof artifact | Artifact type | Role | Display mode | Supporting artifacts | Evidence status until URL added |
+| Assignment ID | Primary proof artifact | Artifact type | Role | Display mode | Supporting artifacts | Evidence status (resolved 2026-09-18) |
 |---|---|---|---|---|---|---|
-| `ml-01-run-starter-notebooks` | Executed starter notebooks in public ML repo | GitHub / notebook | Produces | Preview + link | Public repo URL, notebook outputs | Partial |
-| `ml-02-research-question-lane` | `w01_research_question.ipynb` | Notebook | Produces | Preview + link | Supporting starter data numbers | Partial |
-| `ml-03-ml-task-framing` | `w02_ml_task_framing.ipynb` | Notebook | Produces | Preview + link | Unit-of-analysis dataframe screenshot/table | Partial |
-| `ml-04-data-contract` | `w03_data_contract.ipynb` | Notebook | Produces | Preview + link | Query outputs, feature frame, leakage experiment | Partial |
-| `ml-07-baseline-action-score` | `w04_baseline_score.ipynb` | Notebook | Produces | Preview + link | `baseline_action_score.csv`, metrics JSON, top-10 review | Partial |
-| `ml-08-capstone-modeling` | `w05_model.ipynb` | Notebook | Produces | Preview + link | Model-vs-baseline table, metrics, error notes | Partial |
-| `ml-09-validation-claim-audit` | `w06_validation_audit.ipynb` | Notebook | Produces | Preview + link | Before/after split comparison, leakage audit, claim rewrite | Partial |
-| `ml-10-content-action-playbook` | `w07_action_playbook.ipynb` | Notebook | Produces | Preview + link | Ranked queue export, figures, metrics JSONs | Partial |
-| `ml-11-ship-paper` | Deployed ML research paper | Live / document | Produces | Embed preferred, preview fallback | Repo, `submission/paper_url.txt`, capstone notebook | Partial |
-| `ml-12-tell-story` | Demo outline and shareable cuts in final notebook/work folder | Document / markdown | Produces | Preview + link | Live paper abstract/introduction updates | Partial |
-| `fl-01-workflow-audit` | Workflow audit document | Document | Produces | Preview + link | Claude Project screenshot, target task definitions | Partial |
-| `fl-portfolio-proof` | Proof statement document | Document | Produces | Preview + link | AI interview notes, one-line why | Partial |
-| `fl-portfolio-sitemap` | Sitemap sketch and Claude pressure-test output | Image / document | Produces | Preview + link | Claude Project screenshot | Partial |
-| `fl-portfolio-cases` | Framed case study document | Document | Produces | Preview + link | Voice card, generic line before/after edit | Partial |
-| `fl-prompt-ladder` | Prompt ladder document | Document | Produces | Preview + link | Six prompt outputs, final reusable prompt | Partial |
-| `fl-02-prompting-fundamentals` | Prompt iteration log | Document | Produces | Preview + link | Claude/ChatGPT comparison, final template | Partial |
-| `fl-identity-kit` | Identity kit page | Document / image | Produces | Preview + link | Fonts, palette, logo/favicon, style note | Partial |
-| `fl-curate-images` | Final curated image set | Image / document | Produces | Preview + link | Rejection note, real capture decisions | Partial |
-| `fl-content-ctas` | Content map and CTA map | Document | Produces | Preview + link | One-line claim, gather-list | Partial |
-| `fl-empty-live-page` | Empty or near-blank live URL | Live | Produces | Preview + link | Screenshot, Claude Project context loaded | Partial |
-| `fl-stack-choice` | Stack decision rationale | Document | Produces | Preview + link | Three options, trade-off notes | Partial |
-| `fl-04-automation-workflow` | Working automation workflow walkthrough | Document / other | Produces | Preview + link | Step diagram, prompts/config, five runs, time estimate | Partial |
-| `fl-05-agent-mcp-basics` | Agent/MCP explainer and connector evidence | Document / image | Produces | Preview + link | Three tool-call screenshots | Partial |
-| `fl-explain-build` | Plain-words build explanation | Document | Produces | Preview + link | Optional screenshot of the explained build piece | Partial |
-| `fl-06-agent-design` | Agent design doc | Document | Produces | Preview + link | Eval cases, guardrails, platform rationale | Partial |
-| `fl-07-build-agent` | Working personal agent MVP | Live / other | Produces | Preview + link, embed only if runnable/demoable | Build log, raw run capture | Partial |
-| `pf-04-personal-website` | Live personal website | Live | Produces | Embed preferred, preview fallback | DNS walkthrough, LinkedIn/CV links | Partial |
-| `fl-dynamic-feature` | Working dynamic portfolio feature | Live | Produces | Embed preferred if stable, preview fallback | Test submission evidence, backend/data-flow explainer | Partial |
-| `fl-mobile-audit` | Mobile fix log | Document / image | Produces | Preview + link | Before/after phone screenshots | Partial |
-| `fl-crit-review` | Crit feedback and fix record | Document | Produces | Preview + link | Must-fix/nice-to-have sort, live site fix evidence | Partial |
-| `fl-site-hardening` | Site hardening list | Document | Produces | Preview + link | SEO/meta proof, speed check, review evidence | Partial |
-| `fl-domain-badge` | Final launched site with domain, analytics, badge | Live | Produces | Embed preferred, preview fallback | Analytics screenshot, badge/footer screenshot | Partial |
-| `fl-maintenance-plan` | Next-case maintenance note | Document | Produces | Preview + link | Reminder screenshot, named next piece | Partial |
-| `fl-09-documentation-demo` | Agent README and demo video | GitHub / video | Documents | Embed video preferred, README preview + link | Architecture sketch, evals, limitations | Partial |
-| `fl-10-final-package` | This learning archive / final package | Live / document | Produces | Embed not needed if current site, use direct internal route | Retrospective, hours log reference, build-in-public post, sign-off | Partial |
+| `ml-01-run-starter-notebooks` | Executed starter notebooks in public ML repo | GitHub / notebook | Produces | Preview + link | Public repo URL, notebook outputs | Available |
+| `ml-02-research-question-lane` | `w01_research_question.ipynb` | Notebook | Produces | Preview + link | Supporting starter data numbers | Available |
+| `ml-03-ml-task-framing` | `w02_ml_task_framing.ipynb` | Notebook | Produces | Preview + link | Unit-of-analysis dataframe screenshot/table | Available |
+| `ml-04-data-contract` | `w03_data_contract.ipynb` | Notebook | Produces | Preview + link | Query outputs, feature frame, leakage experiment | Available |
+| `ml-07-baseline-action-score` | `w04_baseline_score.ipynb` | Notebook | Produces | Preview + link | `baseline_action_score.csv`, metrics JSON, top-10 review | Available |
+| `ml-08-capstone-modeling` | `w05_model.ipynb` | Notebook | Produces | Preview + link | Model-vs-baseline table, metrics, error notes | Available |
+| `ml-09-validation-claim-audit` | `w06_validation_audit.ipynb` | Notebook | Produces | Preview + link | Before/after split comparison, leakage audit, claim rewrite | Available |
+| `ml-10-content-action-playbook` | `w07_action_playbook.ipynb` | Notebook | Produces | Preview + link | Ranked queue export, figures, metrics JSONs | Available |
+| `ml-11-ship-paper` | Deployed ML research paper | Live / document | Produces | Embed preferred, preview fallback | Repo, `submission/paper_url.txt`, capstone notebook | Partial (see §3.4) |
+| `ml-12-tell-story` | Demo outline and shareable cuts in final notebook/work folder | Document / markdown | Produces | Preview + link | Live paper abstract/introduction updates | Partial (see §3.4) |
+| `fl-01-workflow-audit` | Workflow audit document | Document | Produces | Preview + link | Claude Project screenshot, target task definitions | Available |
+| `fl-portfolio-proof` | Proof statement document | Document | Produces | Preview + link | AI interview notes, one-line why | Available |
+| `fl-portfolio-sitemap` | Sitemap sketch and Claude pressure-test output | Image / document | Produces | Preview + link | Claude Project screenshot | Available |
+| `fl-portfolio-cases` | Framed case study document | Document | Produces | Preview + link | Voice card, generic line before/after edit | Available |
+| `fl-prompt-ladder` | Prompt ladder document | Document | Produces | Preview + link | Six prompt outputs, final reusable prompt | Available |
+| `fl-02-prompting-fundamentals` | Prompt iteration log | Document | Produces | Preview + link | Claude/ChatGPT comparison, final template | Available |
+| `fl-identity-kit` | Identity kit page | Document / image | Produces | Preview + link | Fonts, palette, logo/favicon, style note | Available |
+| `fl-curate-images` | Final curated image set | Image / document | Produces | Preview + link | Rejection note, real capture decisions | Available |
+| `fl-content-ctas` | Content map and CTA map | Document | Produces | Preview + link | One-line claim, gather-list | Available |
+| `fl-empty-live-page` | Empty or near-blank live URL | Live | Produces | Preview + link | Screenshot, Claude Project context loaded | Available |
+| `fl-stack-choice` | Stack decision rationale | Document | Produces | Preview + link | Three options, trade-off notes | Available |
+| `fl-04-automation-workflow` | Working automation workflow walkthrough | Document / other | Produces | Preview + link | Step diagram, prompts/config, five runs, time estimate | Available |
+| `fl-05-agent-mcp-basics` | Agent/MCP explainer and connector evidence | Document / image | Produces | Preview + link | Three tool-call screenshots | Available |
+| `fl-explain-build` | Plain-words build explanation | Document | Produces | Preview + link | Optional screenshot of the explained build piece | Available |
+| `fl-06-agent-design` | Agent design doc | Document | Produces | Preview + link | Eval cases, guardrails, platform rationale | Available |
+| `fl-07-build-agent` | Working personal agent MVP | Live / other | Produces | Preview + link, embed only if runnable/demoable | Build log, raw run capture | Available |
+| `pf-04-personal-website` | Live personal website | Live | Produces | Embed preferred, preview fallback | DNS walkthrough, LinkedIn/CV links | Available |
+| `fl-dynamic-feature` | Working dynamic portfolio feature | Live | Produces | Embed preferred if stable, preview fallback | Test submission evidence, backend/data-flow explainer | Available |
+| `fl-mobile-audit` | Mobile fix log | Document / image | Produces | Preview + link | Before/after phone screenshots | Available |
+| `fl-crit-review` | Crit feedback and fix record | Document | Produces | Preview + link | Must-fix/nice-to-have sort, live site fix evidence | Available |
+| `fl-site-hardening` | Site hardening list | Document | Produces | Preview + link | SEO/meta proof, speed check, review evidence | Available |
+| `fl-domain-badge` | Final launched site with domain, analytics, badge | Live | Produces | Embed preferred, preview fallback | Analytics screenshot, badge/footer screenshot | Available |
+| `fl-maintenance-plan` | Next-case maintenance note | Document | Produces | Preview + link | Reminder screenshot, named next piece | Available |
+| `fl-09-documentation-demo` | Agent README and demo video | GitHub / video | Documents | Embed video preferred, README preview + link | Architecture sketch, evals, limitations | Available |
+| `fl-10-final-package` | This learning archive / final package | Live / document | Produces | Embed not needed if current site, use direct internal route | Retrospective, hours log reference, build-in-public post, sign-off | Partial (see §3.4) |
 
 ## 3.3 Shared artifact records to create
 
@@ -215,6 +215,51 @@ These are the major artifact nodes that should exist in `artifacts.ts`.
 | `artifact-build-in-public-post` | Build-in-public Post | Document / live | Public post explaining one real decision and one real limitation. | Link |
 | `artifact-hours-log` | Hours Log Reference | Document | Completion evidence for tracked programme hours. | Link only, likely private or partial |
 | `artifact-final-retrospective` | Final Retrospective | Document | 500 to 800 word reflection required by FL-10. | Internal page |
+
+---
+
+## 3.4 Resolved artifact URLs (2026-09-18)
+
+The `url` / `embedUrl` placeholders in `src/data/artifacts.ts` are now real,
+public, verified locations. Conventions: `url` is the human-facing location
+(GitHub blob page, live site, internal route); `embedUrl` is the raw file used
+by the lazy in-page viewer (PDF iframe, video element).
+
+**Shared major artifact nodes (11):**
+
+| Artifact | Resolved to |
+|---|---|
+| `artifact-ml-repo` | `https://github.com/Tessa-Saumu/FlyRank-ML-Internship` |
+| `artifact-ml-paper` | OPEN — the repo's `submission/paper_url.txt` still holds placeholder text; no deployed paper URL yet. |
+| `artifact-portfolio-site` | `https://theresia-saumu.netlify.app/` |
+| `artifact-personal-agent` | the agent's README (reproducible setup), `assignment-artifacts/fl-09-documentation-demo.md` |
+| `artifact-agent-readme` | `assignment-artifacts/fl-09-documentation-demo.md` |
+| `artifact-agent-demo-video` | `assignment-artifacts/fl-09-documentation-demo.mp4` (raw URL for the video element) |
+| `artifact-automation-workflow` | `assignment-artifacts/fl-04-automation-workflow.pdf` (raw URL for the PDF viewer) |
+| `artifact-learning-archive` | the public index, `INDEX.md` in this repository |
+| `artifact-build-in-public-post` | OPEN — not published yet. |
+| `artifact-hours-log` | `INDEX.md` (Hours Log section, 222.5 hours) |
+| `artifact-final-retrospective` | internal route `/reflection/` on this site |
+
+**Per-assignment deliverable documents (22):** one artifact record per AI
+Fluency assignment whose primary proof is its own submission in
+`assignment-artifacts/` (IDs `artifact-<assignment-id>`), each with the
+matching GitHub blob URL (and raw URL for PDFs; raw PNG preview image for
+`fl-empty-live-page`). These replace the earlier placeholder mappings where
+assignments pointed at the closest shared node.
+
+**ML notebooks:** all 12 executed notebooks are linked per assignment in
+`src/data/notebooks.ts` (starter notebooks `01`–`03` and capstone notebooks
+`w01`–`w07` in the ML repository). The metric tables on ML-01/07/08/09/10 are
+the author's committed output files (`outputs/model_report.md`,
+`work/outputs/baseline_metrics.json`, `work/outputs/model_metrics.json`,
+`work/outputs/validation_audit_metrics.json`,
+`work/outputs/action_playbook_summary.json`), copied verbatim.
+
+**Effect on evidence status:** every assignment whose linked artifact now has
+a real URL is `available`; `ml-11-ship-paper`, `ml-12-tell-story`, and
+`fl-10-final-package` remain `partial` (paper undeployed; retrospective still
+the site draft; build-in-public post unpublished; sign-off open).
 
 ---
 
