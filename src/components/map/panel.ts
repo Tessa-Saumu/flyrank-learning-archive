@@ -29,7 +29,7 @@ function escapeHtml(s: string | undefined): string {
  * renders the real ArtifactPreview with lazy embeds). Status is always shown
  * with text, never colour alone (DESIGN_SPEC §25).
  */
-function renderArtifactPanel(assignmentId: string, art: Artifact, link: ArtifactLink): string {
+function renderArtifactPanel(assignmentId: string, art: Artifact, link: ArtifactLink, status: Assignment['evidenceStatus']): string {
   const role = { produces: 'Produces', uses: 'Uses', documents: 'Documents', demonstrates: 'Demonstrates' }[link.role];
   const hasUrl = Boolean(art.url);
   const mode = link.displayMode;
@@ -43,14 +43,35 @@ function renderArtifactPanel(assignmentId: string, art: Artifact, link: Artifact
       </div>`;
   }
 
+  // ML-spine assignments render their executed notebooks (real public links),
+  // the same contained viewport the static detail page uses.
   const notebook = notebookForAssignment(assignmentId);
-  if (mode === 'embed' && notebook) {
+  if (notebook) {
+    const rows = notebook.notebooks
+      .map(
+        (nb) => `
+        <div class="panel__notebook-row">
+          <code class="panel__notebook-name">${escapeHtml(nb.filename)}</code>
+          <a class="panel__artifact-link" href="${escapeHtml(nb.openUrl)}" rel="noopener noreferrer">Open ↗</a>
+        </div>`
+      )
+      .join('');
+    const metrics =
+      notebook.metrics.length > 0
+        ? `<ul class="panel__metrics">${notebook.metrics
+            .map((m) => `<li><span>${escapeHtml(m.label)}</span><strong>${escapeHtml(m.value)}</strong></li>`)
+            .join('')}</ul>`
+        : '<p class="panel__artifact-pending">The committed metric table and charts attach here when exported.</p>';
     return `
       <article class="panel__artifact panel__artifact--notebook">
-        <span class="panel__artifact-meta">${escapeHtml(art.type)} · ${role} · ${escapeHtml(notebook.filename)}</span>
+        <span class="panel__artifact-meta">${escapeHtml(art.type)} · ${role} · ${notebook.notebooks.length} ${notebook.notebooks.length === 1 ? 'notebook' : 'notebooks'}</span>
         <h3 class="panel__artifact-title">${escapeHtml(art.title)}</h3>
-        <p class="panel__artifact-desc">${escapeHtml(notebook.outcome)}</p>
-        <p class="panel__artifact-pending">Evidence (charts, metric table, code excerpt) attaches here when supplied.</p>
+        ${rows}
+        ${metrics}
+        <div class="panel__artifact-foot">
+          <span class="panel__status">${escapeHtml(evidenceStatusLabel(status))}</span>
+          <a class="panel__artifact-link" href="${escapeHtml(notebook.githubUrl)}" rel="noopener noreferrer">Repository ↗</a>
+        </div>
       </article>`;
   }
 
@@ -61,7 +82,7 @@ function renderArtifactPanel(assignmentId: string, art: Artifact, link: Artifact
       <h3 class="panel__artifact-title">${escapeHtml(art.title)}</h3>
       <p class="panel__artifact-desc">${escapeHtml(art.description)}</p>
       <div class="panel__artifact-foot">
-        <span class="panel__status">${escapeHtml(evidenceStatusLabel('partial'))}</span>
+        <span class="panel__status">${escapeHtml(evidenceStatusLabel(status))}</span>
         ${hasUrl ? `<a class="panel__artifact-link" href="${escapeHtml(art.url)}" rel="noopener noreferrer">Open artifact ↗</a>` : `<span class="panel__artifact-link panel__artifact-link--pending">Link pending</span>`}
       </div>
     </article>`;
@@ -88,7 +109,7 @@ export function renderAssignmentPanel(container: HTMLElement, a: Assignment): vo
     .map((l) => {
       const art = artifactById.get(l.artifactId);
       if (!art) return '';
-      return renderArtifactPanel(a.id, art, l);
+      return renderArtifactPanel(a.id, art, l, a.evidenceStatus);
     })
     .join('');
 

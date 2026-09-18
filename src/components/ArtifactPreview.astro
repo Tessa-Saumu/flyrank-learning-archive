@@ -89,15 +89,11 @@ const externalRel = 'noopener noreferrer';
 }
 
 {
-  /* ---------- EMBED mode (notebook): contained viewport, not an iframe ---------- */
-  mode === 'embed' && notebook && (
-    <NotebookPreview
-      notebook={notebook}
-      evidenceStatus={evidenceStatus}
-      openUrl={artifact.embedUrl}
-      githubUrl={artifact.url}
-    />
-  )
+  /* ---------- Notebook viewport: contained, not an iframe ----------
+     ML-spine assignments render their executed notebooks (DESIGN_SPEC
+     §22–23) in every display mode; the record carries the real per-notebook
+     links and the repository action. */
+  notebook && <NotebookPreview notebook={notebook} evidenceStatus={evidenceStatus} />
 }
 
 {

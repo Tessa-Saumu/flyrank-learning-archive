@@ -513,7 +513,7 @@ import { artifacts } from '../data/artifacts';
   }
 </style>
 
-<style>
+<style is:global>
   /* --- Detail panel (rendered client-side by map/panel.ts) --- */
   .panel__detail {
     display: flex;
@@ -659,6 +659,39 @@ import { artifacts } from '../data/artifacts';
     margin: var(--space-2) 0 0;
     color: var(--text-faint);
     font-size: var(--fs-metadata);
+  }
+  .panel__notebook-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .panel__notebook-name {
+    font-size: var(--fs-metadata);
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-all;
+  }
+  .panel__metrics {
+    list-style: none;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    border-top: var(--rule);
+    padding-top: var(--space-2);
+  }
+  .panel__metrics li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    font-size: var(--fs-metadata);
+    color: var(--text-dim);
+  }
+  .panel__metrics strong {
+    color: var(--text);
   }
   .panel__artifact-foot {
     display: flex;

@@ -141,7 +141,9 @@ test('long concept names wrap instead of clipping, and the box grows with them (
 // ---------------------------------------------------------------------------
 
 test('multiple artifacts never stack on top of one another (§2)', async ({ page }) => {
-  await page.goto('/');
+  // The artifacts view exposes the full record set, so the non-overlap check
+  // covers every artifact, not just the default-view subset.
+  await page.goto('/?view=artifacts');
   await waitReady(page);
 
   const artifacts = await page.evaluate(() => {
@@ -211,7 +213,8 @@ test('the four artifacts of one assignment spread around it instead of stacking 
 // ---------------------------------------------------------------------------
 
 test('artifact nodes are triangles; concept nodes keep their rectangle (§3)', async ({ page }) => {
-  await page.goto('/');
+  // The artifacts view exposes every artifact record.
+  await page.goto('/?view=artifacts');
   await waitReady(page);
 
   const shapes = await page.evaluate(() => {
@@ -541,7 +544,7 @@ test('regression: the default graph state is unchanged apart from layout/colour'
       edges: cy.edges().length,
     };
   });
-  expect(g).toEqual({ assignments: 19, concepts: 10, artifacts: 11, edges: 80 });
+  expect(g).toEqual({ assignments: 19, concepts: 10, artifacts: 17, edges: 82 });
 
   // Category filters still drive the graph.
   await page.locator('[data-filter-primary="ai-fluency"]').click();

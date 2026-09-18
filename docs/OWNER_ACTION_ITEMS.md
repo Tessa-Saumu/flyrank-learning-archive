@@ -55,26 +55,29 @@ Targets: 90+ Performance/Accessibility/Best Practices/SEO on mobile and desktop.
 
 Current: 566-word editable draft (flagged `PLACEHOLDER / EDITABLE DRAFT`). Replace with the author's own wording. Must stay 500-800 words. The validator checks word count and required headings.
 
-### 6. Supply artifact URLs
+### 6. Supply artifact URLs — RESOLVED 2026-09-18 (two items remain)
 
 **File:** `src/data/artifacts.ts`
 
-Every `Artifact.url` and `embedUrl` is `undefined`. For each real artifact:
-1. Set `url` to the live URL
-2. Flip `evidenceStatus` from `"partial"` to `"available"` (or `"private"`/`"missing"`)
-3. Optionally upgrade `displayMode` from `"preview"` to `"embed"` for substantial artifacts
+Done: all 11 shared nodes and 22 per-assignment deliverable records now carry
+real public URLs (see `docs/CONTENT_REGISTRY.md` §3.4), and 33 assignments
+are `available`. Still open:
 
-The UI already renders both states honestly. No code changes needed.
+1. **Deployed ML paper** — fill `submission/paper_url.txt` in the ML
+   repository and set `artifact-ml-paper.url` (flips ML-11/ML-12 to
+   `available`).
+2. **Build-in-public post** — publish it and set
+   `artifact-build-in-public-post.url`.
 
-### 7. Supply ML notebook evidence
+### 7. Supply ML notebook evidence — RESOLVED 2026-09-18 (optional polish remains)
 
 **File:** `src/data/notebooks.ts`
 
-For each ML notebook:
-1. Set `hasEvidence: true`
-2. Populate `charts` (exported static images)
-3. Populate `metrics` (result table)
-4. Populate `code` (short excerpt)
+Done: all 12 executed notebooks are linked to their real public GitHub
+files, and the metric tables on ML-01/07/08/09/10 are the committed output
+files, copied verbatim. Optional polish (honest pending state shows until
+then): export per-notebook chart images into `charts`, and add a short code
+excerpt to `code` where useful.
 
 ### 8. Replace OG image (optional)
 

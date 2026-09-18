@@ -40,8 +40,13 @@ test('modal contains an evidence panel beside the assignment content', async ({ 
   const panel = page.locator('[data-modal-body] [data-evidence-panel]');
   await expect(panel).toBeVisible();
   await expect(panel.locator('.evidence__label')).toHaveText('Evidence');
-  await expect(panel.locator('[data-artifact-preview]').first()).toBeVisible();
-  await expect(panel.locator('[data-show-evidence]').first()).toBeVisible();
+  // ML-09's evidence is the contained notebook viewport, with the real public
+  // notebook link and the repository action (no artifact card, no iframe).
+  await expect(panel.locator('.nb').first()).toBeVisible();
+  await expect(
+    panel.locator('.nb a[href*="w06_validation_audit.ipynb"]').first()
+  ).toBeVisible();
+  await expect(panel.locator('.nb a[href*="FlyRank-ML-Internship"]').first()).toBeVisible();
 });
 
 test('modal preserves background scroll position and Escape closes it', async ({ page }) => {
@@ -74,14 +79,27 @@ test('evidence never ships a heavy viewer in the initial modal HTML', async ({ p
   // No iframe/video/object exists in the modal until the visitor asks for it.
   expect(await page.locator('[data-modal-body] iframe, [data-modal-body] video, [data-modal-body] object').count()).toBe(0);
 
+  // ML-09's notebook viewport is self-contained: real GitHub links only, no
+  // embed is created and nothing is fabricated.
+  await expect(page.locator('[data-modal-body] .nb').first()).toBeVisible();
+  expect(await page.locator('[data-modal-body] iframe, [data-modal-body] video, [data-modal-body] object').count()).toBe(0);
+
+  // An artifact card with a real PDF (FL-01) still creates its viewer lazily,
+  // only after the visitor chooses "Show evidence".
+  await page.keyboard.press('Escape');
+  await page.locator('[data-assignment-id="fl-01-workflow-audit"]').first().click();
+  await expect(page.locator('[data-assignment-modal] dialog[open]')).toBeVisible();
+  await page.locator('[data-modal-body] .detail__grid').waitFor();
+
+  expect(await page.locator('[data-modal-body] iframe').count()).toBe(0);
   const show = page.locator('[data-modal-body] [data-show-evidence]').first();
   await expect(show).toBeVisible();
   await show.click();
-
-  // The assignment's artifacts have no supplied URL yet, so the honest pending
-  // message appears and no embed is fabricated.
-  await expect(page.locator('[data-modal-body] [data-evidence-pending]').first()).toBeVisible();
-  expect(await page.locator('[data-modal-body] iframe, [data-modal-body] video, [data-modal-body] object').count()).toBe(0);
+  const iframe = page.locator('[data-modal-body] iframe').first();
+  await expect(iframe).toBeVisible();
+  await expect(iframe).toHaveAttribute('src', /fl-01-workflow-audit\.pdf$/);
+  // The URL is supplied, so the honest pending message stays hidden.
+  await expect(page.locator('[data-modal-body] [data-evidence-pending]').first()).toBeHidden();
 });
 
 test('assignment cards share the canonical card typography tokens', async ({ page }) => {

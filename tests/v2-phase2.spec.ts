@@ -152,10 +152,10 @@ test('artifacts are visible by default and still filterable (§11)', async ({ pa
       artifactEdges: cy.edges('[relationship="artifact"]').length,
     };
   });
-  // No filter interaction required: all 11 artifacts and their relationships
-  // are present on first load.
-  expect(initial.artifacts).toBe(11);
-  expect(initial.artifactEdges).toBe(23);
+  // No filter interaction required: all 17 artifacts linked to a default
+  // anchor assignment (and their relationships) are present on first load.
+  expect(initial.artifacts).toBe(17);
+  expect(initial.artifactEdges).toBe(25);
 
   // The Concepts filter still hides artifacts.
   await page.locator('[data-filter-primary="concepts"]').click();

@@ -34,8 +34,9 @@ test('keyboard-only journey: home → filter → assignment → artifact → con
   await page.locator('a').first().focus();
   await expect(page.locator('h1', { hasText: 'Validation and Research Claim Audit' })).toBeVisible();
   // The three beats + evidence status are exposed as text (not colour alone).
+  // ML-09's notebook and repo links are supplied, so the status reads available.
   const body = await page.locator('body').innerText();
-  expect(body.toLowerCase()).toContain('evidence: partial');
+  expect(body.toLowerCase()).toContain('evidence: available');
 
   // Concept chip reachable from a detail page.
   await page.goto('/concepts/concept-evaluation/');

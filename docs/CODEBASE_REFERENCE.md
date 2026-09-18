@@ -29,9 +29,9 @@ public/           # Static assets (favicon, og.png).
 | `src/data/types.ts` | TypeScript interfaces for everything | — |
 | `src/data/assignments.ts` | Canonical assignment records | 35 |
 | `src/data/concepts.ts` | Concept definitions + locked mappings | 10 concepts, 58 mappings |
-| `src/data/artifacts.ts` | Shared artifacts + per-assignment artifact links | 11 artifacts, 39 links |
+| `src/data/artifacts.ts` | Artifact records (shared + per-assignment) + per-assignment artifact links | 33 records (11 shared + 22 per-assignment), 43 links |
 | `src/data/graph.ts` | Approved edges + rejected edges | 34 public, 5 rejected |
-| `src/data/notebooks.ts` | ML notebook preview records | 8 |
+| `src/data/notebooks.ts` | ML notebook preview records (real public notebook links + committed output metrics) | 8 records, 12 notebooks |
 | `src/data/framework.ts` | Framework step definitions | 7 steps |
 | `src/data/wish-i-knew.ts` | "What I Wish I Knew" statements | 6 statements |
 | `src/data/reflection.ts` | Retrospective (editable draft) | 566 words |

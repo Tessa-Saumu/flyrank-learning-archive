@@ -25,6 +25,22 @@ function appendMissingStyles(source: Document, target: Document): void {
       target.head.appendChild(style);
     }
   });
+  // Production builds ship component styles as external stylesheets rather
+  // than inline <style> tags. Copy those too (deduped by href, root-relative
+  // so they resolve from any host page) so the injected assignment page
+  // renders with its real styles, not only the host page's.
+  const existingLinks = new Set(
+    Array.from(target.querySelectorAll<HTMLLinkElement>('head link[rel="stylesheet"]')).map(
+      (l) => l.getAttribute('href')
+    )
+  );
+  source.querySelectorAll('head link[rel="stylesheet"]').forEach((link) => {
+    const href = link.getAttribute('href');
+    if (href && !existingLinks.has(href)) {
+      target.head.appendChild(link.cloneNode());
+      existingLinks.add(href);
+    }
+  });
 }
 
 function setModalLoading(id: string): void {
