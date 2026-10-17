@@ -1,0 +1,4 @@
+# Preserve certificate file bytes and PDF offsets on every checkout platform.
+public/evidence/certifications/*.pdf binary
+public/evidence/certifications/*.webp binary
+public/evidence/certifications/*.zip binary
