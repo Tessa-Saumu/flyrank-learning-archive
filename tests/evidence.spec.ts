@@ -114,8 +114,12 @@ test('video is lazy, plays, and is stopped and released on modal close', async (
 });
 
 test('video error and blocked live frame retain an external fallback', async ({ page }) => {
-  await page.route('**/*.mp4',route=>route.abort());
   await page.goto('/work/fl-09-documentation-demo/');
+  // Native WebKit media requests can bypass page.route(). Use a real missing
+  // same-origin asset so every engine exercises its actual media error path.
+  await page.locator('[data-artifact-embed][data-type="video"]').evaluate(card => {
+    card.setAttribute('data-src', '/evidence/assignments/unavailable.mp4');
+  });
   await page.getByRole('button',{name:'Show evidence'}).click();
   await page.locator('video').scrollIntoViewIfNeeded();
   await expect(page.getByRole('status')).toContainText(/could not load|taking too long/, {timeout:25000});

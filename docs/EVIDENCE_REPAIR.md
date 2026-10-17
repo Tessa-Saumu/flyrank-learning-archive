@@ -37,3 +37,13 @@ Visual QA uses Chrome's actual PDF load success and rendered document pages, plu
 Native PDF support varies by browser. The permanent open/download links are required, even when a desktop embed works. Cross-origin live-site iframe load events cannot prove readable contents, so those viewers always retain an external fallback. Browser-specific test runner limitations and final test counts are recorded in the accompanying verification report.
 
 Nothing was deployed. When deploying, publish the generated `dist/` from `npm run build` and check the actual host's `application/pdf`, `video/mp4`, and byte-range responses. No broad Netlify security-header changes or dependency upgrades are part of this repair.
+
+## Verification result - 17 October 2026
+
+- Build/data validation passed; type check: zero errors, warnings, or hints.
+- All 81 existing regression cases passed. All 11 new evidence cases passed in the final isolated evidence run; the final portable native-media failure fixture also passed independently in Chromium and WebKit.
+- The complete 92-case run had 90 passes and two heavy-media timing failures under concurrent browser load. Those two cases passed in the isolated 11-case evidence run. This is validation across full and targeted runs, not a claim of a single uninterrupted 92/92 run.
+- Every generated HTML route (53) and distinct internal link destination (79) passed the local scan, without browser page errors. All 24 generated evidence files matched their originals; correct MIME types and video byte-range responses were verified.
+- Chrome visibly rendered the five-page FL-01 PDF and played the original 303.53-second demo. Desktop home/work and phone work-index screenshots were pixel-identical to baseline. The phone home difference was confined to canvas graph text rasterization.
+- Six supplementary WebKit smoke cases were validated across runs/retries, including video playback, fallback behavior, no-JavaScript links, and the route scan. Initial video test failures were corrected by scrolling the player into view and using a real missing media URL instead of relying on media-request interception.
+- Five Firefox checks completed (asset delivery plus desktop/phone direct/popup PDF checks). The remaining Firefox run was stopped because native PDF cleanup was slow on this Windows runner. Full Firefox and real Safari/iOS certification remain outside this result.
