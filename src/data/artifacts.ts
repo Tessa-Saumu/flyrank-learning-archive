@@ -26,16 +26,15 @@
  *
  * URL conventions:
  *   - `url`      — the human-facing location (GitHub blob page, live site).
- *   - `embedUrl` — the raw file for the in-page lazy viewer (PDF iframe,
- *                  video element). Raw GitHub URLs serve the file with its
- *                  real MIME type, which is what the lazy embed needs.
+ *   - `embedUrl` — the same-origin file for the lazy viewer. Generated from
+ *                  assignment-artifacts/ before dev/build with verified hashes.
+ *                  GitHub raw responses are unsuitable PDF iframe sources.
  */
 import type { Artifact, ArtifactLink } from './types';
 
 const ARCHIVE_REPO = 'https://github.com/Tessa-Saumu/flyrank-learning-archive';
 const ARCHIVE_BLOB = `${ARCHIVE_REPO}/blob/main/assignment-artifacts/`;
-const ARCHIVE_RAW =
-  'https://raw.githubusercontent.com/Tessa-Saumu/flyrank-learning-archive/main/assignment-artifacts/';
+const EVIDENCE_ASSETS = '/evidence/assignments/';
 const INDEX_BLOB = `${ARCHIVE_REPO}/blob/main/INDEX.md`;
 const ML_REPO = 'https://github.com/Tessa-Saumu/FlyRank-ML-Internship';
 const PORTFOLIO_SITE = 'https://theresia-saumu.netlify.app/';
@@ -86,7 +85,7 @@ export const artifacts: Artifact[] = [
     title: 'Agent Demo Video',
     type: 'video',
     url: `${ARCHIVE_BLOB}fl-09-documentation-demo.mp4`,
-    embedUrl: `${ARCHIVE_RAW}fl-09-documentation-demo.mp4`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-09-documentation-demo.mp4`,
     description:
       '3 to 5 minute narrated live run of the agent, including a limitation.',
   },
@@ -95,7 +94,7 @@ export const artifacts: Artifact[] = [
     title: 'Automation Workflow',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-04-automation-workflow.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-04-automation-workflow.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-04-automation-workflow.pdf`,
     description:
       'End-to-end no-code research or writing workflow with documented runs.',
   },
@@ -136,7 +135,7 @@ export const artifacts: Artifact[] = [
     title: 'FL-01 Workflow Audit',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-01-workflow-audit.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-01-workflow-audit.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-01-workflow-audit.pdf`,
     description: 'The submitted workflow audit and tool setup document.',
   },
   {
@@ -144,7 +143,7 @@ export const artifacts: Artifact[] = [
     title: 'The Prompt Ladder',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-prompt-ladder.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-prompt-ladder.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-prompt-ladder.pdf`,
     description: 'Five-version prompt improvement log on a real task from the FL-01 audit.',
   },
   {
@@ -152,7 +151,7 @@ export const artifacts: Artifact[] = [
     title: 'FL-02 Prompting Fundamentals',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-02-prompting-fundamentals.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-02-prompting-fundamentals.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-02-prompting-fundamentals.pdf`,
     description: 'Prompt iteration log with the cross-model comparison and the reusable template.',
   },
   {
@@ -160,7 +159,7 @@ export const artifacts: Artifact[] = [
     title: 'FL-05 Agent and MCP Explainer',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-05-agent-mcp-basics.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-05-agent-mcp-basics.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-05-agent-mcp-basics.pdf`,
     description:
       'Workflow-versus-agent classification, the live MCP connection, and what a true agent would need.',
   },
@@ -169,7 +168,7 @@ export const artifacts: Artifact[] = [
     title: 'FL-06 Agent Design Spec',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-06-agent-design.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-06-agent-design.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-06-agent-design.pdf`,
     description: 'One-job agent scope, platform rationale, guardrails, and eval cases.',
   },
   {
@@ -177,7 +176,7 @@ export const artifacts: Artifact[] = [
     title: 'FL-07 Build Log and Agent Config',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-07-build-agent.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-07-build-agent.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-07-build-agent.pdf`,
     description: 'The build log with the config and system prompt for the Repo Tutor agent.',
   },
 
@@ -187,7 +186,7 @@ export const artifacts: Artifact[] = [
     title: 'What Are You Proving?',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-portfolio-proof.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-portfolio-proof.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-portfolio-proof.pdf`,
     description: 'The single-claim proof statement the whole portfolio hangs on.',
   },
   {
@@ -195,7 +194,7 @@ export const artifacts: Artifact[] = [
     title: 'Portfolio Sitemap and Toolkit',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-portfolio-sitemap.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-portfolio-sitemap.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-portfolio-sitemap.pdf`,
     description: 'The page-by-page sitemap, pressure-tested against the claim.',
   },
   {
@@ -203,7 +202,7 @@ export const artifacts: Artifact[] = [
     title: 'Framed Case Studies',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-portfolio-cases.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-portfolio-cases.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-portfolio-cases.pdf`,
     description: 'Case studies pulled out of AI interviews and edited to a real voice.',
   },
   {
@@ -211,7 +210,7 @@ export const artifacts: Artifact[] = [
     title: 'Identity Kit',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-identity-kit.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-identity-kit.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-identity-kit.pdf`,
     description: 'Fonts, colour palette, logo, and the two-line style note.',
   },
   {
@@ -219,7 +218,7 @@ export const artifacts: Artifact[] = [
     title: 'Curated Image Set',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-curate-images.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-curate-images.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-curate-images.pdf`,
     description: 'Real captures plus generated connective tissue, with the rejection note.',
   },
   {
@@ -227,7 +226,7 @@ export const artifacts: Artifact[] = [
     title: 'Content and CTA Map',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-content-ctas.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-content-ctas.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-content-ctas.pdf`,
     description: 'The one-line claim, section order per page, and the gather-list.',
   },
   {
@@ -235,7 +234,7 @@ export const artifacts: Artifact[] = [
     title: 'Empty but Live: First Screenshot',
     type: 'image',
     url: `${ARCHIVE_BLOB}fl-empty-live-page.png`,
-    previewImage: `${ARCHIVE_RAW}fl-empty-live-page.png`,
+    previewImage: `${EVIDENCE_ASSETS}fl-empty-live-page.png`,
     description: 'Screenshot of the near-blank page live on a real public URL.',
   },
   {
@@ -243,7 +242,7 @@ export const artifacts: Artifact[] = [
     title: 'Stack Decision Rationale',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-stack-choice.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-stack-choice.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-stack-choice.pdf`,
     description: 'Three genuine build paths compared, one committed in writing with reasons.',
   },
   {
@@ -251,7 +250,7 @@ export const artifacts: Artifact[] = [
     title: 'Explain It Like You Built It',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-explain-build.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-explain-build.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-explain-build.pdf`,
     description: 'The jargon-free explanation that proves the gap was genuinely closed.',
   },
   {
@@ -259,7 +258,7 @@ export const artifacts: Artifact[] = [
     title: 'PF-04 Deployment and DNS Walkthrough',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}pf-04-personal-website.pdf`,
-    embedUrl: `${ARCHIVE_RAW}pf-04-personal-website.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}pf-04-personal-website.pdf`,
     description: 'The deployment record and the plain-language DNS walkthrough.',
   },
   {
@@ -267,7 +266,7 @@ export const artifacts: Artifact[] = [
     title: 'Dynamic Feature Build',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-dynamic-feature.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-dynamic-feature.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-dynamic-feature.pdf`,
     description: 'One wired feature, built to the free tier, with the data flow explained.',
   },
   {
@@ -275,7 +274,7 @@ export const artifacts: Artifact[] = [
     title: 'Mobile Device Audit',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-mobile-audit.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-mobile-audit.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-mobile-audit.pdf`,
     description: 'Real-device findings and the fix log across phone, tablet, and desktop.',
   },
   {
@@ -283,7 +282,7 @@ export const artifacts: Artifact[] = [
     title: 'Crit Feedback and Fixes',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-crit-review.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-crit-review.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-crit-review.pdf`,
     description: 'External feedback, the must-fixes, and how they were acted on.',
   },
   {
@@ -291,7 +290,7 @@ export const artifacts: Artifact[] = [
     title: 'Site Hardening and Triage',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-site-hardening.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-site-hardening.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-site-hardening.pdf`,
     description: 'Edge-case testing, SEO and meta proof, and the known-limitation list.',
   },
   {
@@ -299,7 +298,7 @@ export const artifacts: Artifact[] = [
     title: 'Final Launch Record',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-domain-badge.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-domain-badge.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-domain-badge.pdf`,
     description: 'Domain, analytics, HTTPS, and share-preview confirmation for the launch.',
   },
   {
@@ -307,7 +306,7 @@ export const artifacts: Artifact[] = [
     title: 'Maintenance Plan',
     type: 'pdf',
     url: `${ARCHIVE_BLOB}fl-maintenance-plan.pdf`,
-    embedUrl: `${ARCHIVE_RAW}fl-maintenance-plan.pdf`,
+    embedUrl: `${EVIDENCE_ASSETS}fl-maintenance-plan.pdf`,
     description: 'The plan to keep building, naming the next project and when it lands.',
   },
 ];

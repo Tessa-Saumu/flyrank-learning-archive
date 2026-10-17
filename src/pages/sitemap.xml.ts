@@ -7,6 +7,7 @@ import type { APIRoute } from 'astro';
 import { assignments } from '../data/assignments';
 import { concepts } from '../data/concepts';
 import { site } from '../config';
+import { certifications } from '../data/certifications';
 
 const staticPaths = [
   '/',
@@ -16,6 +17,7 @@ const staticPaths = [
   '/framework/',
   '/framework/wish-i-knew/',
   '/reflection/',
+  '/certifications/',
 ];
 
 export const GET: APIRoute = () => {
@@ -23,6 +25,7 @@ export const GET: APIRoute = () => {
     ...staticPaths,
     ...assignments.map((a) => `/work/${a.id}/`),
     ...concepts.map((c) => `/concepts/${c.id}/`),
+    ...certifications.map((c) => `/certifications/${c.id}/`),
   ];
 
   const urls = paths

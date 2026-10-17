@@ -42,6 +42,10 @@ export function applyFilter(
 
   // Handle Concepts view toggle on pages that support it (/work/)
   if (conceptsView && assignmentsView) {
+    // Static markup uses a class; client transitions use the hidden property.
+    // Clear the initial class so it cannot keep the selected view invisible.
+    conceptsView.classList.remove('hidden');
+    assignmentsView.classList.remove('hidden');
     if (state.view === 'concepts') {
       conceptsView.hidden = false;
       assignmentsView.hidden = true;
@@ -200,12 +204,4 @@ export function initWorkFilter(): void {
       applyFilter(root, state);
     });
   });
-}
-
-if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initWorkFilter);
-  } else {
-    initWorkFilter();
-  }
 }

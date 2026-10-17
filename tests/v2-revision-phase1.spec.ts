@@ -362,7 +362,8 @@ test('no supporting/reference tier labels survive in cards or the graph panel (Â
   await page.evaluate(() => (window as any).__learningMap.select('fl-01-workflow-audit', 'assignment'));
   await expect(page.locator('[data-learning-map].is-open')).toBeVisible();
   const panelMeta = await page.locator('.panel__meta').innerText();
-  expect(panelMeta).toContain('AI Fluency');
+  // innerText reflects the existing CSS text-transform: uppercase.
+  expect(panelMeta).toMatch(/AI Fluency/i);
   expect(panelMeta, `panel metadata still shows a tier: ${panelMeta}`).not.toMatch(
     /Core|Supporting|Reference/i
   );

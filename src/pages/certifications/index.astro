@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import CertificationCard from '../../components/CertificationCard.astro';
+import { certifications, certificationCompleted, certificationGoal, certificationPercent, certificationZip } from '../../data/certifications';
+---
+<Base title="Claude Certs" description="Claude course completion certificates: progress, original evidence, and downloads." canonicalPath="/certifications/">
+  <div class="container section">
+    <header class="cert-head">
+      <p class="eyebrow">Claude Certs</p>
+      <h1>Learning, backed by evidence.</h1>
+      <p class="cert-head__intro">My Claude course completion certificates, from AI fluency to building with agents and developer tools.</p>
+    </header>
+    <section class="cert-progress" aria-labelledby="progress-heading">
+      <div>
+        <h2 id="progress-heading">{certificationCompleted} of {certificationGoal} completed <span>· {certificationPercent}%</span></h2>
+        <p>Progress toward my {certificationGoal}-course learning goal. Each completed course below includes its original certificate.</p>
+        <progress max={certificationGoal} value={certificationCompleted} aria-label="Claude course learning goal">{certificationPercent}%</progress>
+      </div>
+      <a class="btn" href={certificationZip} download>Download all certificates</a>
+    </section>
+    <ul class="cert-grid" aria-label="Completed Claude courses">
+      {certifications.map(c => <li><CertificationCard certification={c} /></li>)}
+    </ul>
+  </div>
+</Base>
+<style>
+  .cert-head .eyebrow { color:var(--gold-bright); }
+  .cert-head h1 { font-size:var(--fs-assignment); font-weight:600; margin:var(--space-2) 0 var(--space-4); }
+  .cert-head__intro { color:var(--text-dim); max-width:var(--measure-narrow); }
+  .cert-progress { display:flex; justify-content:space-between; align-items:center; gap:var(--space-5); flex-wrap:wrap; border-top:var(--rule); border-bottom:var(--rule); padding:var(--space-5) 0; margin:var(--space-7) 0; }
+  .cert-progress h2 { font-size:var(--fs-card-title); margin:0 0 var(--space-2); }
+  .cert-progress h2 span { color:var(--gold-bright); }
+  .cert-progress p { color:var(--text-dim); max-width:var(--measure-narrow); margin:0 0 var(--space-3); }
+  progress { display:block; width:100%; max-width:360px; height:6px; border:0; border-radius:var(--radius-1); accent-color:var(--green-text); background:var(--bg-elevated); }
+  progress::-webkit-progress-bar { background:var(--bg-elevated); }
+  progress::-webkit-progress-value { background:var(--green-text); }
+  progress::-moz-progress-bar { background:var(--green-text); }
+  .cert-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:var(--space-5); list-style:none; padding:0; margin:0; }
+</style>

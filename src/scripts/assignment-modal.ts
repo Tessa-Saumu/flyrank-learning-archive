@@ -11,6 +11,8 @@
  *   `Show evidence`.
  */
 
+import { initWorkFilter } from './work-filter';
+
 let lastTrigger: HTMLElement | null = null;
 let requestToken = 0;
 let dialog: HTMLDialogElement | null = null;
@@ -45,18 +47,19 @@ function appendMissingStyles(source: Document, target: Document): void {
 
 function setModalLoading(id: string): void {
   if (!modalBody) return;
+  clearEvidence(modalBody);
   modalBody.setAttribute('data-assignment-id', id);
   modalBody.innerHTML =
-    '<p class="assignment-modal__loading">Loading assignment&hellip;</p>';
+    '<p class="assignment-modal__loading">Loading record&hellip;</p>';
 }
 
-async function loadAssignment(id: string): Promise<void> {
+async function loadAssignment(id: string, path = `/work/${encodeURIComponent(id)}/`): Promise<void> {
   if (!modalBody) return;
   const token = ++requestToken;
   setModalLoading(id);
 
   try {
-    const response = await fetch(`/work/${encodeURIComponent(id)}/`);
+    const response = await fetch(path);
     if (!response.ok) throw new Error(`Assignment load failed (${response.status})`);
     const html = await response.text();
     const parsed = new DOMParser().parseFromString(html, 'text/html');
@@ -76,11 +79,13 @@ async function loadAssignment(id: string): Promise<void> {
   } catch (error) {
     if (token !== requestToken) return;
     modalBody.innerHTML =
-      '<p class="assignment-modal__error">This assignment could not be loaded. <a href="/work/">Open the work index instead.</a></p>';
+      '<p class="assignment-modal__error">This record could not be loaded. <a data-record-fallback>Open the full record instead.</a></p>';
+    const fallback = modalBody.querySelector<HTMLAnchorElement>('[data-record-fallback]');
+    if (fallback) fallback.href = path;
   }
 }
 
-function openAssignment(id: string, trigger: HTMLElement | null): void {
+function openAssignment(id: string, trigger: HTMLElement | null, path?: string): void {
   if (!dialog || !modalBody || !closeButton) return;
   if (!dialog.open) lastTrigger = trigger;
   document.body.style.overflow = 'hidden';
@@ -92,7 +97,7 @@ function openAssignment(id: string, trigger: HTMLElement | null): void {
     closeButton.focus();
   }
 
-  void loadAssignment(id);
+  void loadAssignment(id, path);
 }
 
 function closeAssignment(): void {
@@ -100,28 +105,80 @@ function closeAssignment(): void {
   if (dialog.open) dialog.close();
 }
 
-function revealEvidence(button: HTMLElement): void {
+const evidenceCleanup = new WeakMap<HTMLElement, () => void>();
+
+function clearEvidence(container: HTMLElement): void {
+  container.querySelectorAll<HTMLElement>('[data-evidence-target]').forEach((target) => {
+    evidenceCleanup.get(target)?.();
+    target.querySelectorAll('video').forEach((video) => {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    });
+    target.replaceChildren();
+    target.hidden = true;
+  });
+}
+
+async function revealEvidence(button: HTMLButtonElement): Promise<void> {
   const card = button.closest<HTMLElement>(
     '[data-artifact-embed], [data-artifact-preview], [data-artifact-link]'
   );
   if (!card) return;
 
   const src = card.getAttribute('data-src') || '';
-  const type = card.getAttribute('data-type') || '';
+  const kind = card.getAttribute('data-evidence-kind') || '';
   const target = card.querySelector<HTMLElement>('[data-evidence-target]');
-  const pending = card.querySelector<HTMLElement>('[data-evidence-pending]');
-  const fallback = card.querySelector<HTMLElement>('[data-embed-fallback]');
+  const feedback = card.querySelector<HTMLElement>('[data-evidence-feedback]');
+  if (!target || !src || !['pdf', 'video', 'live'].includes(kind)) return;
+  if (card.dataset.evidenceState === 'loading' || card.dataset.evidenceState === 'ready') return;
 
-  card.classList.add('preview--is-revealed');
-
-  if (pending && !src) pending.hidden = false;
-
-  if (target && src && !target.dataset.loaded) {
-    const label = card.getAttribute('data-title') || type || 'Evidence';
-    if (type === 'video') {
+  evidenceCleanup.get(target)?.();
+  target.replaceChildren();
+  const controller = new AbortController();
+  let timer: ReturnType<typeof setTimeout>;
+  const update = (state: string, message: string) => {
+    if (controller.signal.aborted) return;
+    card.dataset.evidenceState = state;
+    button.disabled = state === 'loading' || state === 'ready';
+    button.textContent = state === 'error' ? 'Retry evidence' : state === 'ready' ? 'Evidence shown' : 'Loading evidence';
+    if (feedback) {
+      feedback.hidden = false;
+      feedback.textContent = message;
+    }
+    if (state !== 'loading') clearTimeout(timer);
+  };
+  evidenceCleanup.set(target, () => {
+    controller.abort();
+    clearTimeout(timer);
+    card.dataset.evidenceState = 'idle';
+    button.disabled = false;
+    button.textContent = 'Show evidence';
+    button.setAttribute('aria-expanded', 'false');
+    if (feedback) feedback.hidden = true;
+  });
+  update('loading', 'Loading evidence. You can also open or download the original.');
+  timer = setTimeout(() => update('error', 'The viewer is taking too long. Open the original or retry.'), 20000);
+  target.hidden = false;
+  button.setAttribute('aria-expanded', 'true');
+  const failed = () => update('error', 'The viewer could not load. Open the original or retry.');
+  const label = card.getAttribute('data-title') || 'Evidence';
+  try {
+    // Check same-origin PDF delivery before handing off to the browser viewer.
+    // Cross-origin live frames cannot reliably report whether their content painted.
+    if (kind === 'pdf' && new URL(src, location.href).origin === location.origin) {
+      const response = await fetch(src, { method: 'HEAD', signal: controller.signal });
+      if (!response.ok || !response.headers.get('content-type')?.includes('application/pdf')) {
+        throw new Error('PDF is unavailable');
+      }
+    }
+    if (controller.signal.aborted) return;
+    if (kind === 'video') {
       const video = document.createElement('video');
       video.controls = true;
-      video.preload = 'none';
+      video.preload = 'metadata';
+      video.addEventListener('loadedmetadata', () => update('ready', 'Video ready.'), { signal: controller.signal });
+      video.addEventListener('error', failed, { signal: controller.signal });
       video.src = src;
       video.title = label;
       target.appendChild(video);
@@ -130,14 +187,14 @@ function revealEvidence(button: HTMLElement): void {
       iframe.className = 'preview__frame';
       iframe.title = label;
       iframe.loading = 'lazy';
+      iframe.addEventListener('load', () => update('ready', 'Viewer opened. If the evidence is not visible, open the original.'), { signal: controller.signal });
+      iframe.addEventListener('error', failed, { signal: controller.signal });
       iframe.src = src;
       target.appendChild(iframe);
     }
-    target.dataset.loaded = 'true';
+  } catch {
+    failed();
   }
-
-  if (target && src) target.hidden = false;
-  if (fallback && src) fallback.hidden = true;
 }
 
 function isAssignmentHref(href: string): string | null {
@@ -152,6 +209,13 @@ function isAssignmentHref(href: string): string | null {
 function handleClick(event: MouseEvent): void {
   const target = event.target as HTMLElement | null;
   if (!target) return;
+
+  const certificate = target.closest<HTMLAnchorElement>('a[data-certificate-card]');
+  if (certificate && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
+    event.preventDefault();
+    openAssignment(certificate.dataset.certificateId || '', certificate, certificate.getAttribute('href') || '');
+    return;
+  }
 
   const card = target.closest<HTMLElement>('[data-assignment-card]');
   if (card) {
@@ -188,12 +252,15 @@ function handleClick(event: MouseEvent): void {
 
   const show = target.closest<HTMLElement>('[data-show-evidence]');
   if (show && show instanceof HTMLButtonElement) {
-    revealEvidence(show);
+    void revealEvidence(show);
     return;
   }
 }
 
 function initialize(): void {
+  // This base-layout entry point is shipped on every page. The browse
+  // component's side-effect-only script was omitted from production output.
+  initWorkFilter();
   dialog = document.querySelector<HTMLDialogElement>('[data-assignment-modal] dialog');
   modalBody = document.querySelector<HTMLElement>('[data-assignment-modal] [data-modal-body]');
   modalLabel = document.querySelector<HTMLElement>('[data-assignment-modal] [data-modal-label]');
@@ -204,6 +271,7 @@ function initialize(): void {
 
   dialog.addEventListener('close', () => {
     requestToken++;
+    if (modalBody) clearEvidence(modalBody);
     dialog?.classList.remove('is-open');
     document.body.style.overflow = '';
     document.body.removeAttribute('data-modal-open');

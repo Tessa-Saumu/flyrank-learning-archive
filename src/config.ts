@@ -11,7 +11,7 @@ export const site = {
   url: 'https://flyrank-learning-archive.example.com',
   title: 'FlyRank Learning Archive',
   description:
-    'A visual archive of work across the FlyRank AI Fluency and Machine Learning tracks: what each assignment asked for, what it taught, and how the pieces connect.',
+    'A visual archive of FlyRank AI Fluency and Machine Learning work, alongside Claude course completion certificates: learning, connections, and original evidence.',
   // Root-relative social preview image (PRODUCT_SPEC §36). PLACEHOLDER until the
   // owner supplies a branded card; /public/og.png ships as the default.
   ogImage: '/og.png',
