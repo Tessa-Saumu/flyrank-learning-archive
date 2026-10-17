@@ -22,11 +22,12 @@ const nav = [
 const tracks = [
   { label: 'AI FLUENCY', href: '/track/ai-fluency/', track: 'ai-fluency' },
   { label: 'MACHINE LEARNING', href: '/track/machine-learning/', track: 'machine-learning' },
+  { label: 'CLAUDE CERTS', href: '/certifications/', track: 'certifications' },
 ];
 
 function isActive(href: string): boolean {
   if (href === '/work/') return path.startsWith('/work');
-  if (href.startsWith('/track/')) return path.startsWith(href);
+  if (href.startsWith('/track/') || href === '/certifications/') return path.startsWith(href);
   // Sub-pages (e.g. /framework/wish-i-knew/) keep the parent section active.
   if (href === '/framework/' || href === '/reflection/') return path.startsWith(href);
   return path === href;
@@ -54,8 +55,8 @@ function isActive(href: string): boolean {
       }
     </nav>
 
-    <nav class="header__tracks" aria-label="Tracks">
-      <span class="header__tracks-label" aria-hidden="true">Tracks</span>
+    <nav class="header__tracks" aria-label="Learning sections">
+      <span class="header__tracks-label" aria-hidden="true">Sections</span>
       {
         tracks.map((item) => (
           <a
@@ -76,7 +77,7 @@ function isActive(href: string): boolean {
     position: sticky;
     top: 0;
     z-index: 100;
-    height: var(--header-height);
+    min-height: var(--header-height);
     display: flex;
     align-items: center;
     background: var(--bg);
@@ -84,6 +85,7 @@ function isActive(href: string): boolean {
   }
 
   .header__inner {
+    min-height: var(--header-height);
     display: flex;
     align-items: center;
     gap: var(--space-6);
@@ -191,6 +193,10 @@ function isActive(href: string): boolean {
     color: var(--terracotta-text);
   }
 
+  .header__link.track-certifications.is-active {
+    color: var(--gold-bright);
+  }
+
   @media (max-width: 900px) {
     .header__inner {
       flex-wrap: wrap;
@@ -226,5 +232,16 @@ function isActive(href: string): boolean {
     .header__tracks {
       gap: var(--space-4);
     }
+  }
+
+  @media (min-width: 901px) and (max-width: 1199px) {
+    .header__inner { flex-wrap:wrap; gap:var(--space-3); padding-top:var(--space-2); padding-bottom:var(--space-2); }
+    .header__nav { order:3; flex-basis:100%; justify-content:flex-start; }
+    .header__tracks { margin-left:auto; }
+  }
+
+  @media (max-width: 600px) {
+    .header__tracks { flex-basis:100%; flex-wrap:wrap; margin-left:0; gap:var(--space-3); }
+    .header__tracks-label { display:none; }
   }
 </style>

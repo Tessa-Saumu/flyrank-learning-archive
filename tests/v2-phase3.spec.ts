@@ -41,9 +41,9 @@ test('header: primary sections read above the secondary track links (§1)', asyn
 
   // The tracks cluster is explicitly grouped under its own label, so the
   // header is no longer one continuous flat row.
-  await expect(page.locator('.header__tracks-label')).toHaveText(/tracks/i);
+  await expect(page.locator('.header__tracks-label')).toHaveText(/sections/i);
   await expect(page.locator('.header__link--primary')).toHaveCount(4);
-  await expect(page.locator('.header__link--secondary')).toHaveCount(2);
+  await expect(page.locator('.header__link--secondary')).toHaveCount(3);
 });
 
 test('filter bars expose the real categories only — the tier cluster is gone (V2 REVISION §6)', async ({

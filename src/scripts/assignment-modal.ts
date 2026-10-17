@@ -50,16 +50,16 @@ function setModalLoading(id: string): void {
   clearEvidence(modalBody);
   modalBody.setAttribute('data-assignment-id', id);
   modalBody.innerHTML =
-    '<p class="assignment-modal__loading">Loading assignment&hellip;</p>';
+    '<p class="assignment-modal__loading">Loading record&hellip;</p>';
 }
 
-async function loadAssignment(id: string): Promise<void> {
+async function loadAssignment(id: string, path = `/work/${encodeURIComponent(id)}/`): Promise<void> {
   if (!modalBody) return;
   const token = ++requestToken;
   setModalLoading(id);
 
   try {
-    const response = await fetch(`/work/${encodeURIComponent(id)}/`);
+    const response = await fetch(path);
     if (!response.ok) throw new Error(`Assignment load failed (${response.status})`);
     const html = await response.text();
     const parsed = new DOMParser().parseFromString(html, 'text/html');
@@ -79,11 +79,13 @@ async function loadAssignment(id: string): Promise<void> {
   } catch (error) {
     if (token !== requestToken) return;
     modalBody.innerHTML =
-      '<p class="assignment-modal__error">This assignment could not be loaded. <a href="/work/">Open the work index instead.</a></p>';
+      '<p class="assignment-modal__error">This record could not be loaded. <a data-record-fallback>Open the full record instead.</a></p>';
+    const fallback = modalBody.querySelector<HTMLAnchorElement>('[data-record-fallback]');
+    if (fallback) fallback.href = path;
   }
 }
 
-function openAssignment(id: string, trigger: HTMLElement | null): void {
+function openAssignment(id: string, trigger: HTMLElement | null, path?: string): void {
   if (!dialog || !modalBody || !closeButton) return;
   if (!dialog.open) lastTrigger = trigger;
   document.body.style.overflow = 'hidden';
@@ -95,7 +97,7 @@ function openAssignment(id: string, trigger: HTMLElement | null): void {
     closeButton.focus();
   }
 
-  void loadAssignment(id);
+  void loadAssignment(id, path);
 }
 
 function closeAssignment(): void {
@@ -207,6 +209,13 @@ function isAssignmentHref(href: string): string | null {
 function handleClick(event: MouseEvent): void {
   const target = event.target as HTMLElement | null;
   if (!target) return;
+
+  const certificate = target.closest<HTMLAnchorElement>('a[data-certificate-card]');
+  if (certificate && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
+    event.preventDefault();
+    openAssignment(certificate.dataset.certificateId || '', certificate, certificate.getAttribute('href') || '');
+    return;
+  }
 
   const card = target.closest<HTMLElement>('[data-assignment-card]');
   if (card) {

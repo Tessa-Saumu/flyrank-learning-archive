@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArtifactPreview from '../../components/ArtifactPreview.astro';
+import { certifications, type Certification } from '../../data/certifications';
+export function getStaticPaths() {
+  return certifications.map(certification => ({params:{id:certification.id},props:{certification}}));
+}
+interface Props { certification: Certification }
+const { certification: c } = Astro.props as Props;
+const artifact = { id:`certificate-${c.id}`, title:c.title, type:'pdf' as const, url:c.pdfPath, embedUrl:c.pdfPath, previewImage:c.previewImage, description:`${c.issuer} course completion certificate awarded to ${c.recipient}.` };
+---
+<Base title={c.title} description={`${c.issuer} course completion certificate: ${c.title}.`} canonicalPath={`/certifications/${c.id}/`}>
+  <div class="container section" data-certificate-detail={c.id}>
+    <p class="crumbs"><a href="/certifications/">← Claude Certs</a></p>
+    <div class="certificate-detail">
+      <header>
+        <p class="eyebrow">Claude Certs · Completed</p>
+        <h1 class="detail__title">{c.title}</h1>
+        <dl>
+          <dt>Issuer</dt><dd>{c.issuer}</dd>
+          <dt>Awarded to</dt><dd>{c.recipient}</dd>
+          <dt>Credential</dt><dd>Course completion certificate</dd>
+        </dl>
+        <p class="certificate-detail__note">The original certificate is the evidence for this completed course.</p>
+        <a class="btn" href={c.pdfPath} download>Download certificate</a>
+      </header>
+      <section aria-label="Certificate evidence">
+        <ArtifactPreview artifact={artifact} evidenceStatus="available" />
+      </section>
+    </div>
+  </div>
+</Base>
+<style>
+  .crumbs { font-size:var(--fs-metadata); margin:0 0 var(--space-6); }
+  .certificate-detail { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:var(--space-7); }
+  .certificate-detail > * { min-width:0; }
+  .eyebrow { color:var(--gold-bright); }
+  h1 { font-size:var(--fs-assignment); font-weight:600; margin:var(--space-3) 0 var(--space-6); overflow-wrap:break-word; }
+  dl { display:grid; grid-template-columns:max-content 1fr; gap:var(--space-3) var(--space-5); border-top:var(--rule); padding-top:var(--space-5); }
+  dt { font-size:var(--fs-metadata); text-transform:uppercase; color:var(--text-faint); }
+  dd { margin:0; }
+  .certificate-detail__note { color:var(--text-dim); margin:var(--space-5) 0; max-width:var(--measure-narrow); }
+  @media(max-width:900px) { .certificate-detail { grid-template-columns:1fr; } }
+</style>

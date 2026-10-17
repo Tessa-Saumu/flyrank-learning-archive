@@ -1,0 +1,23 @@
+---
+import type { Certification } from '../data/certifications';
+interface Props { certification: Certification }
+const { certification: c } = Astro.props;
+---
+<a class="certificate-card" href={`/certifications/${c.id}/`} data-certificate-card data-certificate-id={c.id} aria-haspopup="dialog">
+  <img src={c.previewImage} width={c.previewWidth} height={c.previewHeight} alt={`${c.title} completion certificate for ${c.recipient}`} loading="lazy" />
+  <div class="certificate-card__body">
+    <span class="certificate-card__meta">{c.issuer} · Completed</span>
+    <h2>{c.title}</h2>
+    <span class="certificate-card__action">View certificate <span aria-hidden="true">↗</span></span>
+  </div>
+</a>
+<style>
+  .certificate-card { display:flex; flex-direction:column; height:100%; border:var(--rule); border-radius:var(--radius-2); overflow:hidden; color:var(--text); text-decoration:none; background:var(--bg-elevated); transition:border-color var(--motion-hover) var(--ease); }
+  .certificate-card:hover { border-color:var(--text); }
+  .certificate-card img { display:block; width:100%; height:auto; aspect-ratio:900 / 695; object-fit:contain; border-bottom:var(--rule); }
+  .certificate-card__body { display:flex; flex:1; flex-direction:column; gap:var(--space-3); padding:var(--space-5); }
+  .certificate-card__meta, .certificate-card__action { font-size:var(--fs-card-metadata); font-weight:500; letter-spacing:var(--tracking-metadata); text-transform:uppercase; }
+  .certificate-card__meta { color:var(--green-text); }
+  .certificate-card h2 { font-size:var(--fs-card-title); font-weight:600; margin:0; }
+  .certificate-card__action { margin-top:auto; padding-top:var(--space-3); }
+</style>

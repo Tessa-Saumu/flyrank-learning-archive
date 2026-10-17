@@ -1,0 +1,75 @@
+{
+  "description": "Claude course completion certificates supplied by Theresia Saumu",
+  "certificates": [
+    {
+      "file": "claude-101.pdf",
+      "title": "Claude 101",
+      "sha256": "8894dc5fae8390b641e96ff62062c2f67c209a4c89bcac664668474131bfc91c"
+    },
+    {
+      "file": "ai-fluency-foundations.pdf",
+      "title": "AI Fluency: Framework & Foundations",
+      "sha256": "ac27350a69f009ed481430eae008c4e0ce7702b25517e625d0355ea58aeb6319"
+    },
+    {
+      "file": "ai-capabilities-limitations.pdf",
+      "title": "AI Fluency: AI Capabilities & Limitations",
+      "sha256": "ebd3eea3d46978c36d76b43c1fda6bcdad638798c45edd0ed7440a894972a582"
+    },
+    {
+      "file": "agent-skills.pdf",
+      "title": "Introduction to agent skills",
+      "sha256": "cd9496fa8df57528d265672e1b2e00ee9ab06533cac34f2cb97bbbf19b70ecf7"
+    },
+    {
+      "file": "ai-fluency-educators.pdf",
+      "title": "AI Fluency for educators",
+      "sha256": "8f21772b7c62453910b7afb114e472ef49685b6d405ee4d98eb5415374cb243e"
+    },
+    {
+      "file": "ai-fluency-small-businesses.pdf",
+      "title": "AI Fluency for Small Businesses",
+      "sha256": "cff4d48509048de276cb19446293cc36098690a58a99d90684ec9ce28b372137"
+    },
+    {
+      "file": "ai-fluency-students.pdf",
+      "title": "AI Fluency for students",
+      "sha256": "0caaa3d21e3b2d293cf6bf8f6e14348a1f354d608be2b019c0ef5cf8a4a091ca"
+    },
+    {
+      "file": "ai-fluency-builders.pdf",
+      "title": "AI Fluency for Builders",
+      "sha256": "e583e3f5e2e89b49851aad39c693b4c377ec6af322479dfff76393dcc3712906"
+    },
+    {
+      "file": "claude-code-101.pdf",
+      "title": "Claude Code 101",
+      "sha256": "2ad7ad06d9edc8cf4d5f258198b35559185caef4f7033d398455292a9e9bd8ed"
+    },
+    {
+      "file": "claude-code-in-action.pdf",
+      "title": "Claude Code in Action",
+      "sha256": "1359fefb37fd166a955f9745d888b63819483491e3a4974d778a79bc91f45a4d"
+    },
+    {
+      "file": "claude-platform-101.pdf",
+      "title": "Claude Platform 101",
+      "sha256": "54b7f6a0e49c76ac281cd7babc4db496f013eafbc0960a4b07e8ae8e1ffbcb1e"
+    },
+    {
+      "file": "subagents.pdf",
+      "title": "Introduction to subagents",
+      "sha256": "5eea7fdfa046f163d42f89a31650156fa6f88e1a120fd675c857cd3782c2b015"
+    },
+    {
+      "file": "teaching-ai-fluency.pdf",
+      "title": "Teaching the AI Fluency Framework",
+      "sha256": "90076a0e173407c23d78e18a2014384e6906395d657816271d0f11ab1cc9a3ed"
+    },
+    {
+      "file": "claude-cowork.pdf",
+      "title": "Introduction to Claude Cowork",
+      "sha256": "98619b4a7fbf5f2a01aec2b93e045b4aa6a3df2bcf2da2dd05d98cd50938f175"
+    }
+  ]
+}

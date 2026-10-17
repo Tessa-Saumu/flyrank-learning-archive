@@ -2,7 +2,7 @@
 
 ## Scope
 
-This repair keeps the archive's visual design, canonical assignments, notebook metrics, graph layout/edges, and existing routes. Certifications remains a separate planned addition. Deployment is left to the owner.
+This repair keeps the archive's visual design, canonical assignments, notebook metrics, graph layout/edges, and existing routes. Claude Certs has now been added as a sibling section on this PR; see [CLAUDE_CERTS.md](CLAUDE_CERTS.md). Deployment is left to the owner.
 
 ## Changes
 

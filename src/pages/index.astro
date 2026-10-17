@@ -13,6 +13,7 @@ import LearningMap from '../components/LearningMap.astro';
 import FilterBar from '../components/FilterBar.astro';
 import BrowseWork from '../components/BrowseWork.astro';
 import { assignments } from '../data/assignments';
+import { certificationCompleted, certificationGoal, certificationPercent } from '../data/certifications';
 ---
 
 <Base>
@@ -80,9 +81,20 @@ import { assignments } from '../data/assignments';
       </div>
     </div>
   </section>
+  <section class="section cert-entry" aria-labelledby="claude-certs-heading">
+    <div class="container">
+      <p class="eyebrow">Claude Certs</p>
+      <h2 class="section-label" id="claude-certs-heading">A growing collection of course completions</h2>
+      <p>{certificationCompleted} of my {certificationGoal}-course learning goal completed · {certificationPercent}%. Explore the original certificates behind the progress.</p>
+      <a class="btn" href="/certifications/">Explore Claude Certs</a>
+    </div>
+  </section>
 </Base>
 
 <style>
+  .cert-entry { border-top:var(--rule); }
+  .cert-entry .eyebrow { color:var(--gold-bright); margin-bottom:var(--space-3); }
+  .cert-entry p:not(.eyebrow) { color:var(--text-dim); max-width:var(--measure-narrow); margin-bottom:var(--space-5); }
   .map-section {
     padding: var(--space-7) 0 var(--space-5);
   }
