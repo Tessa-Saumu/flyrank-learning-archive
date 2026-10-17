@@ -29,3 +29,6 @@ playwright-report/
 
 # Lighthouse
 lighthouse-reports/
+
+# Generated from assignment-artifacts/ by prepare:evidence
+public/evidence/assignments/

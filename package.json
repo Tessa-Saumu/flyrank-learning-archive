@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "prebuild": "npm run validate",
+    "prebuild": "npm run validate && npm run prepare:evidence",
     "validate": "node --experimental-strip-types scripts/validate-data.mjs",
     "check": "astro check",
     "preview": "astro preview",
@@ -20,7 +20,9 @@
     "test:revision3": "node --experimental-strip-types scripts/verify-phase3.mjs",
     "test:axe": "playwright test tests/axe.spec.ts",
     "test:install": "playwright install chromium",
-    "lighthouse": "lighthouse http://127.0.0.1:4321 --config-path=./lighthouse.config.mjs --output-dir=./lighthouse-reports --output=html"
+    "lighthouse": "lighthouse http://127.0.0.1:4321 --config-path=./lighthouse.config.mjs --output-dir=./lighthouse-reports --output=html",
+    "prepare:evidence": "node --experimental-strip-types scripts/prepare-evidence.mjs",
+    "predev": "npm run prepare:evidence"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

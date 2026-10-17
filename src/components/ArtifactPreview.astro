@@ -6,11 +6,11 @@
  * Three registry display modes (CONTENT_REGISTRY §3.1):
  *   - embed   — substantial stable artifacts. The initial HTML contains only a
  *               preview. `Show evidence` creates the heavy viewer on demand;
- *               the first-class fallback remains until an embed is chosen.
+ *               the open/download fallback remains available after reveal.
  *   - preview — compact technical card: title, one-sentence description, type,
  *               optional screenshot, evidence status, and a `Show evidence` path.
  *   - link    — administrative/source material: a simple labelled link row with
- *               a `Show evidence` fallback.
+ *               an honest open-link or missing state.
  *
  * Type support: PDF and video use the appropriate viewer when a URL is
  * supplied; the component keeps a single activation contract so additional
@@ -21,6 +21,7 @@
  * fake embed. Status is always shown with text, never colour alone (§25).
  */
 import NotebookPreview from './NotebookPreview.astro';
+import { evidenceCapability } from '../lib/evidence';
 import { evidenceStatusLabel } from '../lib/archive';
 import { notebookForAssignment } from '../data/notebooks';
 import type { Artifact, ArtifactLink, Assignment, EvidenceStatus } from '../data/types';
@@ -36,10 +37,11 @@ interface Props {
 const { artifact, link, evidenceStatus = 'partial', assignment } = Astro.props;
 
 const mode = link?.displayMode ?? 'preview';
-const hasUrl = Boolean(artifact.url);
+const capability = evidenceCapability(artifact, mode, evidenceStatus);
+const hasUrl = Boolean(capability.openUrl);
 const notebook = assignment ? notebookForAssignment(assignment.id) : undefined;
-const hostIsEmbeddable = artifact.type === 'live' || artifact.type === 'video' || artifact.type === 'pdf';
-const srcForEmbed = artifact.embedUrl ?? artifact.url ?? '';
+const hostIsEmbeddable = capability.canReveal;
+const srcForEmbed = capability.src;
 
 const roleLabel = link
   ? { produces: 'Produces', uses: 'Uses', documents: 'Documents', demonstrates: 'Demonstrates' }[
@@ -54,19 +56,21 @@ const externalRel = 'noopener noreferrer';
 
 {
   /* ---------- LINK mode: administrative/source material ---------- */
-  mode === 'link' && (
+  mode === 'link' && !notebook && (
     <div
       class="preview preview--link"
       data-artifact-link
       data-type={artifact.type}
       data-title={artifact.title}
+      data-evidence-kind={capability.kind}
+      data-evidence-state="idle"
       data-src={hasUrl ? srcForEmbed : ''}
     >
       <span class="preview__dot" aria-hidden="true"></span>
       <span class="preview__link-title">{artifact.title}</span>
       {
         hasUrl ? (
-          <a class="preview__action" href={artifact.url} target="_blank" rel={externalRel}>
+          <a class="preview__action" href={capability.openUrl} target="_blank" rel={externalRel}>
             Open <span aria-hidden="true">↗</span>
           </a>
         ) : (
@@ -75,13 +79,10 @@ const externalRel = 'noopener noreferrer';
           </span>
         )
       }
-      <button class="preview__action preview__action--show" type="button" data-show-evidence>
-        Show evidence
-      </button>
       <span class="preview__status" data-status={evidenceStatus}>
         {evidenceStatusLabel(evidenceStatus)}
       </span>
-      <p class="preview__pending" data-evidence-pending hidden>
+      <p class="preview__pending" data-evidence-pending hidden={hasUrl}>
         No evidence URL supplied yet. This item stays in preview until the owner supplies the asset.
       </p>
     </div>
@@ -105,6 +106,8 @@ const externalRel = 'noopener noreferrer';
       data-src={hasUrl ? srcForEmbed : ''}
       data-type={artifact.type}
       data-title={artifact.title}
+      data-evidence-kind={capability.kind}
+      data-evidence-state="idle"
     >
       <div class="preview__bar">
         <span class="preview__type">{artifact.type}</span>
@@ -134,9 +137,9 @@ const externalRel = 'noopener noreferrer';
             <span class="preview__dot" aria-hidden="true"></span>
             {evidenceStatusLabel(evidenceStatus)}
           </span>
-          <button class="preview__action preview__action--filled" type="button" data-show-evidence>
+          {capability.canReveal && <button class="preview__action preview__action--filled" type="button" data-show-evidence aria-expanded="false">
             Show evidence
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -150,7 +153,7 @@ const externalRel = 'noopener noreferrer';
           <span class="preview__action preview__action--filled" data-open-artifact>
             {
               hasUrl ? (
-                <a href={artifact.url} target="_blank" rel={externalRel}>
+                <a href={capability.openUrl} target="_blank" rel={externalRel}>
                   Open artifact <span aria-hidden="true">↗</span>
                 </a>
               ) : (
@@ -164,7 +167,9 @@ const externalRel = 'noopener noreferrer';
       </div>
 
       <div class="preview__embed-target" data-evidence-target hidden></div>
-      <p class="preview__pending" data-evidence-pending hidden>
+      <p class="preview__pending" data-evidence-feedback role="status" aria-live="polite" hidden></p>
+      {capability.downloadUrl && <a class="preview__action preview__action--external" href={capability.downloadUrl} download>Download {artifact.type}</a>}
+      <p class="preview__pending" data-evidence-pending hidden={hasUrl}>
         No evidence URL supplied yet. This item stays in preview until the owner supplies the asset.
       </p>
     </article>
@@ -173,13 +178,15 @@ const externalRel = 'noopener noreferrer';
 
 {
   /* ---------- PREVIEW mode: compact technical evidence card ---------- */
-  mode === 'preview' && (
+  mode === 'preview' && !notebook && (
     <article
       class="preview"
       data-artifact-preview
       data-src={hasUrl && hostIsEmbeddable ? srcForEmbed : ''}
       data-type={artifact.type}
       data-title={artifact.title}
+      data-evidence-kind={capability.kind}
+      data-evidence-state="idle"
     >
       <div class="preview__bar">
         <span class="preview__type">{artifact.type}</span>
@@ -209,13 +216,13 @@ const externalRel = 'noopener noreferrer';
             <span class="preview__dot" aria-hidden="true"></span>
             {evidenceStatusLabel(evidenceStatus)}
           </span>
-          <button class="preview__action preview__action--filled" type="button" data-show-evidence>
+          {capability.canReveal && <button class="preview__action preview__action--filled" type="button" data-show-evidence aria-expanded="false">
             Show evidence
-          </button>
+          </button>}
         </div>
         {
           hasUrl ? (
-            <a class="preview__action preview__action--external" href={artifact.url} target="_blank" rel={externalRel}>
+            <a class="preview__action preview__action--external" href={capability.openUrl} target="_blank" rel={externalRel}>
               Open artifact <span aria-hidden="true">↗</span>
             </a>
           ) : (
@@ -227,7 +234,9 @@ const externalRel = 'noopener noreferrer';
       </div>
 
       <div class="preview__embed-target" data-evidence-target hidden></div>
-      <p class="preview__pending" data-evidence-pending hidden>
+      <p class="preview__pending" data-evidence-feedback role="status" aria-live="polite" hidden></p>
+      {capability.downloadUrl && <a class="preview__action preview__action--external" href={capability.downloadUrl} download>Download {artifact.type}</a>}
+      <p class="preview__pending" data-evidence-pending hidden={hasUrl}>
         No evidence URL supplied yet. This item stays in preview until the owner supplies the asset.
       </p>
     </article>
@@ -466,15 +475,12 @@ const externalRel = 'noopener noreferrer';
     border-top: var(--rule);
   }
 
-  .preview--is-revealed .embed-fallback {
-    display: none;
-  }
-
-  .preview__embed-target iframe,
-  .preview__embed-target video,
-  .preview__embed-target object {
+  .preview__embed-target :global(iframe),
+  .preview__embed-target :global(video),
+  .preview__embed-target :global(object) {
     width: 100%;
-    height: 520px;
+    height: min(520px, 70vh);
+    max-width: 100%;
     border: 0;
     display: block;
     background: var(--bg);
